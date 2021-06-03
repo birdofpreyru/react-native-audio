@@ -19,9 +19,9 @@ def safeExtGet(prop, fallback) {
 
 android {
     compileSdkVersion safeExtGet('ReactNativeAudio_compileSdkVersion', 29)
-    buildToolsVersion safeExtGet('ReactNativeAudio_buildToolsVersion', '29.0.2')
+    buildToolsVersion safeExtGet('ReactNativeAudio_buildToolsVersion', '29.0.3')
     defaultConfig {
-        minSdkVersion safeExtGet('ReactNativeAudio_minSdkVersion', 16)
+        minSdkVersion safeExtGet('ReactNativeAudio_minSdkVersion', 21)
         targetSdkVersion safeExtGet('ReactNativeAudio_targetSdkVersion', 29)
         versionCode 1
         versionName "1.0"

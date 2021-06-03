@@ -1,98 +1,48 @@
-version: 2.1
+defaults: &defaults
+  docker:
+    - image: circleci/node:lts
 
-executors:
-  default:
-    docker:
-      - image: circleci/node:10
-    working_directory: ~/project
-
-commands:
-  attach_project:
-    steps:
-      - attach_workspace:
-          at: ~/project
-
+version: 2
 jobs:
-  install-dependencies:
-    executor: default
+  test:
+    <<: *defaults
     steps:
       - checkout
-      - attach_project
       - restore_cache:
-          keys:
-            - dependencies-{{ checksum "package.json" }}
-            - dependencies-
-      - restore_cache:
-          keys:
-            - dependencies-example-{{ checksum "example/package.json" }}
-            - dependencies-example-
-      - run:
-          name: Install dependencies
-          command: |
-            yarn install --cwd example --frozen-lockfile
-            yarn install --frozen-lockfile
+          key: node-modules-{{ checksum "package-lock.json" }}
+      - run: npm install
       - save_cache:
-          key: dependencies-{{ checksum "package.json" }}
-          paths: node_modules
-      - save_cache:
-          key: dependencies-example-{{ checksum "example/package.json" }}
-          paths: example/node_modules
+          key: node-modules-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - run: npm test
+      - run: npm run prepare
       - persist_to_workspace:
           root: .
-          paths: .
-
-  lint:
-    executor: default
+          paths:
+            - build
+  release:
+    <<: *defaults
     steps:
-      - attach_project
-      - run:
-          name: Lint files
-          command: |
-            yarn lint
-
-  typescript:
-    executor: default
-    steps:
-      - attach_project
-      - run:
-          name: Typecheck files
-          command: |
-            yarn typescript
-
-  unit-tests:
-    executor: default
-    steps:
-      - attach_project
-      - run:
-          name: Run unit tests
-          command: |
-            yarn test --coverage
-      - store_artifacts:
-          path: coverage
-          destination: coverage
-
-  build-package:
-    executor: default
-    steps:
-      - attach_project
-      - run:
-          name: Build package
-          command: |
-            yarn prepare
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - run: npm publish --access public
 
 workflows:
-  build-and-test:
+  version: 2
+  build:
     jobs:
-      - install-dependencies
-      - lint:
+      - test:
+          filters:
+            tags:
+              only: /.*/
+      - release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
           requires:
-            - install-dependencies
-      - typescript:
-          requires:
-            - install-dependencies
-      - unit-tests:
-          requires:
-            - install-dependencies
-      - build-package:
-          requires:
-            - install-dependencies
+            - test

@@ -1,4 +1,4 @@
-package com.drpogodinreactnativeaudio;
+package com.dr_pogodin_react_native_audio;
 
 import androidx.annotation.NonNull;
 
