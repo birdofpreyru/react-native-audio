@@ -16,7 +16,6 @@ jobs:
           paths:
             - node_modules
       - run: npm test
-      - run: npm run prepare
       - persist_to_workspace:
           root: .
           paths:
@@ -28,6 +27,7 @@ jobs:
       - attach_workspace:
           at: .
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - run: npm run prepare
       - run: npm publish --access public
 
 workflows:
