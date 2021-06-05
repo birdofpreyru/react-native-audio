@@ -94,7 +94,7 @@ export class InputAudioStream {
       this.samplingSize
     );
     this.chunkSubscription = eventEmitter.addListener(
-      `RNA_AudioChunk_${this.streamId}`,
+      `RNA_AudioChunk`,
       ({ chunkId, data }: { chunkId: number; data: string }) => {
         if (this.chunkListeners.length) {
           const chunk = Buffer.from(data, 'base64');
@@ -103,7 +103,7 @@ export class InputAudioStream {
       }
     );
     this.errorSubscription = eventEmitter.addListener(
-      `RNA_InputAudioStreamError_${this.streamId}`,
+      `RNA_InputAudioStreamError`,
       (error: string) => {
         if (this.errorListeners.length) {
           const err = new Error(error);
