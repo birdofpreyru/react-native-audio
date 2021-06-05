@@ -142,5 +142,8 @@
         }
       ]
     ]
+  },
+  "dependencies": {
+    "react-native-permissions": "^3.0.4"
   }
 }

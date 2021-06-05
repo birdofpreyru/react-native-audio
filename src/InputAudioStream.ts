@@ -1,9 +1,18 @@
 import { Buffer } from 'buffer';
+
 import {
   EmitterSubscription,
   NativeEventEmitter,
   NativeModules,
+  Platform,
 } from 'react-native';
+
+import {
+  check as checkPermission,
+  request as requestPermission,
+  PERMISSIONS,
+  RESULTS as PERMISSION_STATUS,
+} from 'react-native-permissions';
 
 import type {
   AUDIO_FORMATS,
@@ -86,6 +95,28 @@ export class InputAudioStream {
   }
 
   async start() {
+    // Requests permission to record audio, if not granted, and requestable.
+    // If no permission (at least limited) is granted in result, it bails out.
+    // TODO: Clean-up the code. Can be twice more compact.
+    let status;
+    if (Platform.OS === 'ios') {
+      status = await checkPermission(PERMISSIONS.IOS.MICROPHONE);
+      if (status === PERMISSION_STATUS.DENIED) {
+        status = await requestPermission(PERMISSIONS.IOS.MICROPHONE);
+      }
+    } else if (Platform.OS === 'android') {
+      status = await checkPermission(PERMISSIONS.ANDROID.RECORD_AUDIO);
+      if (status === PERMISSION_STATUS.DENIED) {
+        status = await requestPermission(PERMISSIONS.ANDROID.RECORD_AUDIO);
+      }
+    }
+    if (
+      status !== PERMISSION_STATUS.GRANTED &&
+      status !== PERMISSION_STATUS.LIMITED
+    ) {
+      return;
+    }
+
     this.streamId = await ReactNativeAudio.listen(
       this.audioSource,
       this.sampleRate,
