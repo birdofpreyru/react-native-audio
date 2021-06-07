@@ -1,8 +1,8 @@
 // Exposes constants provided by native layer.
 
-import { NativeModules } from 'react-native';
+import {NativeModules} from 'react-native';
 
-const { ReactNativeAudio } = NativeModules;
+const {ReactNativeAudio} = NativeModules;
 
 const {
   AUDIO_FORMAT_PCM_8BIT,

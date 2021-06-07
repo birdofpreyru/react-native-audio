@@ -6,7 +6,7 @@ buildscript {
         }
 
         dependencies {
-            classpath 'com.android.tools.build:gradle:3.5.3'
+            classpath 'com.android.tools.build:gradle:4.1.0'
         }
     }
 }
@@ -23,9 +23,9 @@ android {
     defaultConfig {
         minSdkVersion safeExtGet('ReactNativeAudio_minSdkVersion', 21)
         targetSdkVersion safeExtGet('ReactNativeAudio_targetSdkVersion', 29)
+        ndkVersion safeExtGet('ReactNativeAudio_ndkVersion', '20.1.5948944')
         versionCode 1
         versionName "1.0"
-
     }
 
     buildTypes {

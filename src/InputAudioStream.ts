@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer';
+import {Buffer} from 'buffer';
 
 import {
   EmitterSubscription,
@@ -14,13 +14,9 @@ import {
   RESULTS as PERMISSION_STATUS,
 } from 'react-native-permissions';
 
-import type {
-  AUDIO_FORMATS,
-  AUDIO_SOURCES,
-  CHANNEL_CONFIGS,
-} from './constants';
+import type {AUDIO_FORMATS, AUDIO_SOURCES, CHANNEL_CONFIGS} from './constants';
 
-const { ReactNativeAudio } = NativeModules;
+const {ReactNativeAudio} = NativeModules;
 
 type ChunkListener = (chunk: Buffer, chunkId: number) => void;
 type ErrorListener = (error: Error) => void;
@@ -56,7 +52,7 @@ export class InputAudioStream {
     sampleRate: number,
     channelConfig: CHANNEL_CONFIGS,
     audioFormat: AUDIO_FORMATS,
-    samplingSize: number
+    samplingSize: number,
   ) {
     this.audioSource = audioSource;
     this.sampleRate = sampleRate;
@@ -126,25 +122,25 @@ export class InputAudioStream {
       this.sampleRate,
       this.channelConfig,
       this.audioFormat,
-      this.samplingSize
+      this.samplingSize,
     );
     this.chunkSubscription = eventEmitter.addListener(
       'RNA_AudioChunk',
-      ({ chunkId, data }: { chunkId: number; data: string }) => {
+      ({chunkId, data}: {chunkId: number; data: string}) => {
         if (this.chunkListeners.length) {
           const chunk = Buffer.from(data, 'base64');
-          this.chunkListeners.forEach((listener) => listener(chunk, chunkId));
+          this.chunkListeners.forEach(listener => listener(chunk, chunkId));
         }
-      }
+      },
     );
     this.errorSubscription = eventEmitter.addListener(
       'RNA_InputAudioStreamError',
       (error: string) => {
         if (this.errorListeners.length) {
           const err = new Error(error);
-          this.errorListeners.forEach((listener) => listener(err));
+          this.errorListeners.forEach(listener => listener(err));
         }
-      }
+      },
     );
   }
 
