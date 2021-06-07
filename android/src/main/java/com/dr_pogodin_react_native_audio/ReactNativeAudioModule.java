@@ -100,18 +100,19 @@ public class ReactNativeAudioModule extends ReactContextBaseJavaModule {
       new InputAudioStream.Listener() {
         @Override
         public void onChunk(int chunkId, byte[] chunk) {
-          String eventName = "RNA_AudioChunk_" + streamId;
           WritableMap event = Arguments.createMap();
+          event.putInt("streamId", streamId);
           event.putInt("chunkId", chunkId);
           event.putString("data", Base64.encodeToString(chunk, Base64.NO_WRAP));
-          eventEmitter.emit(eventName, event);
+          eventEmitter.emit("RNA_AudioChunk", event);
         }
 
         @Override
         public void onError(Exception e) {
-          String eventName = "RNA_InputAudioStreamError_" + streamId;
-          String error = e.toString();
-          eventEmitter.emit(eventName, error);
+          WritableMap event = Arguments.createMap();
+          event.putInt("streamId", streamId);
+          event.putString("error", e.toString());
+          eventEmitter.emit("RNA_InputAudioStreamError", event);
         }
       });
     inputStreams.put(streamId, stream);

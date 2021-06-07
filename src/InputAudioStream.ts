@@ -1,11 +1,6 @@
 import {Buffer} from 'buffer';
 
-import {
-  EmitterSubscription,
-  NativeEventEmitter,
-  NativeModules,
-  Platform,
-} from 'react-native';
+import {NativeEventEmitter, NativeModules, Platform} from 'react-native';
 
 import {
   check as checkPermission,
@@ -23,6 +18,33 @@ type ErrorListener = (error: Error) => void;
 
 const eventEmitter = new NativeEventEmitter(ReactNativeAudio);
 
+let chunkListeners: {
+  streamId: number;
+  listener: ChunkListener;
+}[] = [];
+let errorListeners: {
+  streamId: number;
+  listener: ErrorListener;
+}[] = [];
+
+eventEmitter.addListener('RNA_AudioChunk', ({streamId, chunkId, data}) => {
+  const chunk = Buffer.from(data, 'base64');
+  chunkListeners.forEach(item => {
+    if (item.streamId === streamId) {
+      item.listener(chunk, chunkId);
+    }
+  });
+});
+
+eventEmitter.addListener('RNA_InputAudioStreamError', ({streamId, error}) => {
+  const e = Error(error);
+  errorListeners.forEach(item => {
+    if (item.streamId === streamId) {
+      item.listener(e);
+    }
+  });
+});
+
 export class InputAudioStream {
   readonly audioSource: AUDIO_SOURCES;
   readonly sampleRate: number;
@@ -33,9 +55,6 @@ export class InputAudioStream {
   private streamId?: number;
   private chunkListeners: ChunkListener[] = [];
   private errorListeners: ErrorListener[] = [];
-
-  private chunkSubscription?: EmitterSubscription;
-  private errorSubscription?: EmitterSubscription;
 
   /**
    * Creates a new InputAudioStream.
@@ -61,19 +80,38 @@ export class InputAudioStream {
     this.samplingSize = samplingSize;
   }
 
+  /**
+   * Adds a new chunk listener.
+   * @param listener
+   */
   addChunkListener(listener: ChunkListener) {
-    this.chunkListeners.push(listener);
+    if (!this.chunkListeners.includes(listener)) {
+      this.chunkListeners.push(listener);
+      if (this.streamId !== undefined) {
+        chunkListeners.push({streamId: this.streamId, listener});
+      }
+    }
   }
 
   addErrorListener(listener: ErrorListener) {
-    this.errorListeners.push(listener);
+    if (!this.errorListeners.includes(listener)) {
+      this.errorListeners.push(listener);
+      if (this.streamId !== undefined) {
+        errorListeners.push({streamId: this.streamId, listener});
+      }
+    }
   }
 
   async destroy() {
-    this.chunkListeners = [];
-    this.chunkSubscription!.remove();
-    this.errorSubscription!.remove();
-    ReactNativeAudio.unlisten(this.streamId);
+    if (this.streamId !== undefined) {
+      chunkListeners = chunkListeners.filter(
+        ({streamId}) => streamId !== this.streamId,
+      );
+      errorListeners = errorListeners.filter(
+        ({streamId}) => streamId !== this.streamId,
+      );
+      ReactNativeAudio.unlisten(this.streamId);
+    }
   }
 
   mute() {
@@ -81,16 +119,18 @@ export class InputAudioStream {
   }
 
   removeChunkListener(listener: ChunkListener) {
-    const idx = this.chunkListeners.indexOf(listener);
-    if (idx >= 0) {
-      this.chunkListeners.splice(idx, 1);
+    if (this.streamId !== undefined) {
+      chunkListeners = chunkListeners.filter(
+        item => item.streamId !== this.streamId || item.listener !== listener,
+      );
     }
   }
 
   removeErrorListener(listener: ErrorListener) {
-    const idx = this.errorListeners.indexOf(listener);
-    if (idx >= 0) {
-      this.errorListeners.splice(idx, 1);
+    if (this.streamId !== undefined) {
+      errorListeners = errorListeners.filter(
+        item => item.streamId !== this.streamId || item.listener !== listener,
+      );
     }
   }
 
@@ -124,23 +164,17 @@ export class InputAudioStream {
       this.audioFormat,
       this.samplingSize,
     );
-    this.chunkSubscription = eventEmitter.addListener(
-      'RNA_AudioChunk',
-      ({chunkId, data}: {chunkId: number; data: string}) => {
-        if (this.chunkListeners.length) {
-          const chunk = Buffer.from(data, 'base64');
-          this.chunkListeners.forEach(listener => listener(chunk, chunkId));
-        }
-      },
+    this.chunkListeners.forEach(item =>
+      chunkListeners.push({
+        streamId: this.streamId!,
+        listener: item,
+      }),
     );
-    this.errorSubscription = eventEmitter.addListener(
-      'RNA_InputAudioStreamError',
-      (error: string) => {
-        if (this.errorListeners.length) {
-          const err = new Error(error);
-          this.errorListeners.forEach(listener => listener(err));
-        }
-      },
+    this.errorListeners.forEach(item =>
+      errorListeners.push({
+        streamId: this.streamId!,
+        listener: item,
+      }),
     );
   }
 
