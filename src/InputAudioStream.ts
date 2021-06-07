@@ -86,12 +86,16 @@ export class InputAudioStream {
 
   removeChunkListener(listener: ChunkListener) {
     const idx = this.chunkListeners.indexOf(listener);
-    if (idx >= 0) this.chunkListeners.splice(idx, 1);
+    if (idx >= 0) {
+      this.chunkListeners.splice(idx, 1);
+    }
   }
 
   removeErrorListener(listener: ErrorListener) {
     const idx = this.errorListeners.indexOf(listener);
-    if (idx >= 0) this.errorListeners.splice(idx, 1);
+    if (idx >= 0) {
+      this.errorListeners.splice(idx, 1);
+    }
   }
 
   async start() {
@@ -125,7 +129,7 @@ export class InputAudioStream {
       this.samplingSize
     );
     this.chunkSubscription = eventEmitter.addListener(
-      `RNA_AudioChunk`,
+      'RNA_AudioChunk',
       ({ chunkId, data }: { chunkId: number; data: string }) => {
         if (this.chunkListeners.length) {
           const chunk = Buffer.from(data, 'base64');
@@ -134,7 +138,7 @@ export class InputAudioStream {
       }
     );
     this.errorSubscription = eventEmitter.addListener(
-      `RNA_InputAudioStreamError`,
+      'RNA_InputAudioStreamError',
       (error: string) => {
         if (this.errorListeners.length) {
           const err = new Error(error);
