@@ -2,11 +2,11 @@ buildscript {
     if (project == rootProject) {
         repositories {
             google()
-            jcenter()
+            mavenCentral()
         }
 
         dependencies {
-            classpath 'com.android.tools.build:gradle:4.1.0'
+            classpath 'com.android.tools.build:gradle:4.2.1'
         }
     }
 }
@@ -18,11 +18,11 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
-    compileSdkVersion safeExtGet('ReactNativeAudio_compileSdkVersion', 29)
-    buildToolsVersion safeExtGet('ReactNativeAudio_buildToolsVersion', '29.0.3')
+    compileSdkVersion safeExtGet('ReactNativeAudio_compileSdkVersion', 30)
+    buildToolsVersion safeExtGet('ReactNativeAudio_buildToolsVersion', '30.0.2')
     defaultConfig {
         minSdkVersion safeExtGet('ReactNativeAudio_minSdkVersion', 21)
-        targetSdkVersion safeExtGet('ReactNativeAudio_targetSdkVersion', 29)
+        targetSdkVersion safeExtGet('ReactNativeAudio_targetSdkVersion', 30)
         ndkVersion safeExtGet('ReactNativeAudio_ndkVersion', '20.1.5948944')
         versionCode 1
         versionName "1.0"
@@ -36,20 +36,16 @@ android {
     lintOptions {
         disable 'GradleCompatible'
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
 }
 
 repositories {
+    mavenCentral()
     mavenLocal()
     maven {
         // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
         url("$rootDir/../node_modules/react-native/android")
     }
     google()
-    jcenter()
 }
 
 dependencies {
