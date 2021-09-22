@@ -1,6 +1,6 @@
 import {Buffer} from 'buffer';
 
-import {NativeEventEmitter, NativeModules, Platform} from 'react-native';
+import {Alert, NativeEventEmitter, NativeModules, Platform} from 'react-native';
 
 import {
   check as checkPermission,
@@ -65,13 +65,41 @@ async function getAudioRecordingPermission() {
   }
 
   let status = await checkPermission(permission);
-  if (status === PERMISSION_STATUS.DENIED) {
-    status = await requestPermission(permission);
+  switch (status) {
+    case PERMISSION_STATUS.UNAVAILABLE:
+      Alert.alert(
+        'Microphone unavailable',
+        'Microphone is not accessible at your system',
+      );
+      break;
+    case PERMISSION_STATUS.BLOCKED:
+      Alert.alert(
+        'Microphone access blocked',
+        'Microphone access have been forbidden before. Allow it in the device settigns, or re-install the app to automatically ask for it again',
+      );
+      break;
+    case PERMISSION_STATUS.DENIED:
+      status = await requestPermission(permission);
+      break;
+    case PERMISSION_STATUS.GRANTED:
+    case PERMISSION_STATUS.LIMITED:
+      break;
+    default:
+      throw Error('Unexpected permission status');
   }
 
-  return (
-    status === PERMISSION_STATUS.GRANTED || status === PERMISSION_STATUS.LIMITED
-  );
+  const permitted =
+    status === PERMISSION_STATUS.GRANTED ||
+    status === PERMISSION_STATUS.LIMITED;
+
+  if (!permitted) {
+    Alert.alert(
+      'Microphone access forbidden',
+      'Microphone access is forbidden. Allow it in the device settigns, or re-install the app to automatically ask for it again',
+    );
+  }
+
+  return permitted;
 }
 
 export class InputAudioStream {
