@@ -45,6 +45,35 @@ eventEmitter.addListener('RNA_InputAudioStreamError', ({streamId, error}) => {
   });
 });
 
+/**
+ * Attempts to check and/or request (if necessary and possible) audio recording
+ * permission.
+ * @return {Promise<boolean>} Resolves "true" if at least limited audio
+ * recording permissions are granted on the exit from this function.
+ */
+async function getAudioRecordingPermission() {
+  let permission;
+  switch (Platform.OS) {
+    case 'android':
+      permission = PERMISSIONS.ANDROID.RECORD_AUDIO;
+      break;
+    case 'ios':
+      permission = PERMISSIONS.IOS.MICROPHONE;
+      break;
+    default:
+      throw Error('Invalid OS');
+  }
+
+  let status = await checkPermission(permission);
+  if (status === PERMISSION_STATUS.DENIED) {
+    status = await requestPermission(permission);
+  }
+
+  return (
+    status === PERMISSION_STATUS.GRANTED || status === PERMISSION_STATUS.LIMITED
+  );
+}
+
 export class InputAudioStream {
   readonly audioSource: AUDIO_SOURCES;
   readonly sampleRate: number;
@@ -52,7 +81,7 @@ export class InputAudioStream {
   readonly audioFormat: AUDIO_FORMATS;
   readonly samplingSize: number;
 
-  private streamId?: number;
+  private streamId?: Promise<number | undefined>;
   private chunkListeners: ChunkListener[] = [];
   private errorListeners: ErrorListener[] = [];
 
@@ -81,104 +110,124 @@ export class InputAudioStream {
   }
 
   /**
+   * Gets the actual stream ID number (or undefined).
+   */
+  async getStreamId() {
+    return this.streamId && (await this.streamId);
+  }
+
+  /**
    * Adds a new chunk listener.
    * @param listener
    */
-  addChunkListener(listener: ChunkListener) {
+  async addChunkListener(listener: ChunkListener) {
     if (!this.chunkListeners.includes(listener)) {
       this.chunkListeners.push(listener);
-      if (this.streamId !== undefined) {
-        chunkListeners.push({streamId: this.streamId, listener});
+      const streamId = await this.getStreamId();
+      if (streamId !== undefined) {
+        chunkListeners.push({streamId, listener});
       }
     }
   }
 
-  addErrorListener(listener: ErrorListener) {
+  async addErrorListener(listener: ErrorListener) {
     if (!this.errorListeners.includes(listener)) {
       this.errorListeners.push(listener);
-      if (this.streamId !== undefined) {
-        errorListeners.push({streamId: this.streamId, listener});
+      const streamId = await this.getStreamId();
+      if (streamId !== undefined) {
+        errorListeners.push({streamId, listener});
       }
     }
   }
 
   async destroy() {
-    if (this.streamId !== undefined) {
+    const streamId = await this.getStreamId();
+    if (streamId !== undefined) {
       chunkListeners = chunkListeners.filter(
-        ({streamId}) => streamId !== this.streamId,
+        item => item.streamId !== streamId,
       );
       errorListeners = errorListeners.filter(
-        ({streamId}) => streamId !== this.streamId,
+        item => item.streamId !== streamId,
       );
       ReactNativeAudio.unlisten(this.streamId);
     }
   }
 
-  mute() {
-    ReactNativeAudio.muteInputStream(this.streamId, true);
+  async mute() {
+    const streamId = await this.getStreamId();
+    if (streamId !== undefined) {
+      ReactNativeAudio.muteInputStream(streamId, true);
+    }
   }
 
-  removeChunkListener(listener: ChunkListener) {
-    if (this.streamId !== undefined) {
+  async removeChunkListener(listener: ChunkListener) {
+    const streamId = await this.getStreamId();
+    if (streamId !== undefined) {
       chunkListeners = chunkListeners.filter(
-        item => item.streamId !== this.streamId || item.listener !== listener,
+        item => item.streamId !== streamId || item.listener !== listener,
       );
     }
   }
 
-  removeErrorListener(listener: ErrorListener) {
-    if (this.streamId !== undefined) {
+  async removeErrorListener(listener: ErrorListener) {
+    const streamId = await this.getStreamId();
+    if (streamId !== undefined) {
       errorListeners = errorListeners.filter(
-        item => item.streamId !== this.streamId || item.listener !== listener,
+        item => item.streamId !== streamId || item.listener !== listener,
       );
     }
   }
 
-  async start() {
-    // Requests permission to record audio, if not granted, and requestable.
-    // If no permission (at least limited) is granted in result, it bails out.
-    // TODO: Clean-up the code. Can be twice more compact.
-    let status;
-    if (Platform.OS === 'ios') {
-      status = await checkPermission(PERMISSIONS.IOS.MICROPHONE);
-      if (status === PERMISSION_STATUS.DENIED) {
-        status = await requestPermission(PERMISSIONS.IOS.MICROPHONE);
-      }
-    } else if (Platform.OS === 'android') {
-      status = await checkPermission(PERMISSIONS.ANDROID.RECORD_AUDIO);
-      if (status === PERMISSION_STATUS.DENIED) {
-        status = await requestPermission(PERMISSIONS.ANDROID.RECORD_AUDIO);
-      }
+  /**
+   * Attempts to start the input audio stream. In case the stream is already
+   * active, it just reports the active state. If the stream is pending to start
+   * it waits and returns the result, without doing a new attempt in case of
+   * failure.
+   * @return Resolves "true" if the stream is active upon the call exit;
+   * otherwise resolves "false".
+   */
+  async start(): Promise<boolean> {
+    if (!this.streamId) {
+      this.streamId = (async () => {
+        try {
+          if (await getAudioRecordingPermission()) {
+            const streamId = await ReactNativeAudio.listen(
+              this.audioSource,
+              this.sampleRate,
+              this.channelConfig,
+              this.audioFormat,
+              this.samplingSize,
+            );
+            this.chunkListeners.forEach(item =>
+              chunkListeners.push({
+                listener: item,
+                streamId,
+              }),
+            );
+            this.errorListeners.forEach(item =>
+              errorListeners.push({
+                listener: item,
+                streamId,
+              }),
+            );
+            return streamId;
+          }
+        } catch (error) {
+          // If an error happens we just fallthrough to reset this.streamId and
+          // return "undefined". Which returns the object to its initial state
+          // allowing to retry the start later, if needed.
+        }
+        this.streamId = undefined;
+        return undefined;
+      })();
     }
-    if (
-      status !== PERMISSION_STATUS.GRANTED &&
-      status !== PERMISSION_STATUS.LIMITED
-    ) {
-      return;
-    }
-
-    this.streamId = await ReactNativeAudio.listen(
-      this.audioSource,
-      this.sampleRate,
-      this.channelConfig,
-      this.audioFormat,
-      this.samplingSize,
-    );
-    this.chunkListeners.forEach(item =>
-      chunkListeners.push({
-        streamId: this.streamId!,
-        listener: item,
-      }),
-    );
-    this.errorListeners.forEach(item =>
-      errorListeners.push({
-        streamId: this.streamId!,
-        listener: item,
-      }),
-    );
+    return !!(await this.streamId);
   }
 
-  unmute() {
-    ReactNativeAudio.muteInputStream(this.streamId, false);
+  async unmute() {
+    const streamId = await this.getStreamId();
+    if (streamId !== undefined) {
+      ReactNativeAudio.muteInputStream(streamId, false);
+    }
   }
 }
