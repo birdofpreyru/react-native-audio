@@ -177,7 +177,7 @@ export class InputAudioStream {
       errorListeners = errorListeners.filter(
         item => item.streamId !== streamId,
       );
-      ReactNativeAudio.unlisten(this.streamId);
+      ReactNativeAudio.unlisten(streamId);
     }
   }
 
