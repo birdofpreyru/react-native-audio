@@ -138,8 +138,6 @@ public class ReactNativeAudioModule extends ReactContextBaseJavaModule {
     inputStreams.remove(streamId).stop();
   }
 
-  /*
-  TODO: Probably, rename
   @ReactMethod
   public void addListener(String eventName) {
     // Keep: Required for RN built in Event Emitter Calls.
@@ -149,5 +147,4 @@ public class ReactNativeAudioModule extends ReactContextBaseJavaModule {
   public void removeListeners(Integer count) {
     // Keep: Required for RN built in Event Emitter Calls.
   }
-  */
 }
