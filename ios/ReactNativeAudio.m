@@ -32,6 +32,11 @@ RCT_EXPORT_MODULE(ReactNativeAudio)
   };
 }
 
++ (BOOL) requiresMainQueueSetup
+{
+  return NO;
+}
+
 /**
  *  Creates a dedicated queue for module operations.
  */
