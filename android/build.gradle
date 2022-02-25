@@ -18,14 +18,14 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
-    compileSdkVersion safeExtGet('ReactNativeAudio_compileSdkVersion', 30)
-    buildToolsVersion safeExtGet('ReactNativeAudio_buildToolsVersion', '30.0.2')
+    compileSdkVersion safeExtGet('compileSdkVersion', 31)
+    buildToolsVersion safeExtGet('buildToolsVersion', '30.0.2')
     defaultConfig {
-        minSdkVersion safeExtGet('ReactNativeAudio_minSdkVersion', 21)
-        targetSdkVersion safeExtGet('ReactNativeAudio_targetSdkVersion', 30)
-        ndkVersion safeExtGet('ReactNativeAudio_ndkVersion', '21.4.7075529')
-        versionCode 2
-        versionName "1.0.1"
+        minSdkVersion safeExtGet('minSdkVersion', 23)
+        targetSdkVersion safeExtGet('targetSdkVersion', 31)
+        ndkVersion safeExtGet('ndkVersion', '21.4.7075529')
+        versionCode 3
+        versionName "1.0.2"
     }
 
     buildTypes {
