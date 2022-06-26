@@ -90,7 +90,7 @@ void HandleInputBuffer(void *inUserData,
    */
   
   // Creates stream configuration.
-  AudioStreamBasicDescription config;
+  AudioStreamBasicDescription config = {0};
   config.mFormatID = kAudioFormatLinearPCM;
   config.mFormatFlags = 0;
   switch (audioFormat) {
