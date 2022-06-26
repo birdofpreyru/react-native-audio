@@ -26,8 +26,8 @@ android {
         minSdkVersion safeExtGet('minSdkVersion', 23)
         targetSdkVersion safeExtGet('targetSdkVersion', 31)
         ndkVersion safeExtGet('ndkVersion', '21.4.7075529')
-        versionCode 5
-        versionName "1.1.1"
+        versionCode 6
+        versionName "1.2.0"
     }
 
     buildTypes {
