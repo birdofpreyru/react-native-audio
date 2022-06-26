@@ -59,3 +59,12 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 }
+
+react {
+    libraryName = "audio"
+    codegenJavaPackageName = "studio.drpogodin.audio"
+    root = rootProject.file("..")
+    jsRootDir = rootProject.file("../js/")
+    reactNativeDir = rootProject.file("../node_modules/react-native/")
+    codegenDir = rootProject.file("../node_modules/react-native-codegen/")
+}
