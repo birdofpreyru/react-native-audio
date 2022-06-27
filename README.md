@@ -57,10 +57,6 @@ function createAndStartAudioStream() {
   // resources. If you need to temporarily stop and then resume the stream,
   // use .mute() and .unmute() methods instead.
 }
-
-// ...
-
-const result = await ReactNativeAudio.multiply(3, 7);
 ```
 
 ## Contributing
