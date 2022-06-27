@@ -1,4 +1,4 @@
-package studio.drpogodin.audio;
+package com.drpogodin.audio;
 
 import androidx.annotation.NonNull;
 

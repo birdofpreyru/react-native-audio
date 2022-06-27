@@ -1,22 +1,30 @@
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 buildscript {
     if (project == rootProject) {
         repositories {
             google()
+            gradlePluginPortal()
             mavenCentral()
         }
 
         dependencies {
-            classpath("com.android.tools.build:gradle:7.0.4")
+            classpath("com.android.tools.build:gradle:7.1.1")
             classpath("com.facebook.react:react-native-gradle-plugin")
-            classpath("de.undercouch:gradle-download-task:4.1.2")
+            classpath("de.undercouch:gradle-download-task:5.0.1")
         }
     }
 }
 
-apply plugin: 'com.android.library'
+def isNewArchitectureEnabled() {
+    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
 
-def safeExtGet(prop, fallback) {
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+apply plugin: 'com.android.library'
+if (isNewArchitectureEnabled()) {
+    apply plugin: 'com.facebook.react'
 }
 
 android {
@@ -25,6 +33,7 @@ android {
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 23)
         targetSdkVersion safeExtGet('targetSdkVersion', 31)
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         ndkVersion safeExtGet('ndkVersion', '21.4.7075529')
         versionCode 6
         versionName "1.2.0"
@@ -37,6 +46,15 @@ android {
     }
     lintOptions {
         disable 'GradleCompatible'
+    }
+    sourceSets {
+        main {
+            if (isNewArchitectureEnabled()) {
+                java.srcDirs += ['src/newarch']
+            } else {
+                java.srcDirs += ['src/oldarch']
+            }
+        }
     }
 }
 
@@ -60,11 +78,13 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
 }
 
-react {
-    libraryName = "audio"
-    codegenJavaPackageName = "studio.drpogodin.audio"
-    root = rootProject.file("..")
-    jsRootDir = rootProject.file("../js/")
-    reactNativeDir = rootProject.file("../node_modules/react-native/")
-    codegenDir = rootProject.file("../node_modules/react-native-codegen/")
+if (isNewArchitectureEnabled()) {
+    react {
+        libraryName = "audio"
+        codegenJavaPackageName = "com.drpogodin.audio"
+        root = rootProject.file("..")
+        jsRootDir = rootProject.file("../src/")
+        reactNativeDir = rootProject.file("../node_modules/react-native/")
+        codegenDir = rootProject.file("../node_modules/react-native-codegen/")
+    }
 }
