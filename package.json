@@ -22,6 +22,8 @@
     "!**/__mocks__"
   ],
   "scripts": {
+    "ios:generate-schema": "rimraf ios/tmp && mkdir -p ios/tmp && node ./node_modules/react-native-codegen/lib/cli/combine/combine-js-to-schema-cli.js ./ios/tmp/schema.json src",
+    "ios:generate-specs": "npm run ios:generate-schema && node ./node_modules/react-native/scripts/generate-specs-cli.js --platform ios --schemaPath ./ios/tmp/schema.json --outputDir ./ios/tmp --libraryName AudioSpecs --libraryType modules",
     "jest": "jest",
     "test": "npm run lint && jest",
     "typescript": "tsc --noEmit",
