@@ -86,8 +86,8 @@ public class ReactNativeAudioModuleImpl {
         @Override
         public void onChunk(int chunkId, byte[] chunk) {
           WritableMap event = Arguments.createMap();
-          event.putInt("streamId", streamId);
-          event.putInt("chunkId", chunkId);
+          event.putDouble("streamId", streamId);
+          event.putDouble("chunkId", chunkId);
           event.putString("data", Base64.encodeToString(chunk, Base64.NO_WRAP));
           emitter.emit("RNA_AudioChunk", event);
         }
@@ -95,7 +95,7 @@ public class ReactNativeAudioModuleImpl {
         @Override
         public void onError(Exception e) {
           WritableMap event = Arguments.createMap();
-          event.putInt("streamId", streamId);
+          event.putDouble("streamId", streamId);
           event.putString("error", e.toString());
           emitter.emit("RNA_InputAudioStreamError", event);
         }
@@ -110,7 +110,7 @@ public class ReactNativeAudioModuleImpl {
    * @param muted
    */
   public void muteInputStream(Double streamId, boolean muted) {
-    inputStreams.get(streamId).muted = muted;
+    inputStreams.get(streamId.intValue()).muted = muted;
   }
 
   /**
@@ -118,6 +118,6 @@ public class ReactNativeAudioModuleImpl {
    * @param streamId
    */
   public void unlisten(Double streamId) {
-    inputStreams.remove(streamId).stop();
+    inputStreams.remove(streamId.intValue()).stop();
   }
 }
