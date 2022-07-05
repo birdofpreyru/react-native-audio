@@ -5,7 +5,7 @@
   #import <NativeAudioSpec/NativeAudioSpec.h>
   @interface ReactNativeAudio () <NativeAudioSpec>
   @end
-#elif
+#else
   @interface ReactNativeAudio: RCTEventEmitter <RCTBridgeModule>
   @end
 #endif

@@ -3,8 +3,8 @@
 #import "ReactNativeAudio.h"
 #import "RNAInputAudioStream.h"
 
-const NSString *EVENT_AUDIO_CHUNK = @"RNA_AudioChunk";
-const NSString *EVENT_INPUT_AUDIO_STREAM_ERROR = @"RNA_InputAudioStreamError";
+NSString *EVENT_AUDIO_CHUNK = @"RNA_AudioChunk";
+NSString *EVENT_INPUT_AUDIO_STREAM_ERROR = @"RNA_InputAudioStreamError";
 
 @implementation ReactNativeAudio {
   int lastInputStreamId;
@@ -78,10 +78,10 @@ RCT_EXPORT_METHOD(listen:(double)audioSource
   };
   
   RNAInputAudioStream *stream =
-  [RNAInputAudioStream streamAudioSource:audioSource
+  [RNAInputAudioStream streamAudioSource:(AUDIO_SOURCES)audioSource
                               sampleRate:sampleRate
-                           channelConfig:channelConfig
-                             audioFormat:audioFormat
+                           channelConfig:(CHANNEL_CONFIGS)channelConfig
+                             audioFormat:(AUDIO_FORMATS)audioFormat
                             samplingSize:samplingSize
                                  onChunk:onChunk
                                  onError:onError];
@@ -93,13 +93,13 @@ RCT_EXPORT_METHOD(listen:(double)audioSource
 
 RCT_EXPORT_METHOD(unlisten:(double)streamId)
 {
-  [inputStreams[streamId] stop];
+  [inputStreams[(int)streamId] stop];
   [inputStreams removeObjectForKey:streamId];
 }
 
 RCT_EXPORT_METHOD(muteInputStream:(double)streamId mute:(BOOL)mute)
 {
-  inputStreams[streamId].muted = mute;
+  inputStreams[(int)streamId].muted = mute;
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
