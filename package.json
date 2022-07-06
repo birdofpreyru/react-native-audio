@@ -87,7 +87,7 @@
     ]
   },
   "dependencies": {
-    "react-native-permissions": "^3.3.1"
+    "react-native-permissions": "^3.4.0"
   },
   "codegenConfig": {
     "libraries": [

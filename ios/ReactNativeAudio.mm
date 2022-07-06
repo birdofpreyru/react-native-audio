@@ -93,13 +93,14 @@ RCT_EXPORT_METHOD(listen:(double)audioSource
 
 RCT_EXPORT_METHOD(unlisten:(double)streamId)
 {
-  [inputStreams[(int)streamId] stop];
-  [inputStreams removeObjectForKey:streamId];
+  NSNumber *id = [NSNumber numberWithDouble:streamId];
+  [inputStreams[id] stop];
+  [inputStreams removeObjectForKey:id];
 }
 
 RCT_EXPORT_METHOD(muteInputStream:(double)streamId mute:(BOOL)mute)
 {
-  inputStreams[(int)streamId].muted = mute;
+  inputStreams[[NSNumber numberWithDouble:streamId]].muted = mute;
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED

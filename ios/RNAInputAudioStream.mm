@@ -32,7 +32,7 @@ void HandleInputBuffer(void *inUserData,
   RNAInputAudioStream *stream = (__bridge RNAInputAudioStream*)inUserData;
   if (!stream.muted) {
     stream->onChunk(stream->chunkId,
-                    inBuffer->mAudioData,
+                    (unsigned char *)inBuffer->mAudioData,
                     inBuffer->mAudioDataByteSize);
   }
   ++stream->chunkId;
@@ -48,7 +48,7 @@ void HandleInputBuffer(void *inUserData,
 {
   if (error) {
     onError([NSString stringWithFormat:@"%@ [%d]: %@",
-             error.domain, error.code, error.localizedDescription]);
+             error.domain, (int)error.code, error.localizedDescription]);
   }
 }
 
@@ -76,10 +76,9 @@ void HandleInputBuffer(void *inUserData,
   self->onChunk = onChunk;
   self->onError = onError;
   
-  NSError *error;
-  
   // Configuration and activation of audio session.
   /*
+  NSError *error;
   AVAudioSession *audioSession = [AVAudioSession sharedInstance];
   [audioSession setCategory:AVAudioSessionCategoryRecord error:&error];
   [self handleError:error];
