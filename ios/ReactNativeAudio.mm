@@ -3,8 +3,8 @@
 #import "ReactNativeAudio.h"
 #import "RNAInputAudioStream.h"
 
-const NSString *EVENT_AUDIO_CHUNK = @"RNA_AudioChunk";
-const NSString *EVENT_INPUT_AUDIO_STREAM_ERROR = @"RNA_InputAudioStreamError";
+NSString *EVENT_AUDIO_CHUNK = @"RNA_AudioChunk";
+NSString *EVENT_INPUT_AUDIO_STREAM_ERROR = @"RNA_InputAudioStreamError";
 
 @implementation ReactNativeAudio {
   int lastInputStreamId;
@@ -51,11 +51,11 @@ RCT_EXPORT_MODULE(ReactNativeAudio)
 }
 
 // NOTE: Can't use enum as the argument type here, as RN won't understand that.
-RCT_EXPORT_METHOD(listen:(int)audioSource
-                  withSampleRate:(int)sampleRate
-                  withChannelConfig:(int)channelConfig
-                  withAudioFormat:(int)audioFormat
-                  withSamplingSize:(int)samplingSize
+RCT_EXPORT_METHOD(listen:(double)audioSource
+                  withSampleRate:(double)sampleRate
+                  withChannelConfig:(double)channelConfig
+                  withAudioFormat:(double)audioFormat
+                  withSamplingSize:(double)samplingSize
                   resolver:(RCTPromiseResolveBlock) resolve
                   rejecter:(RCTPromiseRejectBlock) reject)
 {
@@ -78,10 +78,10 @@ RCT_EXPORT_METHOD(listen:(int)audioSource
   };
   
   RNAInputAudioStream *stream =
-  [RNAInputAudioStream streamAudioSource:audioSource
+  [RNAInputAudioStream streamAudioSource:(AUDIO_SOURCES)audioSource
                               sampleRate:sampleRate
-                           channelConfig:channelConfig
-                             audioFormat:audioFormat
+                           channelConfig:(CHANNEL_CONFIGS)channelConfig
+                             audioFormat:(AUDIO_FORMATS)audioFormat
                             samplingSize:samplingSize
                                  onChunk:onChunk
                                  onError:onError];
@@ -91,15 +91,24 @@ RCT_EXPORT_METHOD(listen:(int)audioSource
   resolve(streamId);
 }
 
-RCT_EXPORT_METHOD(unlisten:(nonnull NSNumber*)streamId)
+RCT_EXPORT_METHOD(unlisten:(double)streamId)
 {
-  [inputStreams[streamId] stop];
-  [inputStreams removeObjectForKey:streamId];
+  NSNumber *id = [NSNumber numberWithDouble:streamId];
+  [inputStreams[id] stop];
+  [inputStreams removeObjectForKey:id];
 }
 
-RCT_EXPORT_METHOD(muteInputStream:(nonnull NSNumber*)streamId mute:(BOOL)mute)
+RCT_EXPORT_METHOD(muteInputStream:(double)streamId mute:(BOOL)mute)
 {
-  inputStreams[streamId].muted = mute;
+  inputStreams[[NSNumber numberWithDouble:streamId]].muted = mute;
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+  {
+    return std::make_shared<facebook::react::NativeAudioSpecJSI>(params); 
+  }
+#endif
 
 @end

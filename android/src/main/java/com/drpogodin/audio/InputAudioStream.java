@@ -1,4 +1,4 @@
-package com.dr_pogodin_react_native_audio;
+package com.drpogodin.audio;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -83,7 +83,8 @@ public class InputAudioStream {
           // De-initialization.
           record.stop();
           record.release();
-
+        } catch (SecurityException e) {
+          listener.onError(e);
         } catch (Exception e) {
           listener.onError(e);
         }

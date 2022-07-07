@@ -1,42 +1,24 @@
-package com.dr_pogodin_react_native_audio;
+package com.drpogodin.audio;
 
 import android.media.AudioFormat;
 import android.media.MediaRecorder;
 import android.util.Base64;
 
-import androidx.annotation.NonNull;
-
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@ReactModule(name = ReactNativeAudioModule.NAME)
-public class ReactNativeAudioModule extends ReactContextBaseJavaModule {
+public class ReactNativeAudioModuleImpl {
   public static final String NAME = "ReactNativeAudio";
 
   private int lastInputStreamId;
   private HashMap<Integer, InputAudioStream> inputStreams = new HashMap<>();
 
-  public ReactNativeAudioModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-  }
-
-  @Override
-  @NonNull
-  public String getName() { return NAME; }
-
-  @Override
-  public Map<String, Object> getConstants() {
+  public static Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
 
     // Valid audio formats, see:
@@ -84,35 +66,38 @@ public class ReactNativeAudioModule extends ReactContextBaseJavaModule {
    * @param samplingSize Number of samples in data chunk (per channel).
    * @param promise RN promise to resolve / reject.
    */
-  @ReactMethod
-  public void listen(int audioSource, int sampleRate, int channelConfig, int audioFormat,
-                     int samplingSize, Promise promise) {
+  public void listen(
+    Double audioSource,
+    Double sampleRate,
+    Double channelConfig,
+    Double audioFormat,
+    Double samplingSize,
+    DeviceEventManagerModule.RCTDeviceEventEmitter emitter,
+    Promise promise
+  ) {
     int streamId = ++lastInputStreamId;
-    DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = getReactApplicationContext()
-      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-    ReactApplicationContext context = getReactApplicationContext();
     InputAudioStream stream = new InputAudioStream(
-      audioSource,
-      sampleRate,
-      channelConfig,
-      audioFormat,
-      samplingSize,
+      audioSource.intValue(),
+      sampleRate.intValue(),
+      channelConfig.intValue(),
+      audioFormat.intValue(),
+      samplingSize.intValue(),
       new InputAudioStream.Listener() {
         @Override
         public void onChunk(int chunkId, byte[] chunk) {
           WritableMap event = Arguments.createMap();
-          event.putInt("streamId", streamId);
-          event.putInt("chunkId", chunkId);
+          event.putDouble("streamId", streamId);
+          event.putDouble("chunkId", chunkId);
           event.putString("data", Base64.encodeToString(chunk, Base64.NO_WRAP));
-          eventEmitter.emit("RNA_AudioChunk", event);
+          emitter.emit("RNA_AudioChunk", event);
         }
 
         @Override
         public void onError(Exception e) {
           WritableMap event = Arguments.createMap();
-          event.putInt("streamId", streamId);
+          event.putDouble("streamId", streamId);
           event.putString("error", e.toString());
-          eventEmitter.emit("RNA_InputAudioStreamError", event);
+          emitter.emit("RNA_InputAudioStreamError", event);
         }
       });
     inputStreams.put(streamId, stream);
@@ -124,27 +109,15 @@ public class ReactNativeAudioModule extends ReactContextBaseJavaModule {
    * @param streamId
    * @param muted
    */
-  @ReactMethod
-  public void muteInputStream(int streamId, boolean muted) {
-    inputStreams.get(streamId).muted = muted;
+  public void muteInputStream(Double streamId, boolean muted) {
+    inputStreams.get(streamId.intValue()).muted = muted;
   }
 
   /**
    * Stops, and releases an input audio stream.
    * @param streamId
    */
-  @ReactMethod
-  public void unlisten(int streamId) {
-    inputStreams.remove(streamId).stop();
-  }
-
-  @ReactMethod
-  public void addListener(String eventName) {
-    // Keep: Required for RN built in Event Emitter Calls.
-  }
-
-  @ReactMethod
-  public void removeListeners(Integer count) {
-    // Keep: Required for RN built in Event Emitter Calls.
+  public void unlisten(Double streamId) {
+    inputStreams.remove(streamId.intValue()).stop();
   }
 }
