@@ -11,7 +11,13 @@ import {
 
 import type {AUDIO_FORMATS, AUDIO_SOURCES, CHANNEL_CONFIGS} from './constants';
 
-const {ReactNativeAudio} = NativeModules;
+declare global {
+  var __turboModuleProxy: object | undefined;
+}
+
+const ReactNativeAudio = global.__turboModuleProxy
+  ? require('./NativeAudio').default
+  : NativeModules.ReactNativeAudio;
 
 type ChunkListener = (chunk: Buffer, chunkId: number) => void;
 type ErrorListener = (error: Error) => void;

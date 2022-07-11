@@ -35,8 +35,8 @@ android {
         targetSdkVersion safeExtGet('targetSdkVersion', 31)
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         ndkVersion safeExtGet('ndkVersion', '21.4.7075529')
-        versionCode 6
-        versionName "1.2.0"
+        versionCode 7
+        versionName "1.2.1"
     }
 
     buildTypes {
