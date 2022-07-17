@@ -53,6 +53,8 @@ RCT_EXPORT_MODULE(ReactNativeAudio)
 RCT_EXPORT_METHOD(configAudioSystem:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
+  RCTLogInfo(@"Audio session configuration...");
+
   AVAudioSession *audioSession = AVAudioSession.sharedInstance;
   NSArray<AVAudioSessionCategory> *cats = audioSession.availableCategories;
 
@@ -83,6 +85,13 @@ RCT_EXPORT_METHOD(configAudioSystem:(RCTPromiseResolveBlock)resolve
     return;
   }
 
+  res = [audioSession setActive:YES error:&error];
+  if (res != YES || error != nil) {
+    reject(@"audio_session_activation_failure",
+           @"failed to activate audio session",
+           error);
+  }
+
   resolve(nil);
 }
 
@@ -98,7 +107,7 @@ RCT_EXPORT_METHOD(listen:(double)audioSource
   NSNumber *streamId = [NSNumber numberWithInt:++lastInputStreamId];
 
   OnChunk onChunk = ^void(int chunkId, unsigned char *chunk, int size) {
-    RCTLogInfo(@"AUDIO DATA CHUNK RECEIVED");
+    RCTLogInfo(@"[Stream %@] Audio data chunk %d received", streamId, chunkId);
     NSData* data = [NSData dataWithBytesNoCopy:chunk
                                         length:size
                                   freeWhenDone:NO];
@@ -132,6 +141,7 @@ RCT_EXPORT_METHOD(unlisten:(double)streamId)
   NSNumber *id = [NSNumber numberWithDouble:streamId];
   [inputStreams[id] stop];
   [inputStreams removeObjectForKey:id];
+  RCTLogInfo(@"[Stream %@] Is unlistened", id);
 }
 
 RCT_EXPORT_METHOD(muteInputStream:(double)streamId mute:(BOOL)mute)
