@@ -50,6 +50,42 @@ RCT_EXPORT_MODULE(ReactNativeAudio)
   return @[EVENT_AUDIO_CHUNK, EVENT_INPUT_AUDIO_STREAM_ERROR];
 }
 
+RCT_EXPORT_METHOD(configAudioSystem:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  AVAudioSession *audioSession = AVAudioSession.sharedInstance;
+  NSArray<AVAudioSessionCategory> *cats = audioSession.availableCategories;
+
+  AVAudioSessionCategory category;
+  if ([cats containsObject:AVAudioSessionCategoryPlayAndRecord]) {
+    category = AVAudioSessionCategoryPlayAndRecord;
+  } else if ([cats containsObject:AVAudioSessionCategoryPlayback]) {
+    category = AVAudioSessionCategoryPlayback;
+  } else {
+    reject(@"incompatible_audio_session",
+           @"neither play-and-record, nor playback category is supported",
+           nil);
+    return;
+  }
+
+  NSError *error = nil;
+  BOOL res = [audioSession setCategory:category
+                                  mode:AVAudioSessionModeMeasurement
+                               options:(AVAudioSessionCategoryOptionAllowBluetooth |
+                                        AVAudioSessionCategoryOptionAllowBluetoothA2DP |
+                                        AVAudioSessionCategoryOptionDefaultToSpeaker)
+                                 error:&error];
+
+  if (res != YES || error != nil) {
+    reject(@"audio_session_config_failure",
+           @"failed to configure audio session",
+           error);
+    return;
+  }
+
+  resolve(nil);
+}
+
 // NOTE: Can't use enum as the argument type here, as RN won't understand that.
 RCT_EXPORT_METHOD(listen:(double)audioSource
                   withSampleRate:(double)sampleRate

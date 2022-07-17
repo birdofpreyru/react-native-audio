@@ -28,15 +28,15 @@ if (isNewArchitectureEnabled()) {
 }
 
 android {
-    compileSdkVersion safeExtGet('compileSdkVersion', 31)
-    buildToolsVersion safeExtGet('buildToolsVersion', '31.0.0')
+    compileSdkVersion safeExtGet('compileSdkVersion', 33)
+    buildToolsVersion safeExtGet('buildToolsVersion', '33.0.0')
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 23)
-        targetSdkVersion safeExtGet('targetSdkVersion', 31)
+        targetSdkVersion safeExtGet('targetSdkVersion', 33)
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         ndkVersion safeExtGet('ndkVersion', '21.4.7075529')
-        versionCode 7
-        versionName "1.2.1"
+        versionCode 8
+        versionName "1.2.2"
     }
 
     buildTypes {

@@ -52,6 +52,17 @@ eventEmitter.addListener('RNA_InputAudioStreamError', ({streamId, error}) => {
 });
 
 /**
+ * Configures audio system (input & output devices).
+ *
+ * Currently, it does nothing on Android; on iOS it re-configures audio session
+ * in the best way for audio playback and recording.
+ * @return {Promise<>}
+ */
+export async function configAudioSystem() {
+  return ReactNativeAudio.configAudioSystem();
+}
+
+/**
  * Attempts to check and/or request (if necessary and possible) audio recording
  * permission.
  * @return {Promise<boolean>} Resolves "true" if at least limited audio
@@ -225,6 +236,7 @@ export class InputAudioStream {
       this.streamId = (async () => {
         try {
           if (await getAudioRecordingPermission()) {
+            await configAudioSystem();
             const streamId = await ReactNativeAudio.listen(
               this.audioSource,
               this.sampleRate,
