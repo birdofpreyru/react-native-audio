@@ -18,6 +18,11 @@ public class ReactNativeAudioModuleImpl {
   private int lastInputStreamId;
   private HashMap<Integer, InputAudioStream> inputStreams = new HashMap<>();
 
+  public void configAudioSystem(Promise promise) {
+    // As of now, no special configuration needed on Android.
+    promise.resolve(null);
+  }
+
   public static Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
 

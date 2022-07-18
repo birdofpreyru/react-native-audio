@@ -52,7 +52,7 @@
     "@types/jest": "^28.1.6",
     "@types/react": "^18.0.15",
     "@types/react-native": "^0.69.2",
-    "eslint": "^8.19.0",
+    "eslint": "^8.20.0",
     "eslint-plugin-flowtype": "^8.0.3",
     "eslint-plugin-react-native": "^4.0.0",
     "jest": "^28.1.3",

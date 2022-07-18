@@ -33,6 +33,11 @@ public class ReactNativeAudioModule extends NativeAudioSpec {
   public String getName() { return ReactNativeAudioModuleImpl.NAME; }
 
   @Override
+  public void configAudioSystem(Promise promise) {
+    this.impl.configAudioSystem(promise);
+  }
+
+  @Override
   public Map<String, Object> getTypedExportedConstants() {
     return ReactNativeAudioModuleImpl.getConstants();
   }

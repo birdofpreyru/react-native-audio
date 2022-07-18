@@ -90,6 +90,7 @@ RCT_EXPORT_METHOD(configAudioSystem:(RCTPromiseResolveBlock)resolve
     reject(@"audio_session_activation_failure",
            @"failed to activate audio session",
            error);
+    return;
   }
 
   resolve(nil);

@@ -24,6 +24,11 @@ public class ReactNativeAudioModule extends ReactContextBaseJavaModule {
   @NonNull
   public String getName() { return ReactNativeAudioModuleImpl.NAME; }
 
+  @ReactMethod
+  public void configAudioSystem(Promise promise) {
+    this.impl.configAudioSystem(promise);
+  }
+
   @Override
   public Map<String, Object> getConstants() {
     return ReactNativeAudioModuleImpl.getConstants();
