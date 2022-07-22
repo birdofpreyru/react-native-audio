@@ -43,7 +43,7 @@
   "bugs": {
     "url": "https://github.com/birdofpreyru/react-native-audio/issues"
   },
-  "homepage": "https://github.com/birdofpreyru/react-native-audio#readme",
+  "homepage": "https://dr.pogodin.studio/docs/react-native-audio",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
