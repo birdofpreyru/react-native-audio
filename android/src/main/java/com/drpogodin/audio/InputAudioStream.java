@@ -59,6 +59,8 @@ public class InputAudioStream {
     this.thread = new Thread() {
       @Override
       public void run() {
+        AudioRecord record = null;
+
         try {
           // Initialization.
           int frameSize = getNumChannels(channelConfig) * getSampleSize(audioFormat); // bytes
@@ -68,8 +70,13 @@ public class InputAudioStream {
           int minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
           int bufferSize = Math.max(3 * chunkSize, minBufferSize); // bytes
 
-          AudioRecord record = new AudioRecord(audioSource, sampleRate, channelConfig, audioFormat,
+          record = new AudioRecord(audioSource, sampleRate, channelConfig, audioFormat,
             bufferSize);
+
+          if (record.getState() != AudioRecord.STATE_INITIALIZED) {
+            throw new Exception("Failed to start audio recording");
+          }
+
           record.startRecording();
 
           // Main lifetime.
@@ -82,12 +89,13 @@ public class InputAudioStream {
 
           // De-initialization.
           record.stop();
-          record.release();
         } catch (SecurityException e) {
           listener.onError(e);
         } catch (Exception e) {
           listener.onError(e);
         }
+
+        if (record != null) record.release();
       }
     };
     this.thread.start();

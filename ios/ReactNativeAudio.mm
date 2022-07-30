@@ -26,6 +26,8 @@ RCT_EXPORT_MODULE(ReactNativeAudio)
     @"AUDIO_FORMAT_PCM_8BIT": [NSNumber numberWithInt:PCM_8BIT],
     @"AUDIO_FORMAT_PCM_16BIT": [NSNumber numberWithInt:PCM_16BIT],
     @"AUDIO_FORMAT_PCM_FLOAT": [NSNumber numberWithInt:PCM_FLOAT],
+    @"AUDIO_SOURCE_DEFAULT": [NSNumber numberWithInt:DEFAULT],
+    @"AUDIO_SOURCE_MIC": [NSNumber numberWithInt:MIC],
     @"AUDIO_SOURCE_UNPROCESSED": [NSNumber numberWithInt:UNPROCESSED],
     @"CHANNEL_IN_MONO": [NSNumber numberWithInt:MONO],
     @"CHANNEL_IN_STEREO": [NSNumber numberWithInt:STEREO]
@@ -50,6 +52,9 @@ RCT_EXPORT_MODULE(ReactNativeAudio)
   return @[EVENT_AUDIO_CHUNK, EVENT_INPUT_AUDIO_STREAM_ERROR];
 }
 
+// TODO: Should we somehow plug-in this audio system configuration into
+// AudioStream initialization, and base it on the "audioSource" parameter,
+// which is now ignored on iOS?
 RCT_EXPORT_METHOD(configAudioSystem:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {

@@ -14,8 +14,13 @@ enum AUDIO_FORMATS {
   PCM_FLOAT = 3
 };
 
+// NOTE: These are dummy values, as "audio source" parameter is ignored in iOS
+// implementation of the library (at least as of now). Thus, the values below
+// are selected to just match Android implementation.
 enum AUDIO_SOURCES {
-  UNPROCESSED = 1
+  DEFAULT = 0,
+  MIC = 1,
+  UNPROCESSED = 9
 } ;
 
 enum CHANNEL_CONFIGS {
