@@ -2,7 +2,13 @@
 
 import {NativeModules} from 'react-native';
 
-const {ReactNativeAudio} = NativeModules;
+declare global {
+  var __turboModuleProxy: object | undefined;
+}
+
+const ReactNativeAudio = global.__turboModuleProxy
+  ? require('./NativeAudio').default
+  : NativeModules.Audio;
 
 const {
   AUDIO_FORMAT_PCM_8BIT,

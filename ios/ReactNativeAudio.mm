@@ -11,7 +11,7 @@ NSString *EVENT_INPUT_AUDIO_STREAM_ERROR = @"RNA_InputAudioStreamError";
   NSMutableDictionary<NSNumber*,RNAInputAudioStream*> *inputStreams;
 }
 
-RCT_EXPORT_MODULE(ReactNativeAudio)
+RCT_EXPORT_MODULE(Audio)
 
 - (id) init
 {

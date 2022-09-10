@@ -17,7 +17,7 @@ declare global {
 
 const ReactNativeAudio = global.__turboModuleProxy
   ? require('./NativeAudio').default
-  : NativeModules.ReactNativeAudio;
+  : NativeModules.Audio;
 
 type ChunkListener = (chunk: Buffer, chunkId: number) => void;
 type ErrorListener = (error: Error) => void;

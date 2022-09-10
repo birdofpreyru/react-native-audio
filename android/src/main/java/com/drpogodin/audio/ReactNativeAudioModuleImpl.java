@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ReactNativeAudioModuleImpl {
-  public static final String NAME = "ReactNativeAudio";
+  public static final String NAME = "Audio";
 
   private int lastInputStreamId;
   private HashMap<Integer, InputAudioStream> inputStreams = new HashMap<>();
