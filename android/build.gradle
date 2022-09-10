@@ -88,8 +88,8 @@ if (isNewArchitectureEnabled()) {
     react {
         libraryName = "audio"
         codegenJavaPackageName = "com.drpogodin.audio"
-        root = rootProject.file("..")
-        jsRootDir = rootProject.file("../src/")
+        root = file("..")
+        jsRootDir = file("../src/")
         reactNativeDir = rootProject.file("../node_modules/react-native/")
         codegenDir = rootProject.file("../node_modules/react-native-codegen/")
     }
