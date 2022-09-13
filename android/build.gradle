@@ -11,7 +11,7 @@ buildscript {
         }
 
         dependencies {
-            classpath("com.android.tools.build:gradle:7.1.1")
+            classpath("com.android.tools.build:gradle:7.2.1")
             classpath("com.facebook.react:react-native-gradle-plugin")
             classpath("de.undercouch:gradle-download-task:5.0.1")
         }
@@ -39,7 +39,7 @@ android {
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 23)
         targetSdkVersion safeExtGet('targetSdkVersion', 33)
-        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString())
         ndkVersion safeExtGet('ndkVersion', '21.4.7075529')
         versionCode 9
         versionName "1.2.3"
@@ -82,15 +82,4 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-}
-
-if (isNewArchitectureEnabled()) {
-    react {
-        libraryName = "audio"
-        codegenJavaPackageName = "com.drpogodin.audio"
-        root = file("..")
-        jsRootDir = file("../src/")
-        reactNativeDir = rootProject.file("../node_modules/react-native/")
-        codegenDir = rootProject.file("../node_modules/react-native-codegen/")
-    }
 }
