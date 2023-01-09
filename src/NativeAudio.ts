@@ -37,6 +37,9 @@ export interface Spec extends TurboModule {
 
   muteInputStream(streamId: number, muted: boolean): void;
   unlisten(streamId: number): void;
+
+  addListener(eventName: string): void;
+  removeListeners(count: number): void;
 }
 
 export default TurboModuleRegistry.get<Spec>('Audio');

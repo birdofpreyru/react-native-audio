@@ -64,4 +64,14 @@ public class ReactNativeAudioModule extends NativeAudioSpec {
   public void unlisten(double streamId) {
     this.impl.unlisten(streamId);
   }
+
+  @Override
+  public void addListener(String eventName) {
+    // Keep: Required for RN built in Event Emitter Calls.
+  }
+
+  @Override
+  public void removeListeners(double count) {
+    // Keep: Required for RN built in Event Emitter Calls.
+  }
 }
