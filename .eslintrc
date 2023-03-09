@@ -1,4 +1,22 @@
 {
-  "extends": "@react-native-community",
   "root": true,
+  "extends": [
+    "@react-native-community",
+    "prettier"
+  ],
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "arrowParens": "avoid",
+        "bracketSameLine": true,
+        "bracketSpacing": false,
+        "quoteProps": "consistent",
+        "singleQuote": true,
+        "tabWidth": 2,
+        "trailingComma": "all",
+        "useTabs": false
+      }
+    ]
+  }
 }

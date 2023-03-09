@@ -1,11 +1,3 @@
-//
-//  RNAInputAudioStream.m
-//  ReactNativeAudio
-//
-//  Created by Sergey Pogodin on 4/6/21.
-//  Copyright © 2021 Facebook. All rights reserved.
-//
-
 #import "RNAInputAudioStream.h"
 
 #import <AVFoundation/AVFoundation.h>

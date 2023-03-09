@@ -1,6 +1,5 @@
 import {Buffer} from 'buffer';
-
-import {Alert, NativeEventEmitter, NativeModules, Platform} from 'react-native';
+import {Alert, NativeEventEmitter, Platform} from 'react-native';
 
 import {
   check as checkPermission,
@@ -9,15 +8,9 @@ import {
   RESULTS as PERMISSION_STATUS,
 } from 'react-native-permissions';
 
+import ReactNativeAudio from './ReactNativeAudio';
+
 import type {AUDIO_FORMATS, AUDIO_SOURCES, CHANNEL_CONFIGS} from './constants';
-
-declare global {
-  var __turboModuleProxy: object | undefined;
-}
-
-const ReactNativeAudio = global.__turboModuleProxy
-  ? require('./NativeAudio').default
-  : NativeModules.Audio;
 
 type ChunkListener = (chunk: Buffer, chunkId: number) => void;
 type ErrorListener = (error: Error) => void;

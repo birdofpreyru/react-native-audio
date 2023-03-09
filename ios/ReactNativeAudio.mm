@@ -11,17 +11,14 @@ NSString *EVENT_INPUT_AUDIO_STREAM_ERROR = @"RNA_InputAudioStreamError";
   NSMutableDictionary<NSNumber*,RNAInputAudioStream*> *inputStreams;
 }
 
-RCT_EXPORT_MODULE(Audio)
+RCT_EXPORT_MODULE()
 
-- (id) init
-{
-  self = [super init];
+- (instancetype) init {
   inputStreams = [NSMutableDictionary new];
-  return self;
+  return [super init];
 }
 
-- (NSDictionary *) constantsToExport
-{
+- (NSDictionary *) constantsToExport {
   return @{
     @"AUDIO_FORMAT_PCM_8BIT": [NSNumber numberWithInt:PCM_8BIT],
     @"AUDIO_FORMAT_PCM_16BIT": [NSNumber numberWithInt:PCM_16BIT],
@@ -34,9 +31,8 @@ RCT_EXPORT_MODULE(Audio)
   };
 }
 
-+ (BOOL) requiresMainQueueSetup
-{
-  return NO;
+- (NSDictionary*) getConstants {
+  return [self constantsToExport];
 }
 
 /**
@@ -55,9 +51,10 @@ RCT_EXPORT_MODULE(Audio)
 // TODO: Should we somehow plug-in this audio system configuration into
 // AudioStream initialization, and base it on the "audioSource" parameter,
 // which is now ignored on iOS?
-RCT_EXPORT_METHOD(configAudioSystem:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_REMAP_METHOD(configAudioSystem,
+  configAudioSystem:(RCTPromiseResolveBlock)resolve
+  rejecter:(RCTPromiseRejectBlock)reject
+) {
   RCTLogInfo(@"Audio session configuration...");
 
   AVAudioSession *audioSession = AVAudioSession.sharedInstance;
@@ -102,14 +99,15 @@ RCT_EXPORT_METHOD(configAudioSystem:(RCTPromiseResolveBlock)resolve
 }
 
 // NOTE: Can't use enum as the argument type here, as RN won't understand that.
-RCT_EXPORT_METHOD(listen:(double)audioSource
-                  withSampleRate:(double)sampleRate
-                  withChannelConfig:(double)channelConfig
-                  withAudioFormat:(double)audioFormat
-                  withSamplingSize:(double)samplingSize
-                  resolver:(RCTPromiseResolveBlock) resolve
-                  rejecter:(RCTPromiseRejectBlock) reject)
-{
+RCT_REMAP_METHOD(listen,
+  listen:(double)audioSource
+  withSampleRate:(double)sampleRate
+  withChannelConfig:(double)channelConfig
+  withAudioFormat:(double)audioFormat
+  withSamplingSize:(double)samplingSize
+  resolver:(RCTPromiseResolveBlock) resolve
+  rejecter:(RCTPromiseRejectBlock) reject
+) {
   NSNumber *streamId = [NSNumber numberWithInt:++lastInputStreamId];
 
   OnChunk onChunk = ^void(int chunkId, unsigned char *chunk, int size) {
@@ -142,25 +140,32 @@ RCT_EXPORT_METHOD(listen:(double)audioSource
   resolve(streamId);
 }
 
-RCT_EXPORT_METHOD(unlisten:(double)streamId)
-{
+RCT_REMAP_METHOD(unlisten,
+  unlisten:(double)streamId
+) {
   NSNumber *id = [NSNumber numberWithDouble:streamId];
   [inputStreams[id] stop];
   [inputStreams removeObjectForKey:id];
   RCTLogInfo(@"[Stream %@] Is unlistened", id);
 }
 
-RCT_EXPORT_METHOD(muteInputStream:(double)streamId mute:(BOOL)mute)
-{
+RCT_REMAP_METHOD(muteInputStream,
+  muteInputStream:(double)streamId mute:(BOOL)mute
+) {
   inputStreams[[NSNumber numberWithDouble:streamId]].muted = mute;
 }
 
++ (BOOL)requiresMainQueueSetup {
+    return NO;
+}
+
+// Don't compile this code when we build for the old architecture.
 #ifdef RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
-  {
-    return std::make_shared<facebook::react::NativeAudioSpecJSI>(params); 
-  }
+{
+    return std::make_shared<facebook::react::NativeReactNativeAudioSpecJSI>(params);
+}
 #endif
 
 @end

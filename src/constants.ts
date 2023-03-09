@@ -1,14 +1,6 @@
 // Exposes constants provided by native layer.
 
-import {NativeModules} from 'react-native';
-
-declare global {
-  var __turboModuleProxy: object | undefined;
-}
-
-const ReactNativeAudio = global.__turboModuleProxy
-  ? require('./NativeAudio').default
-  : NativeModules.Audio;
+import ReactNativeAudio from './ReactNativeAudio';
 
 const {
   AUDIO_FORMAT_PCM_8BIT,

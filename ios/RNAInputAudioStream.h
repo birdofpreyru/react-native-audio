@@ -1,11 +1,3 @@
-//
-//  RNAInputAudioStream.h
-//  ReactNativeAudio
-//
-//  Created by Sergey Pogodin on 4/6/21.
-//  Copyright © 2021 Facebook. All rights reserved.
-//
-
 #import <AVFAudio/AVFAudio.h>
 
 enum AUDIO_FORMATS {

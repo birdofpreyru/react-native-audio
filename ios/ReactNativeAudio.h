@@ -1,11 +1,13 @@
-#import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
-  #import <NativeAudioSpec/NativeAudioSpec.h>
-  @interface ReactNativeAudio () <NativeAudioSpec>
-  @end
+#import "RNReactNativeAudioSpec.h"
+
+@interface ReactNativeAudio : RCTEventEmitter <NativeReactNativeAudioSpec>
 #else
-  @interface ReactNativeAudio: RCTEventEmitter <RCTBridgeModule>
-  @end
+#import <React/RCTBridgeModule.h>
+
+@interface ReactNativeAudio : RCTEventEmitter <RCTBridgeModule>
 #endif
+
+@end
