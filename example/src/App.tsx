@@ -5,7 +5,7 @@
 import FFT from 'fft.js';
 import React, {useEffect, useState} from 'react';
 
-import {Alert, StyleSheet, View, Text} from 'react-native';
+import {Alert, Platform, StyleSheet, View, Text} from 'react-native';
 
 import {
   AUDIO_FORMATS,
@@ -102,6 +102,8 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   mono: {
-    fontFamily: 'monospace',
+    // On iOS "monospace" value is not allowed by iOS, not without extra
+    // setup. Just leaving it undefined is fine for us.
+    fontFamily: Platform.OS !== 'ios' ? 'monospace' : undefined,
   },
 });
