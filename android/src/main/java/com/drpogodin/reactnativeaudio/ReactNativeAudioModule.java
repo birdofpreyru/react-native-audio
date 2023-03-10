@@ -18,8 +18,8 @@ import java.util.Map;
 public class ReactNativeAudioModule extends ReactNativeAudioSpec {
   public static final String NAME = "ReactNativeAudio";
 
-  private int lastInputStreamId;
-  private HashMap<Integer,InputAudioStream> inputStreams = new HashMap<>();
+  private double lastInputStreamId;
+  private HashMap<Double,InputAudioStream> inputStreams = new HashMap<>();
 
   ReactNativeAudioModule(ReactApplicationContext context) {
     super(context);
@@ -87,21 +87,25 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
    */
   @ReactMethod
   public void listen(
-    Double audioSource,
-    Double sampleRate,
-    Double channelConfig,
-    Double audioFormat,
-    Double samplingSize,
-    DeviceEventManagerModule.RCTDeviceEventEmitter emitter,
+    double audioSource,
+    double sampleRate,
+    double channelConfig,
+    double audioFormat,
+    double samplingSize,
     Promise promise
   ) {
-    int streamId = ++lastInputStreamId;
+    double streamId = ++lastInputStreamId;
+
+    DeviceEventManagerModule.RCTDeviceEventEmitter emitter =
+      getReactApplicationContext()
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+
     InputAudioStream stream = new InputAudioStream(
-      audioSource.intValue(),
-      sampleRate.intValue(),
-      channelConfig.intValue(),
-      audioFormat.intValue(),
-      samplingSize.intValue(),
+      (int)audioSource,
+      (int)sampleRate,
+      (int)channelConfig,
+      (int)audioFormat,
+      (int)samplingSize,
       new InputAudioStream.Listener() {
         @Override
         public void onChunk(int chunkId, byte[] chunk) {
@@ -130,8 +134,8 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
    * @param muted
    */
   @ReactMethod
-  public void muteInputStream(Double streamId, boolean muted) {
-    inputStreams.get(streamId.intValue()).muted = muted;
+  public void muteInputStream(double streamId, boolean muted) {
+    inputStreams.get(streamId).muted = muted;
   }
 
   /**
@@ -139,7 +143,17 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
    * @param streamId
    */
   @ReactMethod
-  public void unlisten(Double streamId) {
-    inputStreams.remove(streamId.intValue()).stop();
+  public void unlisten(double streamId) {
+    inputStreams.remove(streamId).stop();
+  }
+
+  @ReactMethod
+  public void addListener(String eventName) {
+    // NOOP
+  }
+
+  @ReactMethod
+  public void removeListeners(double count) {
+    // NOOP
   }
 }

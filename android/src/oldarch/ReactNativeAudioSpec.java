@@ -3,6 +3,7 @@ package com.drpogodin.reactnativeaudio;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.util.Map;
 
@@ -31,5 +32,5 @@ abstract class ReactNativeAudioSpec extends ReactContextBaseJavaModule {
   public abstract void muteInputStream(double streamId, boolean muted);
   public abstract void unlisten(double streamId);
   public abstract void addListener(String eventName);
-  public abstract void removeListeners(Integer count);
+  public abstract void removeListeners(double count);
 }
