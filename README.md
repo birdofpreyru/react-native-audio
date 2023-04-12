@@ -2,6 +2,7 @@
 
 [![Latest NPM Release](https://img.shields.io/npm/v/@dr.pogodin/react-native-audio.svg)](https://www.npmjs.com/package/@dr.pogodin/react-native-audio)
 [![NPM Downloads](https://img.shields.io/npm/dm/@dr.pogodin/react-native-audio.svg)](https://www.npmjs.com/package/@dr.pogodin/react-native-audio)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/birdofpreyru/react-native-audio/tree/main.svg?style=shield)](https://app.circleci.com/pipelines/github/birdofpreyru/react-native-audio)
 [![GitHub Repo stars](https://img.shields.io/github/stars/birdofpreyru/react-native-audio?style=social)](https://github.com/birdofpreyru/react-native-audio)
 
 React Native audio stream listening / recording
