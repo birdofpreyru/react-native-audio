@@ -81,17 +81,13 @@ RCT_REMAP_METHOD(configAudioSystem,
                                  error:&error];
 
   if (res != YES || error != nil) {
-    reject(@"audio_session_config_failure",
-           @"failed to configure audio session",
-           error);
+    reject(error.domain, error.localizedDescription, error);
     return;
   }
 
   res = [audioSession setActive:YES error:&error];
   if (res != YES || error != nil) {
-    reject(@"audio_session_activation_failure",
-           @"failed to activate audio session",
-           error);
+    reject(error.domain, error.localizedDescription, error);
     return;
   }
 
