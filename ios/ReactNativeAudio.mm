@@ -80,6 +80,13 @@ RCT_REMAP_METHOD(configAudioSystem,
                                         AVAudioSessionCategoryOptionDefaultToSpeaker)
                                  error:&error];
 
+  // TODO: Currently here, and in the next rejection, although we include
+  // error object, the details of error we get to sentry are minimal, should
+  // be investigated, and checked how do we pass all available details to
+  // Sentry?
+
+  // TODO: Probably, need to provide additional details here. At least
+  // add some error ID, to determine where exactly do errors are thrown.
   if (res != YES || error != nil) {
     reject(error.domain, error.localizedDescription, error);
     return;
