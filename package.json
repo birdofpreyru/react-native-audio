@@ -1,6 +1,6 @@
 {
   "name": "@dr.pogodin/react-native-audio",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "React Native: access to the audio input stream",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -102,6 +102,7 @@
     ]
   },
   "dependencies": {
+    "@dr.pogodin/js-utils": "^0.0.3",
     "react-native-permissions": "^3.8.0"
   },
   "codegenConfig": {

@@ -28,6 +28,7 @@ export interface Spec extends TurboModule {
   };
 
   listen(
+    streamId: number,
     audioSource: number, // Ignored on iOS.
     sampleRate: number,
     channelConfig: number,
@@ -36,7 +37,7 @@ export interface Spec extends TurboModule {
   ): Promise<void>;
 
   muteInputStream(streamId: number, muted: boolean): void;
-  unlisten(streamId: number): void;
+  unlisten(streamId: number): Promise<void>;
 
   addListener(eventName: string): void;
   removeListeners(count: number): void;

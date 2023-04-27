@@ -18,7 +18,6 @@ import java.util.Map;
 public class ReactNativeAudioModule extends ReactNativeAudioSpec {
   public static final String NAME = "ReactNativeAudio";
 
-  private double lastInputStreamId;
   private HashMap<Double,InputAudioStream> inputStreams = new HashMap<>();
 
   ReactNativeAudioModule(ReactApplicationContext context) {
@@ -87,6 +86,7 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
    */
   @ReactMethod
   public void listen(
+    double streamId,
     double audioSource,
     double sampleRate,
     double channelConfig,
@@ -94,8 +94,6 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
     double samplingSize,
     Promise promise
   ) {
-    double streamId = ++lastInputStreamId;
-
     DeviceEventManagerModule.RCTDeviceEventEmitter emitter =
       getReactApplicationContext()
       .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
@@ -125,7 +123,7 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
         }
       });
     inputStreams.put(streamId, stream);
-    promise.resolve(streamId);
+    promise.resolve(null);
   }
 
   /**
@@ -143,8 +141,9 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
    * @param streamId
    */
   @ReactMethod
-  public void unlisten(double streamId) {
+  public void unlisten(double streamId, Promise promise) {
     inputStreams.remove(streamId).stop();
+    promise.resolve(null);
   }
 
   @ReactMethod

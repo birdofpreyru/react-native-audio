@@ -1,5 +1,12 @@
 import {Buffer} from 'buffer';
-import {Alert, NativeEventEmitter, Platform} from 'react-native';
+import {
+  type AppStateStatus,
+  type NativeEventSubscription,
+  Alert,
+  AppState,
+  NativeEventEmitter,
+  Platform,
+} from 'react-native';
 
 import {
   check as checkPermission,
@@ -7,6 +14,8 @@ import {
   PERMISSIONS,
   RESULTS as PERMISSION_STATUS,
 } from 'react-native-permissions';
+
+import {Emitter, Semaphore} from '@dr.pogodin/js-utils';
 
 import ReactNativeAudio from './ReactNativeAudio';
 
@@ -17,31 +26,25 @@ type ErrorListener = (error: Error) => void;
 
 const eventEmitter = new NativeEventEmitter(ReactNativeAudio);
 
-let chunkListeners: {
-  streamId: number;
-  listener: ChunkListener;
-}[] = [];
-let errorListeners: {
-  streamId: number;
-  listener: ErrorListener;
-}[] = [];
+// TODO: UUID string would be better, but making "uuid" library to work for RN
+// is a bit cumbersome, at least in my current understanding.
+let lastInputStreamId: number = 0;
+
+const chunkEmitters: {[streamId: number]: Emitter} = {};
+
+const errorEmitters: {[streamId: number]: Emitter} = {};
 
 eventEmitter.addListener('RNA_AudioChunk', ({streamId, chunkId, data}) => {
-  const chunk = Buffer.from(data, 'base64');
-  chunkListeners.forEach(item => {
-    if (item.streamId === streamId) {
-      item.listener(chunk, chunkId);
-    }
-  });
+  const emitter = chunkEmitters[streamId];
+  if (emitter && emitter.hasListeners) {
+    const chunk = Buffer.from(data, 'base64');
+    emitter.emit(chunk, chunkId);
+  }
 });
 
 eventEmitter.addListener('RNA_InputAudioStreamError', ({streamId, error}) => {
-  const e = Error(error);
-  errorListeners.forEach(item => {
-    if (item.streamId === streamId) {
-      item.listener(e);
-    }
-  });
+  const emitter = errorEmitters[streamId];
+  if (emitter && emitter.hasListeners) emitter.emit(Error(error));
 });
 
 /**
@@ -118,10 +121,30 @@ export class InputAudioStream {
   readonly channelConfig: CHANNEL_CONFIGS;
   readonly audioFormat: AUDIO_FORMATS;
   readonly samplingSize: number;
+  readonly stopInBackground: boolean;
 
-  private streamId?: Promise<number | undefined>;
-  private chunkListeners: ChunkListener[] = [];
-  private errorListeners: ErrorListener[] = [];
+  private _appStateSub?: NativeEventSubscription;
+  private _active = false;
+  private _muted = false;
+  private sem = new Semaphore(true);
+  private streamId: number;
+
+  /**
+   * `true` when this stream is active; `false` otherwise. Note, a muted stream
+   * is still "active" - it holds native resources, and keeps listening the mic,
+   * it just does not send captured data to JS layer, silently discarding them.
+   * At the same time, a started stream, when it is automatically stopped in
+   * background by "stopinBackground" option, is considered non-active, as it
+   * releases native resources and stops listening the mic, and re-inits on
+   * native side when the app returns to the foreground.
+   */
+  get active() {
+    return this._active;
+  }
+
+  get muted() {
+    return this._muted;
+  }
 
   /**
    * Creates a new InputAudioStream.
@@ -132,6 +155,9 @@ export class InputAudioStream {
    * @param audioFormat Audio format.
    * @param samplingSize Sampling (data chunk) size, expressed as a number of
    *  samples per channel in the chunk.
+   * @param {boolean} [stopInBackground=true] If set `true` (default) the stream
+   *  will automatically stop when the app leaves foreground, and resume when
+   *  the app returns to the foreground.
    */
   constructor(
     audioSource: AUDIO_SOURCES,
@@ -139,19 +165,17 @@ export class InputAudioStream {
     channelConfig: CHANNEL_CONFIGS,
     audioFormat: AUDIO_FORMATS,
     samplingSize: number,
+    stopInBackground: boolean = true,
   ) {
     this.audioSource = audioSource;
     this.sampleRate = sampleRate;
     this.channelConfig = channelConfig;
     this.audioFormat = audioFormat;
     this.samplingSize = samplingSize;
-  }
-
-  /**
-   * Gets the actual stream ID number (or undefined).
-   */
-  async getStreamId() {
-    return this.streamId && (await this.streamId);
+    this.stopInBackground = stopInBackground;
+    this.streamId = ++lastInputStreamId;
+    chunkEmitters[this.streamId] = new Emitter();
+    errorEmitters[this.streamId] = new Emitter();
   }
 
   /**
@@ -159,61 +183,80 @@ export class InputAudioStream {
    * @param listener
    */
   async addChunkListener(listener: ChunkListener) {
-    if (!this.chunkListeners.includes(listener)) {
-      this.chunkListeners.push(listener);
-      const streamId = await this.getStreamId();
-      if (streamId !== undefined) {
-        chunkListeners.push({streamId, listener});
-      }
-    }
+    chunkEmitters[this.streamId]!.addListener(listener);
   }
 
   async addErrorListener(listener: ErrorListener) {
-    if (!this.errorListeners.includes(listener)) {
-      this.errorListeners.push(listener);
-      const streamId = await this.getStreamId();
-      if (streamId !== undefined) {
-        errorListeners.push({streamId, listener});
+    errorEmitters[this.streamId]!.addListener(listener);
+  }
+
+  private _handleAppStateChange(appState: AppStateStatus) {
+    if (appState === 'active') this.start();
+    else this._stop();
+  }
+
+  private _configAppStateHandling() {
+    if (this.stopInBackground) {
+      if (!this._appStateSub) {
+        this._appStateSub = AppState.addEventListener(
+          'change',
+          this._handleAppStateChange.bind(this),
+        );
       }
+    } else if (this._appStateSub) {
+      this._appStateSub.remove();
+      delete this._appStateSub;
     }
+  }
+
+  /**
+   * Internal. Stops the audio input, if active, but keeps its listeners.
+   */
+  private async _stop() {
+    try {
+      await this.sem.seize();
+      if (this._active) {
+        await ReactNativeAudio.unlisten(this.streamId);
+        this._active = false;
+        this._muted = false;
+      }
+    } finally {
+      this.sem.setReady(true);
+    }
+  }
+
+  async stop() {
+    if (this._appStateSub) {
+      this._appStateSub.remove();
+      delete this._appStateSub;
+    }
+    await this._stop();
   }
 
   async destroy() {
-    const streamId = await this.getStreamId();
-    if (streamId !== undefined) {
-      chunkListeners = chunkListeners.filter(
-        item => item.streamId !== streamId,
-      );
-      errorListeners = errorListeners.filter(
-        item => item.streamId !== streamId,
-      );
-      ReactNativeAudio.unlisten(streamId);
-    }
+    await this._stop();
+    delete chunkEmitters[this.streamId];
+    delete errorEmitters[this.streamId];
   }
 
   async mute() {
-    const streamId = await this.getStreamId();
-    if (streamId !== undefined) {
-      ReactNativeAudio.muteInputStream(streamId, true);
+    try {
+      await this.sem.seize();
+      if (this.active && !this._muted) {
+        ReactNativeAudio.muteInputStream(this.streamId, true);
+        this._muted = true;
+      }
+    } finally {
+      this.sem.setReady(true);
     }
   }
 
   async removeChunkListener(listener: ChunkListener) {
-    const streamId = await this.getStreamId();
-    if (streamId !== undefined) {
-      chunkListeners = chunkListeners.filter(
-        item => item.streamId !== streamId || item.listener !== listener,
-      );
-    }
+    chunkEmitters[this.streamId]!.removeListener(listener);
   }
 
   async removeErrorListener(listener: ErrorListener) {
-    const streamId = await this.getStreamId();
-    if (streamId !== undefined) {
-      errorListeners = errorListeners.filter(
-        item => item.streamId !== streamId || item.listener !== listener,
-      );
-    }
+    errorEmitters[this.streamId]!.removeListener(listener);
   }
 
   /**
@@ -225,48 +268,36 @@ export class InputAudioStream {
    * otherwise resolves "false".
    */
   async start(): Promise<boolean> {
-    if (!this.streamId) {
-      this.streamId = (async () => {
-        try {
-          if (await getAudioRecordingPermission()) {
-            await configAudioSystem();
-            const streamId = await ReactNativeAudio.listen(
-              this.audioSource,
-              this.sampleRate,
-              this.channelConfig,
-              this.audioFormat,
-              this.samplingSize,
-            );
-            this.chunkListeners.forEach(item =>
-              chunkListeners.push({
-                listener: item,
-                streamId,
-              }),
-            );
-            this.errorListeners.forEach(item =>
-              errorListeners.push({
-                listener: item,
-                streamId,
-              }),
-            );
-            return streamId;
-          }
-        } catch (error) {
-          // If an error happens we just fallthrough to reset this.streamId and
-          // return "undefined". Which returns the object to its initial state
-          // allowing to retry the start later, if needed.
-        }
-        this.streamId = undefined;
-        return undefined;
-      })();
+    try {
+      await this.sem.seize();
+      if (!this._active && (await getAudioRecordingPermission())) {
+        await configAudioSystem();
+        this._configAppStateHandling();
+        await ReactNativeAudio.listen(
+          this.streamId,
+          this.audioSource,
+          this.sampleRate,
+          this.channelConfig,
+          this.audioFormat,
+          this.samplingSize,
+        );
+        this._active = true;
+      }
+    } finally {
+      this.sem.setReady(true);
     }
-    return !!(await this.streamId);
+    return this._active;
   }
 
   async unmute() {
-    const streamId = await this.getStreamId();
-    if (streamId !== undefined) {
-      ReactNativeAudio.muteInputStream(streamId, false);
+    try {
+      await this.sem.seize();
+      if (this.active && this._muted) {
+        ReactNativeAudio.muteInputStream(this.streamId, false);
+        this._muted = false;
+      }
+    } finally {
+      this.sem.setReady(true);
     }
   }
 }
