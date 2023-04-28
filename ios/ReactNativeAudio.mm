@@ -7,7 +7,6 @@ NSString *EVENT_AUDIO_CHUNK = @"RNA_AudioChunk";
 NSString *EVENT_INPUT_AUDIO_STREAM_ERROR = @"RNA_InputAudioStreamError";
 
 @implementation ReactNativeAudio {
-  int lastInputStreamId;
   NSMutableDictionary<NSNumber*,RNAInputAudioStream*> *inputStreams;
 }
 
@@ -103,7 +102,8 @@ RCT_REMAP_METHOD(configAudioSystem,
 
 // NOTE: Can't use enum as the argument type here, as RN won't understand that.
 RCT_REMAP_METHOD(listen,
-  listen:(double)audioSource
+  listen:(double)streamId
+  audioSource:(double)audioSource
   withSampleRate:(double)sampleRate
   withChannelConfig:(double)channelConfig
   withAudioFormat:(double)audioFormat
@@ -111,22 +111,22 @@ RCT_REMAP_METHOD(listen,
   resolver:(RCTPromiseResolveBlock) resolve
   rejecter:(RCTPromiseRejectBlock) reject
 ) {
-  NSNumber *streamId = [NSNumber numberWithInt:++lastInputStreamId];
+  NSNumber *sid = [NSNumber numberWithDouble:streamId];
 
   OnChunk onChunk = ^void(int chunkId, unsigned char *chunk, int size) {
-    RCTLogInfo(@"[Stream %@] Audio data chunk %d received", streamId, chunkId);
+    RCTLogInfo(@"[Stream %@] Audio data chunk %d received", sid, chunkId);
     NSData* data = [NSData dataWithBytesNoCopy:chunk
                                         length:size
                                   freeWhenDone:NO];
     [self sendEventWithName:EVENT_AUDIO_CHUNK
-                       body:@{@"streamId":streamId,
+                       body:@{@"streamId":sid,
                               @"chunkId":@(chunkId),
                               @"data":[data base64EncodedStringWithOptions:0]}];
   };
   
   OnError onError = ^void(NSString* error) {
     [self sendEventWithName:EVENT_INPUT_AUDIO_STREAM_ERROR
-                       body:@{@"streamId":streamId, @"error":error}];
+                       body:@{@"streamId":sid, @"error":error}];
   };
   
   RNAInputAudioStream *stream =
@@ -138,18 +138,21 @@ RCT_REMAP_METHOD(listen,
                                  onChunk:onChunk
                                  onError:onError];
   
-  inputStreams[streamId] = stream;
+  inputStreams[sid] = stream;
   
-  resolve(streamId);
+  resolve(nil);
 }
 
 RCT_REMAP_METHOD(unlisten,
   unlisten:(double)streamId
+  resolver:(RCTPromiseResolveBlock) resolve
+  rejecter:(RCTPromiseRejectBlock) reject
 ) {
   NSNumber *id = [NSNumber numberWithDouble:streamId];
   [inputStreams[id] stop];
   [inputStreams removeObjectForKey:id];
   RCTLogInfo(@"[Stream %@] Is unlistened", id);
+  resolve(nil);
 }
 
 RCT_REMAP_METHOD(muteInputStream,
