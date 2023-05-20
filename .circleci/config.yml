@@ -9,11 +9,12 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: node-modules-{{ checksum "package-lock.json" }}
-      - run: npm install --force
+          key: node-modules-{{ checksum "package-lock.json" }}-{{ checksum "example/package-lock.json" }}
+      - run: npm install --force && cd example && npm install --force
       - save_cache:
-          key: node-modules-{{ checksum "package-lock.json" }}
+          key: node-modules-{{ checksum "package-lock.json" }}-{{ checksum "example/package-lock.json" }}
           paths:
+            - example/node_modules
             - node_modules
       - run: npm test
       - persist_to_workspace:
