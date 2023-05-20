@@ -27,7 +27,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "test": "npm run lint && jest",
+    "test": "npm run lint && npm run typecheck && jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "postinstall": "react-native setup-ios-permissions && pod-install",
@@ -54,16 +54,16 @@
   "devDependencies": {
     "@react-native-community/eslint-config": "^3.2.0",
     "@types/jest": "^29.5.1",
-    "@types/react": "^18.2.0",
+    "@types/react": "^18.2.6",
     "del-cli": "^5.0.0",
-    "eslint": "^8.39.0",
+    "eslint": "^8.41.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "^29.3.1",
     "pod-install": "^0.1.38",
     "prettier": "^2.8.8",
     "react": "18.2.0",
-    "react-native": "0.71.7",
+    "react-native": "0.71.8",
     "react-native-builder-bob": "^0.20.3",
     "typescript": "^5.0.4"
   },
@@ -102,7 +102,7 @@
     ]
   },
   "dependencies": {
-    "@dr.pogodin/js-utils": "^0.0.3",
+    "@dr.pogodin/js-utils": "^0.0.5",
     "react-native-permissions": "^3.8.0"
   },
   "codegenConfig": {

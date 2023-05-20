@@ -30,9 +30,9 @@ const eventEmitter = new NativeEventEmitter(ReactNativeAudio);
 // is a bit cumbersome, at least in my current understanding.
 let lastInputStreamId: number = 0;
 
-const chunkEmitters: {[streamId: number]: Emitter} = {};
+const chunkEmitters: {[streamId: number]: Emitter<[Buffer, number]>} = {};
 
-const errorEmitters: {[streamId: number]: Emitter} = {};
+const errorEmitters: {[streamId: number]: Emitter<[Error]>} = {};
 
 eventEmitter.addListener('RNA_AudioChunk', ({streamId, chunkId, data}) => {
   const emitter = chunkEmitters[streamId];
