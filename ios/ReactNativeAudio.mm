@@ -73,8 +73,7 @@ RCT_REMAP_METHOD(configAudioSystem,
 
   NSError *error = nil;
   BOOL res = [audioSession setCategory:category
-                                  mode:AVAudioSessionModeMeasurement
-                               options:(AVAudioSessionCategoryOptionAllowBluetooth |
+                           withOptions:(AVAudioSessionCategoryOptionAllowBluetooth |
                                         AVAudioSessionCategoryOptionAllowBluetoothA2DP |
                                         AVAudioSessionCategoryOptionDefaultToSpeaker)
                                  error:&error];
