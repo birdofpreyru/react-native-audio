@@ -27,6 +27,8 @@ export interface Spec extends TurboModule {
     AUDIO_SOURCE_VOICE_UPLINK?: number;
   };
 
+  getInputAvailable(): Promise<boolean>;
+
   listen(
     streamId: number,
     audioSource: number, // Ignored on iOS.

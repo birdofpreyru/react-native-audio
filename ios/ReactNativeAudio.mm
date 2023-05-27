@@ -34,6 +34,13 @@ RCT_EXPORT_MODULE()
   return [self constantsToExport];
 }
 
+RCT_REMAP_METHOD(getInputAvailable,
+  getInputAvailable:(RCTPromiseResolveBlock)resolve
+  rejecter:(RCTPromiseRejectBlock)reject
+) {
+  resolve([NSNumber numberWithBool: AVAudioSession.sharedInstance.inputAvailable]);
+}
+
 /**
  *  Creates a dedicated queue for module operations.
  */

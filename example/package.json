@@ -16,9 +16,9 @@
     "react-native-permissions": "^3.8.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.8",
-    "@babel/preset-env": "^7.21.5",
-    "@babel/runtime": "^7.21.5",
+    "@babel/core": "^7.22.0",
+    "@babel/preset-env": "^7.22.0",
+    "@babel/runtime": "^7.22.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "metro-react-native-babel-preset": "0.73.9"
   },
