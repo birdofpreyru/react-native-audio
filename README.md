@@ -4,8 +4,12 @@
 [![NPM Downloads](https://img.shields.io/npm/dm/@dr.pogodin/react-native-audio.svg)](https://www.npmjs.com/package/@dr.pogodin/react-native-audio)
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/birdofpreyru/react-native-audio/tree/master.svg?style=shield)](https://app.circleci.com/pipelines/github/birdofpreyru/react-native-audio)
 [![GitHub Repo stars](https://img.shields.io/github/stars/birdofpreyru/react-native-audio?style=social)](https://github.com/birdofpreyru/react-native-audio)
+[![Dr. Pogodin Studio](https://raw.githubusercontent.com/birdofpreyru/react-native-audio/master/.README/logo-dr-pogodin-studio.svg)](https://dr.pogodin.studio/docs/react-native-audio)
 
-React Native audio stream listening / recording
+React Native audio stream listening / recording, and utility functions for
+audio system management.
+
+[![Sponsor](https://raw.githubusercontent.com/birdofpreyru/react-native-audio/master/.README/sponsor.svg)](https://github.com/sponsors/birdofpreyru)
 
 ## Installation
 
