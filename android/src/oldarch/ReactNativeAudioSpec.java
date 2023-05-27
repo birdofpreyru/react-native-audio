@@ -20,6 +20,8 @@ abstract class ReactNativeAudioSpec extends ReactContextBaseJavaModule {
     return this.getTypedExportedConstants();
   }
 
+  public abstract void getInputAvailable(Promise promise);
+
   public abstract void listen(
     double audioSource,
     double sampleRate,

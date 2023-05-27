@@ -1,9 +1,11 @@
 package com.drpogodin.reactnativeaudio;
 
-import androidx.annotation.NonNull;
+import android.content.Context;
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.util.Base64;
+import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -12,6 +14,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,6 +68,22 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
     constants.put("CHANNEL_IN_STEREO", AudioFormat.CHANNEL_IN_STEREO);
 
     return constants;
+  }
+
+  @ReactMethod
+  public void getInputAvailable(Promise promise) {
+    Context ctxt = getReactApplicationContext().getApplicationContext();
+    AudioManager manager = (AudioManager)ctxt.getSystemService(
+      Context.AUDIO_SERVICE);
+    try {
+      promise.resolve(manager.getMicrophones().size() > 0);
+    } catch (IOException e) {
+      String msg = "Failed to get microphone list";
+      promise.reject(
+        "ReactNativeAudio:getInputAvailable",
+        msg, new Error(msg)
+      );
+    }
   }
 
   /**
