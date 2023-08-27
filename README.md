@@ -13,8 +13,9 @@ audio system management.
 
 ## Installation
 
+Install the package and its peer dependencies
 ```sh
-npm install @dr.pogodin/react-native-audio
+npx install-peerdeps @dr.pogodin/react-native-audio
 ```
 
 ## Usage
