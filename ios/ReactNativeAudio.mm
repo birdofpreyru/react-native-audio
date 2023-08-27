@@ -8,6 +8,12 @@ NSString *EVENT_INPUT_AUDIO_STREAM_ERROR = @"RNA_InputAudioStreamError";
 
 @implementation ReactNativeAudio {
   NSMutableDictionary<NSNumber*,RNAInputAudioStream*> *inputStreams;
+
+  // NOTE: This player reference is currently used only for a single playback
+  // test method. It has to be a class field, otherwise if a player instance
+  // is created and owned inside the test method, it is garbage-collected on
+  // the method exit, which cancels the playback.
+  AVAudioPlayer *player;
 }
 
 RCT_EXPORT_MODULE()
@@ -165,6 +171,19 @@ RCT_REMAP_METHOD(muteInputStream,
   muteInputStream:(double)streamId muted:(BOOL)muted
 ) {
   inputStreams[[NSNumber numberWithDouble:streamId]].muted = muted;
+}
+
+/**
+ * This is just a playback test method for the Example App. Probably later it will be turned into a generic
+ * audio file playback method.
+ */
+RCT_EXPORT_METHOD(playTest) {
+  NSString *path = [[NSBundle mainBundle] bundlePath];
+  path = [path stringByAppendingString:@"/assets/Sine_wave_440.mp3"];
+  NSURL *url = [NSURL fileURLWithPath:path isDirectory:NO];
+
+  player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+  [player play];
 }
 
 + (BOOL)requiresMainQueueSetup {

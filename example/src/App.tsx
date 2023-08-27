@@ -5,7 +5,7 @@
 import FFT from 'fft.js';
 import React, { useEffect, useState } from 'react';
 
-import { Alert, Platform, StyleSheet, View, Text } from 'react-native';
+import { Alert, Button, Platform, StyleSheet, View, Text } from 'react-native';
 
 import {
   AUDIO_FORMATS,
@@ -13,6 +13,8 @@ import {
   CHANNEL_CONFIGS,
   getInputAvailable,
   InputAudioStream,
+  playTest,
+  configAudioSystem,
 } from '@dr.pogodin/react-native-audio';
 
 const FFT_SIZE = 4096;
@@ -101,6 +103,13 @@ export default function App() {
           </Text>
         );
       })}
+      <Button
+        title="Playback test"
+        onPress={async () => {
+          await configAudioSystem();
+          playTest();
+        }}
+      />
     </View>
   );
 }

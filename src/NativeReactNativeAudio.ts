@@ -43,6 +43,8 @@ export interface Spec extends TurboModule {
 
   addListener(eventName: string): void;
   removeListeners(count: number): void;
+
+  playTest(): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('ReactNativeAudio');
