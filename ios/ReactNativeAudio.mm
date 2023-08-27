@@ -36,7 +36,7 @@ RCT_EXPORT_MODULE()
 
 RCT_REMAP_METHOD(getInputAvailable,
   getInputAvailable:(RCTPromiseResolveBlock)resolve
-  rejecter:(RCTPromiseRejectBlock)reject
+  reject:(RCTPromiseRejectBlock)reject
 ) {
   resolve([NSNumber numberWithBool: AVAudioSession.sharedInstance.inputAvailable]);
 }
@@ -59,7 +59,7 @@ RCT_REMAP_METHOD(getInputAvailable,
 // which is now ignored on iOS?
 RCT_REMAP_METHOD(configAudioSystem,
   configAudioSystem:(RCTPromiseResolveBlock)resolve
-  rejecter:(RCTPromiseRejectBlock)reject
+  reject:(RCTPromiseRejectBlock)reject
 ) {
   RCTLogInfo(@"Audio session configuration...");
 
@@ -110,12 +110,12 @@ RCT_REMAP_METHOD(configAudioSystem,
 RCT_REMAP_METHOD(listen,
   listen:(double)streamId
   audioSource:(double)audioSource
-  withSampleRate:(double)sampleRate
-  withChannelConfig:(double)channelConfig
-  withAudioFormat:(double)audioFormat
-  withSamplingSize:(double)samplingSize
-  resolver:(RCTPromiseResolveBlock) resolve
-  rejecter:(RCTPromiseRejectBlock) reject
+  sampleRate:(double)sampleRate
+  channelConfig:(double)channelConfig
+  audioFormat:(double)audioFormat
+  samplingSize:(double)samplingSize
+  resolve:(RCTPromiseResolveBlock) resolve
+  reject:(RCTPromiseRejectBlock) reject
 ) {
   NSNumber *sid = [NSNumber numberWithDouble:streamId];
 
@@ -151,8 +151,8 @@ RCT_REMAP_METHOD(listen,
 
 RCT_REMAP_METHOD(unlisten,
   unlisten:(double)streamId
-  resolver:(RCTPromiseResolveBlock) resolve
-  rejecter:(RCTPromiseRejectBlock) reject
+  resolve:(RCTPromiseResolveBlock) resolve
+  reject:(RCTPromiseRejectBlock) reject
 ) {
   NSNumber *id = [NSNumber numberWithDouble:streamId];
   [inputStreams[id] stop];
@@ -162,9 +162,9 @@ RCT_REMAP_METHOD(unlisten,
 }
 
 RCT_REMAP_METHOD(muteInputStream,
-  muteInputStream:(double)streamId mute:(BOOL)mute
+  muteInputStream:(double)streamId muted:(BOOL)muted
 ) {
-  inputStreams[[NSNumber numberWithDouble:streamId]].muted = mute;
+  inputStreams[[NSNumber numberWithDouble:streamId]].muted = muted;
 }
 
 + (BOOL)requiresMainQueueSetup {
