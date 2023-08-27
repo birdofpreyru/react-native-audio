@@ -1,8 +1,10 @@
-import {NativeModules, Platform} from 'react-native';
+import { NativeModules, Platform } from 'react-native';
+
+import { type Spec } from './NativeReactNativeAudio';
 
 const LINKING_ERROR =
   `The package '@dr.pogodin/react-native-audio' doesn't seem to be linked. Make sure: \n\n` +
-  Platform.select({ios: "- You have run 'pod install'\n", default: ''}) +
+  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
@@ -24,4 +26,4 @@ const ReactNativeAudio = ReactNativeAudioModule
       },
     );
 
-export default ReactNativeAudio;
+export default ReactNativeAudio as Spec;

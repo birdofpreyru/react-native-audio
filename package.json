@@ -1,6 +1,6 @@
 {
   "name": "@dr.pogodin/react-native-audio",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "React Native: access to the audio input stream",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -34,6 +34,8 @@
     "prepack": "bob build",
     "example": "npm --cwd example",
     "bootstrap": "npm example && npm install && npm example pods",
+    "build:android": "cd example/android && ./gradlew assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a",
+    "build:ios": "cd example/ios && xcodebuild -workspace ReactNativeAudioExample.xcworkspace -scheme ReactNativeAudioExample -configuration Debug -sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build"
   },
   "keywords": [

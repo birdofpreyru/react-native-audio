@@ -1,4 +1,4 @@
-import {Buffer} from 'buffer';
+import { Buffer } from 'buffer';
 import {
   type AppStateStatus,
   type NativeEventSubscription,
@@ -15,11 +15,15 @@ import {
   RESULTS as PERMISSION_STATUS,
 } from 'react-native-permissions';
 
-import {Emitter, Semaphore} from '@dr.pogodin/js-utils';
+import { Emitter, Semaphore } from '@dr.pogodin/js-utils';
 
 import ReactNativeAudio from './ReactNativeAudio';
 
-import type {AUDIO_FORMATS, AUDIO_SOURCES, CHANNEL_CONFIGS} from './constants';
+import type {
+  AUDIO_FORMATS,
+  AUDIO_SOURCES,
+  CHANNEL_CONFIGS,
+} from './constants';
 
 type ChunkListener = (chunk: Buffer, chunkId: number) => void;
 type ErrorListener = (error: Error) => void;
@@ -30,11 +34,11 @@ const eventEmitter = new NativeEventEmitter(ReactNativeAudio);
 // is a bit cumbersome, at least in my current understanding.
 let lastInputStreamId: number = 0;
 
-const chunkEmitters: {[streamId: number]: Emitter<[Buffer, number]>} = {};
+const chunkEmitters: { [streamId: number]: Emitter<[Buffer, number]> } = {};
 
-const errorEmitters: {[streamId: number]: Emitter<[Error]>} = {};
+const errorEmitters: { [streamId: number]: Emitter<[Error]> } = {};
 
-eventEmitter.addListener('RNA_AudioChunk', ({streamId, chunkId, data}) => {
+eventEmitter.addListener('RNA_AudioChunk', ({ streamId, chunkId, data }) => {
   const emitter = chunkEmitters[streamId];
   if (emitter && emitter.hasListeners) {
     const chunk = Buffer.from(data, 'base64');
@@ -42,7 +46,7 @@ eventEmitter.addListener('RNA_AudioChunk', ({streamId, chunkId, data}) => {
   }
 });
 
-eventEmitter.addListener('RNA_InputAudioStreamError', ({streamId, error}) => {
+eventEmitter.addListener('RNA_InputAudioStreamError', ({ streamId, error }) => {
   const emitter = errorEmitters[streamId];
   if (emitter && emitter.hasListeners) emitter.emit(Error(error));
 });

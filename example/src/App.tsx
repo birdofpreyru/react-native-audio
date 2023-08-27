@@ -3,9 +3,9 @@
 // resulting sound spectra as a simple text representation.
 
 import FFT from 'fft.js';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
-import {Alert, Platform, StyleSheet, View, Text} from 'react-native';
+import { Alert, Platform, StyleSheet, View, Text } from 'react-native';
 
 import {
   AUDIO_FORMATS,
@@ -47,7 +47,7 @@ export default function App() {
           AUDIO_FORMATS.PCM_16BIT,
           FFT_SIZE,
         );
-        stream.addErrorListener(error => {
+        stream.addErrorListener((error) => {
           Alert.alert('React Natitve Audio Error', error.message);
         });
         stream.addChunkListener((chunk, chunkId) => {

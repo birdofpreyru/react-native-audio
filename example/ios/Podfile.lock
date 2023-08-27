@@ -2,7 +2,7 @@ PODS:
   - boost (1.76.0)
   - CocoaAsyncSocket (7.6.5)
   - DoubleConversion (1.1.6)
-  - dr-pogodin-react-native-audio (1.5.1):
+  - dr-pogodin-react-native-audio (1.6.0):
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - RCTRequired
@@ -1278,7 +1278,7 @@ SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  dr-pogodin-react-native-audio: d75a8226d48c503c175398358a6afe1bd3463d91
+  dr-pogodin-react-native-audio: cfb4a077373dfab29b7c21e413bde9cf5d254b6e
   FBLazyVector: 5d4a3b7f411219a45a6d952f77d2c0a6c9989da5
   Flipper: 6edb735e6c3e332975d1b17956bcc584eccf5818
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
@@ -1334,6 +1334,6 @@ SPEC CHECKSUMS:
   Yoga: 3efc43e0d48686ce2e8c60f99d4e6bd349aff981
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: af862475dc118c99780ad1f614c66b88c4d6ca74
+PODFILE CHECKSUM: 9464e619e15e942444030c0002664783e95119ac
 
 COCOAPODS: 1.12.1
