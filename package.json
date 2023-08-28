@@ -1,6 +1,6 @@
 {
   "name": "@dr.pogodin/react-native-audio",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "React Native: access to the audio input stream",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -34,6 +34,8 @@
     "prepack": "bob build",
     "example": "npm --cwd example",
     "bootstrap": "npm example && npm install && npm example pods",
+    "build:android": "cd example/android && ./gradlew assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a",
+    "build:ios": "cd example/ios && xcodebuild -workspace ReactNativeAudioExample.xcworkspace -scheme ReactNativeAudioExample -configuration Debug -sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build"
   },
   "keywords": [
@@ -47,25 +49,30 @@
   "bugs": {
     "url": "https://github.com/birdofpreyru/react-native-audio/issues"
   },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/birdofpreyru"
+  },
   "homepage": "https://dr.pogodin.studio/docs/react-native-audio",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@react-native-community/eslint-config": "^3.2.0",
-    "@types/jest": "^29.5.2",
-    "@types/react": "^18.2.14",
-    "del-cli": "^5.0.0",
-    "eslint": "^8.44.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "jest": "^29.3.1",
-    "pod-install": "^0.1.38",
-    "prettier": "^2.8.8",
+    "@react-native/eslint-config": "^0.72.2",
+    "@types/jest": "^29.5.4",
+    "@types/react": "^18.2.21",
+    "del-cli": "^5.0.1",
+    "eslint": "^8.48.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "jest": "^29.6.4",
+    "pod-install": "^0.1.39",
+    "prettier": "^3.0.2",
     "react": "18.2.0",
-    "react-native": "0.72.1",
-    "react-native-builder-bob": "^0.21.0",
-    "typescript": "^5.1.6"
+    "react-native": "0.72.4",
+    "react-native-builder-bob": "^0.21.3",
+    "react-native-permissions": "^3.8.4",
+    "typescript": "^5.2.2"
   },
   "reactNativePermissionsIOS": [
     "Microphone"
@@ -75,7 +82,8 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-permissions": ">=3.8"
   },
   "engines": {
     "node": ">= 16.0.0"
@@ -90,16 +98,13 @@
   "eslintConfig": {
     "root": true,
     "extends": [
-      "@react-native-community",
+      "@react-native",
       "prettier"
     ],
     "rules": {
       "prettier/prettier": [
         "error",
         {
-          "arrowParens": "avoid",
-          "bracketSameLine": true,
-          "bracketSpacing": false,
           "quoteProps": "consistent",
           "singleQuote": true,
           "tabWidth": 2,
@@ -114,9 +119,6 @@
     "lib/"
   ],
   "prettier": {
-    "arrowParens": "avoid",
-    "bracketSameLine": true,
-    "bracketSpacing": false,
     "quoteProps": "consistent",
     "singleQuote": true,
     "tabWidth": 2,
@@ -138,8 +140,7 @@
     ]
   },
   "dependencies": {
-    "@dr.pogodin/js-utils": "^0.0.6",
-    "react-native-permissions": "^3.8.3"
+    "@dr.pogodin/js-utils": "^0.0.6"    
   },
   "codegenConfig": {
     "name": "RNReactNativeAudioSpec",

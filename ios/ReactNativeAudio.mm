@@ -8,6 +8,12 @@ NSString *EVENT_INPUT_AUDIO_STREAM_ERROR = @"RNA_InputAudioStreamError";
 
 @implementation ReactNativeAudio {
   NSMutableDictionary<NSNumber*,RNAInputAudioStream*> *inputStreams;
+
+  // NOTE: This player reference is currently used only for a single playback
+  // test method. It has to be a class field, otherwise if a player instance
+  // is created and owned inside the test method, it is garbage-collected on
+  // the method exit, which cancels the playback.
+  AVAudioPlayer *player;
 }
 
 RCT_EXPORT_MODULE()
@@ -36,7 +42,7 @@ RCT_EXPORT_MODULE()
 
 RCT_REMAP_METHOD(getInputAvailable,
   getInputAvailable:(RCTPromiseResolveBlock)resolve
-  rejecter:(RCTPromiseRejectBlock)reject
+  reject:(RCTPromiseRejectBlock)reject
 ) {
   resolve([NSNumber numberWithBool: AVAudioSession.sharedInstance.inputAvailable]);
 }
@@ -59,7 +65,7 @@ RCT_REMAP_METHOD(getInputAvailable,
 // which is now ignored on iOS?
 RCT_REMAP_METHOD(configAudioSystem,
   configAudioSystem:(RCTPromiseResolveBlock)resolve
-  rejecter:(RCTPromiseRejectBlock)reject
+  reject:(RCTPromiseRejectBlock)reject
 ) {
   RCTLogInfo(@"Audio session configuration...");
 
@@ -110,12 +116,12 @@ RCT_REMAP_METHOD(configAudioSystem,
 RCT_REMAP_METHOD(listen,
   listen:(double)streamId
   audioSource:(double)audioSource
-  withSampleRate:(double)sampleRate
-  withChannelConfig:(double)channelConfig
-  withAudioFormat:(double)audioFormat
-  withSamplingSize:(double)samplingSize
-  resolver:(RCTPromiseResolveBlock) resolve
-  rejecter:(RCTPromiseRejectBlock) reject
+  sampleRate:(double)sampleRate
+  channelConfig:(double)channelConfig
+  audioFormat:(double)audioFormat
+  samplingSize:(double)samplingSize
+  resolve:(RCTPromiseResolveBlock) resolve
+  reject:(RCTPromiseRejectBlock) reject
 ) {
   NSNumber *sid = [NSNumber numberWithDouble:streamId];
 
@@ -151,8 +157,8 @@ RCT_REMAP_METHOD(listen,
 
 RCT_REMAP_METHOD(unlisten,
   unlisten:(double)streamId
-  resolver:(RCTPromiseResolveBlock) resolve
-  rejecter:(RCTPromiseRejectBlock) reject
+  resolve:(RCTPromiseResolveBlock) resolve
+  reject:(RCTPromiseRejectBlock) reject
 ) {
   NSNumber *id = [NSNumber numberWithDouble:streamId];
   [inputStreams[id] stop];
@@ -162,9 +168,22 @@ RCT_REMAP_METHOD(unlisten,
 }
 
 RCT_REMAP_METHOD(muteInputStream,
-  muteInputStream:(double)streamId mute:(BOOL)mute
+  muteInputStream:(double)streamId muted:(BOOL)muted
 ) {
-  inputStreams[[NSNumber numberWithDouble:streamId]].muted = mute;
+  inputStreams[[NSNumber numberWithDouble:streamId]].muted = muted;
+}
+
+/**
+ * This is just a playback test method for the Example App. Probably later it will be turned into a generic
+ * audio file playback method.
+ */
+RCT_EXPORT_METHOD(playTest) {
+  NSString *path = [[NSBundle mainBundle] bundlePath];
+  path = [path stringByAppendingString:@"/assets/Sine_wave_440.mp3"];
+  NSURL *url = [NSURL fileURLWithPath:path isDirectory:NO];
+
+  player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+  [player play];
 }
 
 + (BOOL)requiresMainQueueSetup {

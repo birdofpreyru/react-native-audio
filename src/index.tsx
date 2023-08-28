@@ -10,3 +10,11 @@ export * from './InputAudioStream';
 export function getInputAvailable(): Promise<boolean> {
   return ReactNativeAudio.getInputAvailable();
 }
+
+/**
+ * This is a temporary function for testing playback,
+ * we'll probably add better playback interface later.
+ */
+export function playTest() {
+  ReactNativeAudio.playTest();
+}

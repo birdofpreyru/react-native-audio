@@ -1,5 +1,5 @@
-import type {TurboModule} from 'react-native';
-import {TurboModuleRegistry} from 'react-native';
+import type { TurboModule } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
   configAudioSystem(): Promise<void>;
@@ -43,6 +43,8 @@ export interface Spec extends TurboModule {
 
   addListener(eventName: string): void;
   removeListeners(count: number): void;
+
+  playTest(): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('ReactNativeAudio');
