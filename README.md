@@ -11,16 +11,30 @@ audio system management.
 
 [![Sponsor](https://raw.githubusercontent.com/birdofpreyru/react-native-audio/master/.README/sponsor.svg)](https://github.com/sponsors/birdofpreyru)
 
+## Content
+- [Installation]
+- [Getting Started]
+- [API Reference]
+
 ## Installation
+[Installation]: #installation
 
-Install the package and its peer dependencies
-```sh
-npx install-peerdeps @dr.pogodin/react-native-audio
-```
+- Install the package and its peer dependencies
+  ```sh
+  npx install-peerdeps @dr.pogodin/react-native-audio
+  ```
 
-## Usage
+- Follow [react-native-permissions] documentation to setup your app for asking
+  the user for the _RECORD\_AUDIO_ (Android) and/or _Microphone_ (iOS) permissions.
+  **react-native-audio** library will automatically ask for these permissions,
+  if needed, when a stream [.start()] method is called, provided the app has
+  been correctly configured to ask for them.
 
-Detailed documentation to be written, however the overall idea is this:
+## Getting Started
+[Getting Started]: #getting-started
+
+A better _Getting Started_ tutorial is to be written, however the main idea
+is this:
 
 ```js
 import {
@@ -68,11 +82,398 @@ function createAndStartAudioStream() {
   // use .mute() and .unmute() methods instead.
 }
 ```
+and on top of this the library will include other auxiliary methods related
+to audio input and output.
 
-## Contributing
+## API Reference
+[API Reference]: #api-reference
 
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
+- [Classes]
+  - [InputAudioStream] &mdash; Represents individual input audio streams.
+    - [constructor()] &mdash; Creates a new [InputAudioStream] instance.
+    - [.addChunkListener()] &mdash; Adds a new audio data chunk listener to
+      the stream.
+    - [.addErrorListener()] &mdash; Adds a new error listener to the stream.
+    - [.destroy()] &mdash; Destroys the stream &mdash; stops recording, and
+      releases all related resources.
+    - [.mute()] &mdash; Mutes the stream.
+    - [.removeChunkListener()] &mdash; Removes an audio data chunk listener
+      from the stream.
+    - [.removeErrorListener()] &mdash; Removes an error listener from the stream.
+    - [.start()] &mdash; Starts the audio stream recording.
+    - [.stop()] &mdash; Stops the stream.
+    - [.unmute()] &mdash; Unmutes a previously muted stream.
+    - [.active] &mdash; _true_ when the stream is started and recoding.
+    - [.audioFormat] &mdash; Holds the audio format value provided to
+      the [constructor()].
+    - [.audioSource] &mdash; Holds the audio source value provided to
+      the [constructor()].
+    - [.channelConfig] &mdash; Holds the channel mode value provided to
+      the [constructor()].
+    - [.muted] &mdash; _true_ when the stream is muted.
+    - [.sampleRate] &mdash; Holds the stream's sample rate in [[Hz]].
+    - [.samplingSize] &mdash; Holds the stream's sampling (audio data chunk)
+      size, per channel.
+    - [.stopInBackground] &mdash; _true_ if the stream is configured to stop
+      automatically when the app leaves foreground, and to start again when it
+      returns to the foreground.
+- [Constants]
+  - [AUDIO_FORMATS] &mdash; Provides valid [.audioFormat] values.
+  - [AUDIO_SOURCES] &mdash; Provides valid [.audioSource] values.
+  - [CHANNEL_CONFIGS] &mdash; Provides valid [.channelConfig] values.
+- [Functions]
+  - [configAudioSystem()] &mdash; Configures audio system (input & output devices)
+    for iOS, does nothing on Android.
+  - [getInputAvailable()] &mdash; Resolves _true_ if device has an available
+    audio input source.
+- [Types]
+  - [ChunkListener] &mdash; The type of audio data chunk listeners that can be
+    connected to a stream with [.addChunkListener()] method.
+  - [ErrorListener] &mdash; The type of error listeners that can be connected to
+    a stream with [.addErrorListener()] method.
 
-## License
+## Classes
+[Classes]: #classes
 
-MIT
+### InputAudioStream
+[InputAudioStream]: #inputaudiostream
+```tsx
+class InputAudioStream;
+```
+
+The [InputAudioStream] class, as its name suggests, represents individual input
+audio streams, capturing audio data in the configured format from the specified
+audio source.
+
+#### constructor()
+[constructor()]: #constructor
+```tsx
+const stream = new InputAudioStream(
+  audioSource: AUDIO_SOURCES,
+  sampleRate: number,
+  channelConfig: CHANNEL_CONFIGS,
+  audioFormat: AUDIO_FORMATS,
+  samplingSize: number,
+  stopInBackground: boolean = true,
+);
+```
+Creates a new [InputAudioStream] instance. The newly created stream does not
+record audio, neither consumes resources at the native side until its [.start()]
+method is called.
+
+- `audioSource` &mdash; [AUDIO_SOURCES] &mdash; The audio source this stream
+  will listen to. Currently, it is supported for Android only; on iOS this value
+  is just ignored, and the stream captures audio data from the default input
+  source of the device.
+- `sampleRate` &mdash; **number** &mdash; Sample rate [[Hz]].
+  44100 Hz is the recommended value, as it is the only rate that is
+  guaranteed to work on all Android (and many other) devices.
+- `channelConfig` &mdash; [CHANNEL_CONFIGS] &mdash; _Mono_ or _Stereo_ stream
+  mode.
+- `audioFormat` &mdash; [AUDIO_FORMATS] &mdash; Audio format.
+- `samplingSize` &mdash; **number** &mdash; Sampling (data chunk) size,
+  expressed as the number of samples per channel in the chunk.
+- `stopInBackground` &mdash; **boolean** &mdash; Optional. It _true_ (default)
+  the stream will automatically pause itself when the app leaves the foreground,
+  and the stream will automatically resume itself when the app returns to
+  the foreground.
+
+#### .addChunkListener()
+[.addChunkListener()]: #addchunklistener
+```ts
+stream.addChunkListener(listener: ChunkListener): void;
+```
+Adds a new audio data chunk listener to the stream. See [.removeChunkListener()]
+to subsequently remove the listener from the stream.
+
+**Note:** It is safe to call it repeatedly for the same listener & stream pair
+&mdash; the listener still won't be added to the stream more than once.
+
+- `listener` &mdash; [ChunkListener] &mdash; The callback to call with audio
+  data chunks when they arrive.
+
+#### .addErrorListener()
+[.addErrorListener()]: #adderrorlistener
+```ts
+stream.addErrorListener(listener: ErrorListener): void;
+```
+Adds a new error listener to the stream. See [.removeErrorListener()]
+to subsequently remove the listener from the stream.
+
+**Note:** It is safe to call it repeatedly for the same listener & stream pair
+&mdash; the listener still won't be added to the stream more than once.
+
+- `listener` &mdash; [ErrorListener] &mdash; The callback to call with error
+  details, if any error happens in the stream.
+
+#### .destroy()
+[.destroy()]: #destroy
+```ts
+stream.destroy(): void;
+```
+Destroys the stream &mdash; stops the recording, and releases all related
+resources, both at the native and JS sides. Once a stream is destroyed,
+it cannot be re-used.
+
+#### .mute()
+[.mute()]: #mute
+```ts
+stream.mute(): void;
+```
+Mutes the stream. A muted stream still continues to capture audio data chunks
+from the audio source, and thus keeps incrementing chunk IDs (see [ChunkListener]),
+but it discards all data chunks immediately after the capture, without sending
+them to the JavaScript layer, thus causing the minimal performance and memory
+overhead possible without interrupting the recording.
+
+Calling [.mute()] on a muted, or non-active (not recording) audio stream has
+no effect. See also [.active], [.muted].
+
+#### .removeChunkListener()
+[.removeChunkListener()]: #removechunklistener
+```ts
+stream.removeChunkListener(listener: ChunkListener): void;
+```
+Removes the listener from the stream. No operation if given `listener` is not
+connected to the stream. See [.addChunkListener()] to add the listener.
+- `listener` &mdash; [ChunkListener] &mdash; The listener to disconnect.
+
+#### .removeErrorListener()
+[.removeErrorListener()]: #removeerrorlistener
+```ts
+stream.removeErrorListener(listener: ErrorListener): void;
+```
+Removes the listener from the stream. No operation if given `listener` is not
+connected to the stream. See [.addErrorListener()] to connect the listener.
+
+- `listener` &mdash; [ErrorListener] &mdash; The listener to disconnect.
+
+#### .start()
+[.start()]: #start
+```ts
+stream.start(): Promise<boolean>;
+```
+Starts the audio stream recording. This method actually initializes the stream
+on the native side, and starts the recording.
+
+**Note:** If necessary, this method will ask app user for the audio recoding
+permission, using the [react-native-permissions] library.
+
+- Resolves to **boolean** value &mdash; _true_ if the stream has started
+  successfully and is [.active], _false_ otherwise.
+
+#### .stop()
+[.stop()]: #stop
+```ts
+stream.stop(): Promise<void>;
+```
+Stops the stream. Unlike the [.mute()] method, [.stop()] actually stops
+the audio stream and releases its resources on the native side; however,
+unlike the [.destroy()] method, it does not release its resource in the JS
+layer (_i.e._ does not drop references to all connected listeners), thus
+allowing to [.start()] this stream instance again (which will technically
+will init a new stream on the native side, but it will be opaque to the end
+user on the JS side).
+
+- Resolves once the stream is stopped.
+
+#### .unmute()
+[.unmute()]: #unmute
+```ts
+stream.unmute(): void;
+```
+Unmutes a previously [.muted] stream. It has no effect if called on inactive
+(non started), or already muted stream.
+
+#### .active
+[.active]: #active
+```ts
+stream.active: boolean;
+```
+Read-only. _true_ when the stream is [started][.start()] and recording, _false_
+otherwise.
+
+**Note:** [.active] will be _true_ for a started and [.muted] stream.
+
+#### .audioFormat
+[.audioFormat]: #audioformat
+```ts
+stream.audioFormat: AUDIO_FORMATS;
+```
+Read-only. Holds the audio format value provided to [InputAudioStream]'s
+[constructor()]. [AUDIO_FORMATS] enum provides valid format values.
+
+#### .audioSource
+[.audioSource]: #audiosource
+```ts
+stream.audioSource: AUDIO_SOURCES;
+```
+Read-only. Holds the audio source value provided to [InputAudioStream]'s
+[constructor()]. As of now it only has an affect on Android devices, and it is
+ignored for iOS. [AUDIO_SOURCES] enum provides valid audio source values.
+
+#### .channelConfig
+[.channelConfig]: #channelconfig
+```ts
+stream.channelConfig: CHANNEL_CONFIGS;
+```
+Read-only. Holds the channel mode (_Mono_ or _Stereo_) value provided to
+[InputAudioStream]'s [constructor()]. [CHANNEL_CONFIGS] enum provides valid
+channel mode values.
+
+#### .muted
+[.muted]: #muted
+```ts
+stream.muted: boolean;
+```
+Read-only. _true_ when the stream is muted by [.mute()], _false_ otherwise.
+
+#### .sampleRate
+[.sampleRate]: #samplerate
+```ts
+stream.sampleRate: number;
+```
+Read-only. Holds the stream's sample rate provided to the stream [constructor()],
+in [[Hz]].
+
+#### .samplingSize
+[.samplingSize]: #samplingsize
+```ts
+stream.samplingSize: number;
+```
+Read-only. Holds the stream's sampling (audio data chunk) size, provided to
+the stream [constructor()]. The value is the number of samples per channel,
+thus for multi-channel streams the actual chunk size will be a multiple of
+this number, and also the sample size in bytes may vary for different
+[.audioFormat].
+
+#### .stopInBackground
+[.stopInBackground]: #stopinbackground
+```ts
+stream.stopInBackground: boolean;
+```
+Read-only. _true_ if the stream is set to automatically [.stop()] when the app
+leaves foreground, and [.start()] again when it returns to the foreground.
+
+## Constants
+[Constants]: #constants
+
+### AUDIO_FORMATS
+[AUDIO_FORMATS]: #audio_formats
+```ts
+enum AUDIO_FORMATS {
+  PCM_8BIT: number;
+  PCM_16BIT: number;
+  PCM_FLOAT: number;
+};
+```
+Provides valid [.audioFormat] values. See
+[Android documentation](https://developer.android.com/reference/android/media/AudioFormat#encoding)
+for exact definitions of these three formats; they should be the same on iOS
+devices.
+
+**Note:** At least Android allows for other audio formats, which we may include
+here in future.
+
+### AUDIO_SOURCES
+[AUDIO_SOURCES]: #audio_sources
+```ts
+enum AUDIO_SOURCES {
+  CAMCODER: number;
+  DEFAULT: number;
+  MIC: number;
+  REMOTE_SUBMIX: number;
+  RAW: number;
+  VOICE_CALL: number;
+  VOICE_COMMUNICATION: number;
+  VOICE_DOWNLINK: number;
+  VOICE_PERFORMANCE: number;
+  VOICE_RECOGNITION: number;
+  VOICE_UPLINK: number;
+};
+```
+Provides valid [.audioSource] values. As of now, they have effect for Android
+devices only, and for them they represent corresponding values of
+[MediaRecorder.AudioSource](https://developer.android.com/reference/android/media/MediaRecorder.AudioSource).
+
+### CHANNEL_CONFIGS
+[CHANNEL_CONFIGS]: #channel_configs
+```ts
+enum CHANNEL_CONFIGS {
+  MONO: number;
+  STEREO: number;
+};
+```
+Provides valid [.channelConfig] values.
+
+**Note:** As of now, it provides only two values, _MONO_ and _STEREO_, however,
+at least Android seems to support additional channels, which might be added in
+future, see
+[Android's AudioFormat documentation](https://developer.android.com/reference/android/media/AudioFormat).
+
+## Functions
+[Functions]: #functions
+
+### configAudioSystem()
+[configAudioSystem()]: #configaudiosystem
+```ts
+function configAudioSystem(): Promise<void>;
+```
+Configures audio system (input & output devices).
+
+Currently it does nothing on Android; on iOS it (re-)configures the audio
+session, setting the _Play & Record_ category and activating the session.
+
+**Note:** On iOS, if _Play & Record_ category is not available on the device,
+it sets the _Playback_ category instead; and if neither category is available,
+the function rejects its result promise. The function also sets the following
+options for the iOS audio session: _AllowBluetooth_, _AllowBluetoothA2DP_, and
+_DefaultToSpeaker_.
+
+See [iOS documentation](https://developer.apple.com/documentation/avfaudio/avaudiosession?language=objc)
+for further details about iOS audio sessions and categories.
+
+- Resolves once completed.
+
+### getInputAvailable()
+[getInputAvailable()]: #getinputavailable
+```ts
+function getInputAvailable(): Promise<boolean>;
+```
+- Resolves _true_ if device has an available audio input source,
+  _false_ otherwise.
+
+## Types
+[Types]: #types
+
+### ChunkListener
+[ChunkListener]: #chunklistener
+```ts
+type ChunkListener = (chunk: Buffer, chunkId: number) => void;
+```
+The type of audio data chunk listeners that can be connected to an
+[InputAudioStream] with [.addChunkListener()] method.
+
+- `chunk` &mdash; [Buffer] &mdash; Audio data chunk in the format specified
+  upon the audio stream [construction][constructor()]. [Buffer] implementation
+  for RN is provided by [the `buffer` library](https://www.npmjs.com/package/buffer).
+- `chunkId` &mdash; **number** &mdash; Consequtive chunk number. When a stream
+  is [.muted] the chunk numbers are still incremented for discarted audio chunks,
+  thus `chunkId` may be used to judge whether any chunks were missed while
+  a stream was muted.
+
+### ErrorListener
+[ErrorListener]: #errorlistener
+```ts
+type ErrorListener = (error: Error) => void;
+```
+The type of error listeners that can be connected to an [InputAudioStream] with
+[.addErrorListener()] method.
+
+- `error` &mdash; [Error] &mdash; Stream error.
+
+<!-- Global references. -->
+[Buffer]: https://nodejs.org/api/buffer.html
+[Error]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
+[Hz]: https://en.wikipedia.org/wiki/Hertz
+[react-native-permissions]: https://github.com/zoontek/react-native-permissions
