@@ -23,6 +23,7 @@ abstract class ReactNativeAudioSpec extends ReactContextBaseJavaModule {
   public abstract void getInputAvailable(Promise promise);
 
   public abstract void listen(
+    double streamId,
     double audioSource,
     double sampleRate,
     double channelConfig,
@@ -32,7 +33,7 @@ abstract class ReactNativeAudioSpec extends ReactContextBaseJavaModule {
   );
 
   public abstract void muteInputStream(double streamId, boolean muted);
-  public abstract void unlisten(double streamId);
+  public abstract void unlisten(double streamId, Promise promise);
   public abstract void addListener(String eventName);
   public abstract void removeListeners(double count);
 }

@@ -14,6 +14,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import com.drpogodin.reactnativeaudio.Errors;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -153,6 +155,17 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
   @ReactMethod
   public void muteInputStream(double streamId, boolean muted) {
     inputStreams.get(streamId).muted = muted;
+  }
+
+  /**
+   * This method is currently used only for a sound playback test in
+   * the Example App, and this test for now is intended mostly for testing
+   * the audio session configuration on iOS, thus not yet implemented for
+   * Android.
+   */
+  @ReactMethod
+  public void playTest() {
+    Errors.NOT_IMPLEMENTED.log();
   }
 
   /**
