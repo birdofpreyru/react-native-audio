@@ -44,7 +44,24 @@ export interface Spec extends TurboModule {
   addListener(eventName: string): void;
   removeListeners(count: number): void;
 
-  playTest(): void;
+  // Methods below are related to the SamplePlayer implementation.
+  initSamplePlayer(playerId: number): Promise<void>;
+  destroySamplePlayer(playerId: number): Promise<void>;
+
+  loadSample(
+    playerId: number,
+    sampleName: string,
+    samplePath: string,
+  ): Promise<void>;
+
+  playSample(
+    playerId: number,
+    sampleName: string,
+    loop: boolean,
+  ): Promise<void>;
+
+  stopSample(playerId: number, sampleName: string): Promise<void>;
+  unloadSample(playerId: number, sampleName: string): Promise<void>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('ReactNativeAudio');

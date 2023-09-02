@@ -6,8 +6,13 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/birdofpreyru/react-native-audio?style=social)](https://github.com/birdofpreyru/react-native-audio)
 [![Dr. Pogodin Studio](https://raw.githubusercontent.com/birdofpreyru/react-native-audio/master/.README/logo-dr-pogodin-studio.svg)](https://dr.pogodin.studio/docs/react-native-audio)
 
-React Native audio stream listening / recording, and utility functions for
-audio system management.
+React Native (RN) Audio library for Android and iOS platforms, with support of
+[new][New RN Architecture] and [old][Old RN Architecture] RN architectures.
+It covers:
+- Input audio stream (microphone) listening / recording.
+- Audio samples playback.
+- Utility functions for audio system management.
+- _More stuff to come_...
 
 [![Sponsor](https://raw.githubusercontent.com/birdofpreyru/react-native-audio/master/.README/sponsor.svg)](https://github.com/sponsors/birdofpreyru)
 
@@ -90,26 +95,27 @@ to audio input and output.
 
 - [Classes]
   - [InputAudioStream] &mdash; Represents individual input audio streams.
-    - [constructor()] &mdash; Creates a new [InputAudioStream] instance.
+    - [constructor()][InputAudioStream.constructor()] &mdash; Creates
+      a new [InputAudioStream] instance.
     - [.addChunkListener()] &mdash; Adds a new audio data chunk listener to
       the stream.
     - [.addErrorListener()] &mdash; Adds a new error listener to the stream.
-    - [.destroy()] &mdash; Destroys the stream &mdash; stops recording, and
-      releases all related resources.
+    - [.destroy()][InputAudioStream.destroy()] &mdash; Destroys the stream
+      &mdash; stops recording, and releases all related resources.
     - [.mute()] &mdash; Mutes the stream.
     - [.removeChunkListener()] &mdash; Removes an audio data chunk listener
       from the stream.
     - [.removeErrorListener()] &mdash; Removes an error listener from the stream.
     - [.start()] &mdash; Starts the audio stream recording.
-    - [.stop()] &mdash; Stops the stream.
+    - [.stop()][InputAudioStream.stop()] &mdash; Stops the stream.
     - [.unmute()] &mdash; Unmutes a previously muted stream.
     - [.active] &mdash; _true_ when the stream is started and recoding.
     - [.audioFormat] &mdash; Holds the audio format value provided to
-      the [constructor()].
+      the [constructor()][InputAudioStream.constructor()].
     - [.audioSource] &mdash; Holds the audio source value provided to
-      the [constructor()].
+      the [constructor()][InputAudioStream.constructor()].
     - [.channelConfig] &mdash; Holds the channel mode value provided to
-      the [constructor()].
+      the [constructor()][InputAudioStream.constructor()].
     - [.muted] &mdash; _true_ when the stream is muted.
     - [.sampleRate] &mdash; Holds the stream's sample rate in [[Hz]].
     - [.samplingSize] &mdash; Holds the stream's sampling (audio data chunk)
@@ -117,6 +123,15 @@ to audio input and output.
     - [.stopInBackground] &mdash; _true_ if the stream is configured to stop
       automatically when the app leaves foreground, and to start again when it
       returns to the foreground.
+  - [SamplePlayer] &mdash; Represents an audio sample player.
+    - [constructor()][SamplePlayer.constructor()] &mdash; Creates a new
+      [SamplePlayer] instance.
+    - [.destroy()][SamplePlayer.destroy()] &mdash; Destroys the player,
+      releasing all related resources.
+    - [.load()] &mdash; Loads an (additional) audio sample.
+    - [.play()] &mdash; Plays an audio sample.
+    - [.stop()][SamplePlayer.stop()] &mdash; Stops an audio sample playback.
+    - [.unload()] &mdash; Unloads an audio sample.
 - [Constants]
   - [AUDIO_FORMATS] &mdash; Provides valid [.audioFormat] values.
   - [AUDIO_SOURCES] &mdash; Provides valid [.audioSource] values.
@@ -145,8 +160,9 @@ The [InputAudioStream] class, as its name suggests, represents individual input
 audio streams, capturing audio data in the configured format from the specified
 audio source.
 
+<a id="inputaudiostream-constructor"></a>
 #### constructor()
-[constructor()]: #constructor
+[InputAudioStream.constructor()]: #inputaudiostream-constructor
 ```tsx
 const stream = new InputAudioStream(
   audioSource: AUDIO_SOURCES,
@@ -206,8 +222,9 @@ to subsequently remove the listener from the stream.
 - `listener` &mdash; [ErrorListener] &mdash; The callback to call with error
   details, if any error happens in the stream.
 
+<a id="inputaudiostream-destroy"></a>
 #### .destroy()
-[.destroy()]: #destroy
+[InputAudioStream.destroy()]: #inputaudiostream-destroy
 ```ts
 stream.destroy(): void;
 ```
@@ -262,14 +279,15 @@ permission, using the [react-native-permissions] library.
 - Resolves to **boolean** value &mdash; _true_ if the stream has started
   successfully and is [.active], _false_ otherwise.
 
+<a id="inputaudiostream-stop"></a>
 #### .stop()
-[.stop()]: #stop
+[InputAudioStream.stop()]: #inputaudiostream-stop
 ```ts
 stream.stop(): Promise<void>;
 ```
-Stops the stream. Unlike the [.mute()] method, [.stop()] actually stops
+Stops the stream. Unlike the [.mute()] method, [.stop()][InputAudioStream.stop()] actually stops
 the audio stream and releases its resources on the native side; however,
-unlike the [.destroy()] method, it does not release its resource in the JS
+unlike the [.destroy()][InputAudioStream.destroy()] method, it does not release its resource in the JS
 layer (_i.e._ does not drop references to all connected listeners), thus
 allowing to [.start()] this stream instance again (which will technically
 will init a new stream on the native side, but it will be opaque to the end
@@ -301,7 +319,7 @@ otherwise.
 stream.audioFormat: AUDIO_FORMATS;
 ```
 Read-only. Holds the audio format value provided to [InputAudioStream]'s
-[constructor()]. [AUDIO_FORMATS] enum provides valid format values.
+[constructor()][InputAudioStream.constructor()]. [AUDIO_FORMATS] enum provides valid format values.
 
 #### .audioSource
 [.audioSource]: #audiosource
@@ -309,7 +327,7 @@ Read-only. Holds the audio format value provided to [InputAudioStream]'s
 stream.audioSource: AUDIO_SOURCES;
 ```
 Read-only. Holds the audio source value provided to [InputAudioStream]'s
-[constructor()]. As of now it only has an affect on Android devices, and it is
+[constructor()][InputAudioStream.constructor()]. As of now it only has an affect on Android devices, and it is
 ignored for iOS. [AUDIO_SOURCES] enum provides valid audio source values.
 
 #### .channelConfig
@@ -318,7 +336,7 @@ ignored for iOS. [AUDIO_SOURCES] enum provides valid audio source values.
 stream.channelConfig: CHANNEL_CONFIGS;
 ```
 Read-only. Holds the channel mode (_Mono_ or _Stereo_) value provided to
-[InputAudioStream]'s [constructor()]. [CHANNEL_CONFIGS] enum provides valid
+[InputAudioStream]'s [constructor()][InputAudioStream.constructor()]. [CHANNEL_CONFIGS] enum provides valid
 channel mode values.
 
 #### .muted
@@ -333,7 +351,7 @@ Read-only. _true_ when the stream is muted by [.mute()], _false_ otherwise.
 ```ts
 stream.sampleRate: number;
 ```
-Read-only. Holds the stream's sample rate provided to the stream [constructor()],
+Read-only. Holds the stream's sample rate provided to the stream [constructor()][InputAudioStream.constructor()],
 in [[Hz]].
 
 #### .samplingSize
@@ -342,7 +360,7 @@ in [[Hz]].
 stream.samplingSize: number;
 ```
 Read-only. Holds the stream's sampling (audio data chunk) size, provided to
-the stream [constructor()]. The value is the number of samples per channel,
+the stream [constructor()][InputAudioStream.constructor()]. The value is the number of samples per channel,
 thus for multi-channel streams the actual chunk size will be a multiple of
 this number, and also the sample size in bytes may vary for different
 [.audioFormat].
@@ -352,8 +370,97 @@ this number, and also the sample size in bytes may vary for different
 ```ts
 stream.stopInBackground: boolean;
 ```
-Read-only. _true_ if the stream is set to automatically [.stop()] when the app
+Read-only. _true_ if the stream is set to automatically [.stop()][InputAudioStream.stop()] when the app
 leaves foreground, and [.start()] again when it returns to the foreground.
+
+### SamplePlayer
+[SamplePlayer]: #sampleplayer
+```ts
+class SamplePlayer;
+```
+Represents an audio sample player. It is intended for loading into the memory
+a set of short audio fragments, which then can be played at demand with a low
+latency.
+
+On Android we use [SoundPool](https://developer.android.com/reference/android/media/SoundPool)
+for the underlying implementation, you may check its documentation for further
+details. In particular note: _each decoded sound is internally limited to one
+megabyte storage, whcih represents approximately 5.6 seconds at 44.1Hz stereo
+(the duration is proportionally longer at lower sample rates or a channel mask
+of mono)._
+
+<a id="sampleplayer-constructor"></a>
+#### constructor()
+[SamplePlayer.constructor()]: #sampleplayer-constructor
+```ts
+const player = new SamplePlayer();
+```
+Creates a new [SamplePlayer] instance. Note that this creation of [SamplePlayer]
+instance already allocates some resources at the native side, thus to release
+those resources you MUST USE its [.destroy()][SamplePlayer.destroy()] method
+once the instance is not needed anymore.
+
+<a id="sampleplayer-destroy"></a>
+#### .destroy()
+[SamplePlayer.destroy()]: #sampleplayer-destroy
+```ts
+player.destroy(): Promise<void>;
+```
+Destroys player instance, releasing all related resources. Once destroyed
+the player instance can't be reused.
+- Resolves once completed.
+
+### .load()
+[.load()]: #load
+```ts
+player.load(sampleName: string, samplePath: string): Promise<void>;
+```
+Loads an (additional) audio sample into the player.
+- `sampleName` &mdash; **string** &mdash; Sample name, by which you'll refer
+  to the loaded sample in other methods, like [.play()], [SamplePlayer.stop()],
+  and [.unload()]. If it matches a name of a previously loaded sample, that
+  sample will be replaced.
+- `samplePath` &mdash; **string** &mdash; Path to the sample file on the device.
+  For now, only loading samples from regular files is supported (_e.g._ not
+  possible to load from Android asset, without first copying the asset into
+  a regular file).
+- Resolves once the sample is loaded and decoded, thus ready to be played.
+
+### .play()
+[.play()]: #play
+```ts
+player.play(sampleName: string, loop: boolean): Promise<void>;
+```
+Plays an audio sample, previously loaded with [.load()] method.
+
+**NOTE:** In the current implementation, at least on Android, playing a sample
+will stop the playback of any other sample, played by the same player, if any.
+
+- `sampleName` &mdash; **string** &mdash; Sample name, assinged when loading it
+  with the [.load()] method.
+- `loop` &mdash; **boolean** &mdash; Set _true_ to infinitely loop the sample;
+  or _false_ to play it once.
+- Resolves once the playback is launched.
+
+<a id="sampleplayer-stop"></a>
+### .stop()
+[SamplePlayer.stop()]: #sampleplayer-stop
+```ts
+player.stop(sampleName: string): Promise<void>;
+```
+Stops sample playback, does nothing if the sample is not being played by this
+player.
+- `sampleName` &mdash; **string** &mdash; Sample name.
+- Resolves once completed.
+
+### .unload()
+[.unload()]: #unload
+```ts
+player.unload(sampleName: string): Promise<void>;
+```
+Unloads an audio sample previouly loaded into this player.
+- `sampleName` &mdash; **string** &mdash; Sample name.
+- Resolves once completed.
 
 ## Constants
 [Constants]: #constants
@@ -455,7 +562,7 @@ The type of audio data chunk listeners that can be connected to an
 [InputAudioStream] with [.addChunkListener()] method.
 
 - `chunk` &mdash; [Buffer] &mdash; Audio data chunk in the format specified
-  upon the audio stream [construction][constructor()]. [Buffer] implementation
+  upon the audio stream [construction][InputAudioStream.constructor()]. [Buffer] implementation
   for RN is provided by [the `buffer` library](https://www.npmjs.com/package/buffer).
 - `chunkId` &mdash; **number** &mdash; Consequtive chunk number. When a stream
   is [.muted] the chunk numbers are still incremented for discarted audio chunks,
@@ -476,4 +583,6 @@ The type of error listeners that can be connected to an [InputAudioStream] with
 [Buffer]: https://nodejs.org/api/buffer.html
 [Error]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
 [Hz]: https://en.wikipedia.org/wiki/Hertz
+[New RN Architecture]: https://reactnative.dev/docs/the-new-architecture/pillars-turbomodules
+[Old RN Architecture]: https://reactnative.dev/docs/native-modules-intro
 [react-native-permissions]: https://github.com/zoontek/react-native-permissions

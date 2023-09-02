@@ -3,9 +3,16 @@
 // resulting sound spectra as a simple text representation.
 
 import FFT from 'fft.js';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import { Alert, Button, Platform, StyleSheet, View, Text } from 'react-native';
+import {
+  Alert,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+  Text,
+} from 'react-native';
 
 import {
   AUDIO_FORMATS,
@@ -13,9 +20,15 @@ import {
   CHANNEL_CONFIGS,
   getInputAvailable,
   InputAudioStream,
-  playTest,
   configAudioSystem,
+  SamplePlayer,
 } from '@dr.pogodin/react-native-audio';
+
+import {
+  DocumentDirectoryPath,
+  MainBundlePath,
+  copyFileAssets,
+} from '@dr.pogodin/react-native-fs';
 
 const FFT_SIZE = 4096;
 const SAMPLE_RATE_BASE = 44100; // [Hz]
@@ -25,7 +38,13 @@ const fftOutput = fft.createComplexArray();
 const spectra = new Array(16);
 const DF = (SAMPLE_RATE_BASE / FFT_SIZE) * 128;
 
+type HeapT = {
+  player?: SamplePlayer;
+};
+
 export default function App() {
+  const { current: heap } = useRef<HeapT>({});
+
   const [inputAvailable, setInputAvailable] = useState('N/A');
 
   const [currentChunkId, setCurrentChunkId] = useState(0);
@@ -37,8 +56,27 @@ export default function App() {
   });
 
   useEffect(() => {
+    // TODO: This way we miss synchornization between when the player is
+    // ready to play, and when it is actually used / disposed. Fine for now,
+    // not good for a production use.
+    heap.player = new SamplePlayer();
+
     let stream: InputAudioStream | undefined;
     (async () => {
+      // Player initialization.
+      // TODO: We should give an option for Android to load a sample directly
+      // from assets, but for now, let's just copy it into a regular file first,
+      // and load that.
+      let samplePath: string;
+      if (Platform.OS === 'android') {
+        samplePath = `${DocumentDirectoryPath}/sample.mp3`;
+        await copyFileAssets('Sine_wave_440.mp3', samplePath);
+      } else {
+        samplePath = `${MainBundlePath}/Sine_wave_440.mp3`;
+      }
+      await heap.player?.load('test', samplePath);
+
+      // Setup of the input audio stream.
       const ia = await getInputAvailable();
       setInputAvailable(ia ? 'YES' : 'NO');
       if (ia) {
@@ -80,12 +118,12 @@ export default function App() {
       }
     })();
     return () => {
+      heap.player?.destroy();
+      heap.player = undefined;
       stream?.destroy();
       stream = undefined;
     };
-  }, []);
-
-  // const [result, setResult] = React.useState<number | undefined>();
+  }, [heap]);
 
   return (
     <View style={styles.container}>
@@ -103,13 +141,17 @@ export default function App() {
           </Text>
         );
       })}
-      <Button
-        title="Playback test"
-        onPress={async () => {
+      <Pressable
+        onPressIn={async () => {
           await configAudioSystem();
-          playTest();
+          heap.player?.play('test', true);
         }}
-      />
+        onPressOut={async () => {
+          heap.player?.stop('test');
+        }}
+      >
+        <Text style={styles.button}>Sample Player Test</Text>
+      </Pressable>
     </View>
   );
 }
@@ -119,6 +161,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  button: {
+    backgroundColor: 'blue',
+    color: 'white',
+    margin: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
   box: {
     width: 60,
