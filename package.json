@@ -39,6 +39,13 @@
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build"
   },
   "keywords": [
+    "audio",
+    "microphone",
+    "input",
+    "recording",
+    "playback",
+    "sample",
+    "player",
     "react-native",
     "ios",
     "android"
