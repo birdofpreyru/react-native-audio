@@ -30,7 +30,8 @@ RCT_EXPORT_MODULE()
     @"AUDIO_SOURCE_MIC": [NSNumber numberWithInt:MIC],
     @"AUDIO_SOURCE_UNPROCESSED": [NSNumber numberWithInt:UNPROCESSED],
     @"CHANNEL_IN_MONO": [NSNumber numberWithInt:MONO],
-    @"CHANNEL_IN_STEREO": [NSNumber numberWithInt:STEREO]
+    @"CHANNEL_IN_STEREO": [NSNumber numberWithInt:STEREO],
+    @"IS_MAC_CATALYST": @(TARGET_OS_MACCATALYST)
   };
 }
 

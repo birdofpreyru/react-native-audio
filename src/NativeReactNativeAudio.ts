@@ -13,6 +13,8 @@ export interface Spec extends TurboModule {
     CHANNEL_IN_MONO: number;
     CHANNEL_IN_STEREO: number;
 
+    IS_MAC_CATALYST: boolean;
+
     // These are currently Android-only.
     AUDIO_SOURCE_CAMCODER?: number;
     AUDIO_SOURCE_DEFAULT?: number;

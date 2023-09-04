@@ -136,6 +136,7 @@ to audio input and output.
   - [AUDIO_FORMATS] &mdash; Provides valid [.audioFormat] values.
   - [AUDIO_SOURCES] &mdash; Provides valid [.audioSource] values.
   - [CHANNEL_CONFIGS] &mdash; Provides valid [.channelConfig] values.
+  - [IS_MAC_CATALYST] &mdash; _true_ if app is running on macOS (Catalyst).
 - [Functions]
   - [configAudioSystem()] &mdash; Configures audio system (input & output devices)
     for iOS, does nothing on Android.
@@ -517,6 +518,14 @@ Provides valid [.channelConfig] values.
 at least Android seems to support additional channels, which might be added in
 future, see
 [Android's AudioFormat documentation](https://developer.android.com/reference/android/media/AudioFormat).
+
+### IS_MAC_CATALYST
+[IS_MAC_CATALYST]: #is_mac_catalyst
+```ts
+const IS_MAC_CATALYST: boolean;
+```
+Equals _true_ if the app is running on the macOS (Catalyst) platform;
+_false_ otherwise.
 
 ## Functions
 [Functions]: #functions

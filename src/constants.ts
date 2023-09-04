@@ -21,7 +21,11 @@ const {
 
   CHANNEL_IN_MONO,
   CHANNEL_IN_STEREO,
+
+  IS_MAC_CATALYST,
 } = ReactNativeAudio.getConstants();
+
+export { IS_MAC_CATALYST };
 
 export enum AUDIO_FORMATS {
   PCM_8BIT = AUDIO_FORMAT_PCM_8BIT,

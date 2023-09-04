@@ -71,6 +71,8 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
     constants.put("CHANNEL_IN_MONO", AudioFormat.CHANNEL_IN_MONO);
     constants.put("CHANNEL_IN_STEREO", AudioFormat.CHANNEL_IN_STEREO);
 
+    constants.put("IS_MAC_CATALYST", false);
+
     return constants;
   }
 

@@ -18,6 +18,7 @@ import {
   AUDIO_FORMATS,
   AUDIO_SOURCES,
   CHANNEL_CONFIGS,
+  IS_MAC_CATALYST,
   getInputAvailable,
   InputAudioStream,
   configAudioSystem,
@@ -71,6 +72,8 @@ export default function App() {
       if (Platform.OS === 'android') {
         samplePath = `${DocumentDirectoryPath}/sample.mp3`;
         await copyFileAssets('Sine_wave_440.mp3', samplePath);
+      } else if (IS_MAC_CATALYST) {
+        samplePath = `${MainBundlePath}/Contents/Resources/assets/Sine_wave_440.mp3`;
       } else {
         samplePath = `${MainBundlePath}/assets/Sine_wave_440.mp3`;
       }
