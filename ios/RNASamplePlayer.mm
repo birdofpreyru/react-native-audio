@@ -58,7 +58,8 @@
     [[RNAudioException OPERATION_FAILED:nil] reject:reject];
     return;
   }
-  if (_player.volume != 1) [_player setVolume:1 fadeDuration:0.1];
+  [_player setVolume:0];
+  [_player setVolume:1 fadeDuration:0.1];
   resolve(nil);
 }
 
