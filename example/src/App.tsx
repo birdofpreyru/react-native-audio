@@ -72,7 +72,7 @@ export default function App() {
         samplePath = `${DocumentDirectoryPath}/sample.mp3`;
         await copyFileAssets('Sine_wave_440.mp3', samplePath);
       } else {
-        samplePath = `${MainBundlePath}/Sine_wave_440.mp3`;
+        samplePath = `${MainBundlePath}/assets/Sine_wave_440.mp3`;
       }
       await heap.player?.load('test', samplePath);
 

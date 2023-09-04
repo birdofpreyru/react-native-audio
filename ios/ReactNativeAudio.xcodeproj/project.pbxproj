@@ -28,6 +28,10 @@
 		632BA51028842B3700993BF4 /* ReactNativeAudio.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ReactNativeAudio.mm; sourceTree = "<group>"; };
 		632BA51128842B3700993BF4 /* RNAInputAudioStream.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RNAInputAudioStream.mm; sourceTree = "<group>"; };
 		63593FC3266A6EB500AEFF4E /* RNAInputAudioStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNAInputAudioStream.h; sourceTree = "<group>"; wrapsLines = 0; };
+		639AE1EE2AA51D810062AB71 /* RNAudioException.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RNAudioException.mm; sourceTree = "<group>"; };
+		639AE1EF2AA51DB90062AB71 /* RNAudioException.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNAudioException.h; sourceTree = "<group>"; };
+		639AE1F02AA524270062AB71 /* RNASamplePlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNASamplePlayer.h; sourceTree = "<group>"; };
+		639AE1F12AA524420062AB71 /* RNASamplePlayer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RNASamplePlayer.mm; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* ReactNativeAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReactNativeAudio.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -53,6 +57,10 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				639AE1F12AA524420062AB71 /* RNASamplePlayer.mm */,
+				639AE1F02AA524270062AB71 /* RNASamplePlayer.h */,
+				639AE1EF2AA51DB90062AB71 /* RNAudioException.h */,
+				639AE1EE2AA51D810062AB71 /* RNAudioException.mm */,
 				632BA51028842B3700993BF4 /* ReactNativeAudio.mm */,
 				632BA51128842B3700993BF4 /* RNAInputAudioStream.mm */,
 				63593FC3266A6EB500AEFF4E /* RNAInputAudioStream.h */,
