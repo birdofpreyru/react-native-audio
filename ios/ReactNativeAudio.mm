@@ -200,7 +200,12 @@ RCT_EXPORT_METHOD(initSamplePlayer:(double)playerId
   resolve(nil);
 }
 
-- (void)loadSample:(double)playerId sampleName:(NSString *)sampleName samplePath:(NSString *)samplePath resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(loadSample:(double)playerId
+                  sampleName:(NSString *)sampleName
+                  samplePath:(NSString *)samplePath
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
   NSNumber *id = [NSNumber numberWithDouble:playerId];
   RNASamplePlayer *player = samplePlayers[id];
   if (player == nil) {
@@ -210,11 +215,11 @@ RCT_EXPORT_METHOD(initSamplePlayer:(double)playerId
   [player load:sampleName fromPath:samplePath resolve:resolve reject:reject];
 }
 
-- (void)playSample:(double)playerId
-        sampleName:(NSString *)sampleName
-              loop:(BOOL)loop
-           resolve:(RCTPromiseResolveBlock)resolve
-            reject:(RCTPromiseRejectBlock)reject
+RCT_EXPORT_METHOD(playSample:(double)playerId
+                  sampleName:(NSString *)sampleName
+                  loop:(BOOL)loop
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
   NSNumber *id = [NSNumber numberWithDouble:playerId];
   RNASamplePlayer *player = samplePlayers[id];
@@ -225,10 +230,10 @@ RCT_EXPORT_METHOD(initSamplePlayer:(double)playerId
   [player play:sampleName loop:loop resolve:resolve reject:reject];
 }
 
-- (void) stopSample:(double)playerId
-         sampleName:(NSString *)sampleName
-            resolve:(RCTPromiseResolveBlock)resolve
-             reject:(RCTPromiseRejectBlock)reject
+RCT_EXPORT_METHOD(stopSample:(double)playerId
+                  sampleName:(NSString *)sampleName
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
   NSNumber *id = [NSNumber numberWithDouble:playerId];
   RNASamplePlayer *player = samplePlayers[id];
@@ -239,10 +244,10 @@ RCT_EXPORT_METHOD(initSamplePlayer:(double)playerId
   [player stop:sampleName resolve:resolve reject:reject];
 }
 
-- (void) unloadSample:(double)playerId
-           sampleName:(NSString *)sampleName
-              resolve:(RCTPromiseResolveBlock)resolve
-               reject:(RCTPromiseRejectBlock)reject
+RCT_EXPORT_METHOD(unloadSample:(double)playerId
+                  sampleName:(NSString *)sampleName
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
   NSNumber *id = [NSNumber numberWithDouble:playerId];
   RNASamplePlayer *player = samplePlayers[id];
