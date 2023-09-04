@@ -15,6 +15,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import com.drpogodin.reactnativeaudio.Errors;
+import com.drpogodin.reactnativeaudio.SamplePlayer;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
   public static final String NAME = "ReactNativeAudio";
 
   private HashMap<Double,InputAudioStream> inputStreams = new HashMap<>();
+  private HashMap<Double, SamplePlayer> samplePlayers = new HashMap<>();
 
   ReactNativeAudioModule(ReactApplicationContext context) {
     super(context);
@@ -68,6 +70,8 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
     // https://developer.android.com/reference/android/media/AudioFormat#channelMask
     constants.put("CHANNEL_IN_MONO", AudioFormat.CHANNEL_IN_MONO);
     constants.put("CHANNEL_IN_STEREO", AudioFormat.CHANNEL_IN_STEREO);
+
+    constants.put("IS_MAC_CATALYST", false);
 
     return constants;
   }
@@ -158,17 +162,6 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
   }
 
   /**
-   * This method is currently used only for a sound playback test in
-   * the Example App, and this test for now is intended mostly for testing
-   * the audio session configuration on iOS, thus not yet implemented for
-   * Android.
-   */
-  @ReactMethod
-  public void playTest() {
-    Errors.NOT_IMPLEMENTED.log();
-  }
-
-  /**
    * Stops, and releases an input audio stream.
    * @param streamId
    */
@@ -186,5 +179,68 @@ public class ReactNativeAudioModule extends ReactNativeAudioSpec {
   @ReactMethod
   public void removeListeners(double count) {
     // NOOP
+  }
+
+  // These methods are for SamplePlayer functionality.
+  @ReactMethod
+  public void initSamplePlayer(double playerId, Promise promise) {
+    if (samplePlayers.containsKey(playerId)) {
+      Errors.INTERNAL_ERROR.reject(promise, "Sample player ID is occupied");
+      return;
+    }
+
+    samplePlayers.put(playerId, new SamplePlayer());
+
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void destroySamplePlayer(double playerId, Promise promise) {
+    SamplePlayer player = samplePlayers.remove(playerId);
+    if (player == null) {
+      Errors.UNKNOWN_PLAYER_ID.reject(promise);
+      return;
+    }
+
+    player.destroy();
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void loadSample(
+    double playerId,
+    String sampleName,
+    String samplePath,
+    Promise promise
+  ) {
+    SamplePlayer player = samplePlayers.get(playerId);
+    if (player == null) Errors.UNKNOWN_PLAYER_ID.reject(promise);
+    else player.load(sampleName, samplePath, promise);
+  }
+
+  @ReactMethod
+  public void playSample(
+    double playerId,
+    String sampleName,
+    boolean loop,
+    Promise promise
+  ) {
+    SamplePlayer player = samplePlayers.get(playerId);
+    if (player == null) Errors.UNKNOWN_PLAYER_ID.reject(promise);
+    else player.play(sampleName, loop, promise);
+  }
+
+  @ReactMethod
+  public void stopSample(double playerId, String sampleName, Promise promise) {
+    SamplePlayer player = samplePlayers.get(playerId);
+    if (player == null) Errors.UNKNOWN_PLAYER_ID.reject(promise);
+    else player.stop(sampleName, promise);
+  }
+
+  @ReactMethod
+  public void unloadSample(double playerId, String sampleName, Promise promise) {
+    SamplePlayer player = samplePlayers.get(playerId);
+    if (player == null) Errors.UNKNOWN_PLAYER_ID.reject(promise);
+    else player.unload(sampleName, promise);
   }
 }

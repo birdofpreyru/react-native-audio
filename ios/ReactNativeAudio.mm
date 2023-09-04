@@ -1,25 +1,23 @@
 #import <React/RCTLog.h>
 
 #import "ReactNativeAudio.h"
+#import "RNAudioException.h"
 #import "RNAInputAudioStream.h"
+#import "RNASamplePlayer.h"
 
 NSString *EVENT_AUDIO_CHUNK = @"RNA_AudioChunk";
 NSString *EVENT_INPUT_AUDIO_STREAM_ERROR = @"RNA_InputAudioStreamError";
 
 @implementation ReactNativeAudio {
   NSMutableDictionary<NSNumber*,RNAInputAudioStream*> *inputStreams;
-
-  // NOTE: This player reference is currently used only for a single playback
-  // test method. It has to be a class field, otherwise if a player instance
-  // is created and owned inside the test method, it is garbage-collected on
-  // the method exit, which cancels the playback.
-  AVAudioPlayer *player;
+  NSMutableDictionary<NSNumber*,RNASamplePlayer*> *samplePlayers;
 }
 
 RCT_EXPORT_MODULE()
 
 - (instancetype) init {
   inputStreams = [NSMutableDictionary new];
+  samplePlayers = [NSMutableDictionary new];
   return [super init];
 }
 
@@ -32,7 +30,8 @@ RCT_EXPORT_MODULE()
     @"AUDIO_SOURCE_MIC": [NSNumber numberWithInt:MIC],
     @"AUDIO_SOURCE_UNPROCESSED": [NSNumber numberWithInt:UNPROCESSED],
     @"CHANNEL_IN_MONO": [NSNumber numberWithInt:MONO],
-    @"CHANNEL_IN_STEREO": [NSNumber numberWithInt:STEREO]
+    @"CHANNEL_IN_STEREO": [NSNumber numberWithInt:STEREO],
+    @"IS_MAC_CATALYST": @(TARGET_OS_MACCATALYST)
   };
 }
 
@@ -173,20 +172,94 @@ RCT_REMAP_METHOD(muteInputStream,
   inputStreams[[NSNumber numberWithDouble:streamId]].muted = muted;
 }
 
-/**
- * This is just a playback test method for the Example App. Probably later it will be turned into a generic
- * audio file playback method.
- */
-RCT_EXPORT_METHOD(playTest) {
-  NSString *path = [[NSBundle mainBundle] bundlePath];
-  path = [path stringByAppendingString:@"/assets/Sine_wave_440.mp3"];
-  NSURL *url = [NSURL fileURLWithPath:path isDirectory:NO];
+RCT_EXPORT_METHOD(destroySamplePlayer:(double)playerId
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  NSNumber *id = [NSNumber numberWithDouble:playerId];
+  if (samplePlayers[id] == nil) {
+    [RNAudioException UNKNOWN_PLAYER_ID:reject];
+    return;
+  }
 
-  player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
-  [player play];
+  [samplePlayers removeObjectForKey:id];
+  resolve(nil);
 }
 
-+ (BOOL)requiresMainQueueSetup {
+RCT_EXPORT_METHOD(initSamplePlayer:(double)playerId
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  NSNumber *id = [NSNumber numberWithDouble:playerId];
+  if (samplePlayers[id] != nil) {
+    [[RNAudioException INTERNAL_ERROR:@"Sample player ID is occupied"]
+     reject:reject];
+    return;
+  }
+
+  samplePlayers[id] = [RNASamplePlayer new];
+  resolve(nil);
+}
+
+RCT_EXPORT_METHOD(loadSample:(double)playerId
+                  sampleName:(NSString *)sampleName
+                  samplePath:(NSString *)samplePath
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  NSNumber *id = [NSNumber numberWithDouble:playerId];
+  RNASamplePlayer *player = samplePlayers[id];
+  if (player == nil) {
+    [RNAudioException UNKNOWN_PLAYER_ID:reject];
+    return;
+  }
+  [player load:sampleName fromPath:samplePath resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(playSample:(double)playerId
+                  sampleName:(NSString *)sampleName
+                  loop:(BOOL)loop
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  NSNumber *id = [NSNumber numberWithDouble:playerId];
+  RNASamplePlayer *player = samplePlayers[id];
+  if (player == nil) {
+    [RNAudioException UNKNOWN_PLAYER_ID:reject];
+    return;
+  }
+  [player play:sampleName loop:loop resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(stopSample:(double)playerId
+                  sampleName:(NSString *)sampleName
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  NSNumber *id = [NSNumber numberWithDouble:playerId];
+  RNASamplePlayer *player = samplePlayers[id];
+  if (player == nil) {
+    [RNAudioException UNKNOWN_PLAYER_ID:reject];
+    return;
+  }
+  [player stop:sampleName resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(unloadSample:(double)playerId
+                  sampleName:(NSString *)sampleName
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  NSNumber *id = [NSNumber numberWithDouble:playerId];
+  RNASamplePlayer *player = samplePlayers[id];
+  if (player == nil) {
+    [RNAudioException UNKNOWN_PLAYER_ID:reject];
+    return;
+  }
+  [player unload:sampleName resolve:resolve reject:reject];
+}
+
++ (BOOL) requiresMainQueueSetup {
     return NO;
 }
 

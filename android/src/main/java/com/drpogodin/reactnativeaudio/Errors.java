@@ -4,7 +4,11 @@ import android.util.Log;
 import com.facebook.react.bridge.Promise;
 
 public enum Errors {
-  NOT_IMPLEMENTED("Not implemented");
+  INTERNAL_ERROR("Internal error"),
+  NOT_IMPLEMENTED("Not implemented"),
+  OPERATION_FAILED("Operation failed"),
+  UNKNOWN_PLAYER_ID("Unknown player ID"),
+  UNKNOWN_SAMPLE_NAME("Unknown sample name");
 
   private String message;
   public static final String LOGTAG = "RN_AUDIO";

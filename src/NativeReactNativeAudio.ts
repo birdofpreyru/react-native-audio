@@ -13,6 +13,8 @@ export interface Spec extends TurboModule {
     CHANNEL_IN_MONO: number;
     CHANNEL_IN_STEREO: number;
 
+    IS_MAC_CATALYST: boolean;
+
     // These are currently Android-only.
     AUDIO_SOURCE_CAMCODER?: number;
     AUDIO_SOURCE_DEFAULT?: number;
@@ -44,7 +46,24 @@ export interface Spec extends TurboModule {
   addListener(eventName: string): void;
   removeListeners(count: number): void;
 
-  playTest(): void;
+  // Methods below are related to the SamplePlayer implementation.
+  initSamplePlayer(playerId: number): Promise<void>;
+  destroySamplePlayer(playerId: number): Promise<void>;
+
+  loadSample(
+    playerId: number,
+    sampleName: string,
+    samplePath: string,
+  ): Promise<void>;
+
+  playSample(
+    playerId: number,
+    sampleName: string,
+    loop: boolean,
+  ): Promise<void>;
+
+  stopSample(playerId: number, sampleName: string): Promise<void>;
+  unloadSample(playerId: number, sampleName: string): Promise<void>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('ReactNativeAudio');

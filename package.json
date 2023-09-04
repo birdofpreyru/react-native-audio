@@ -1,6 +1,6 @@
 {
   "name": "@dr.pogodin/react-native-audio",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "React Native: access to the audio input stream",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -30,7 +30,7 @@
     "test": "npm run lint && npm run typecheck && jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "postinstall": "react-native setup-ios-permissions && pod-install",
+    "postinstall": "pod-install",
     "prepack": "bob build",
     "example": "npm --cwd example",
     "bootstrap": "npm example && npm install && npm example pods",
@@ -39,6 +39,13 @@
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build"
   },
   "keywords": [
+    "audio",
+    "microphone",
+    "input",
+    "recording",
+    "playback",
+    "sample",
+    "player",
     "react-native",
     "ios",
     "android"
@@ -61,7 +68,7 @@
     "@react-native/eslint-config": "^0.72.2",
     "@types/jest": "^29.5.4",
     "@types/react": "^18.2.21",
-    "del-cli": "^5.0.1",
+    "del-cli": "^5.1.0",
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
@@ -71,12 +78,9 @@
     "react": "18.2.0",
     "react-native": "0.72.4",
     "react-native-builder-bob": "^0.21.3",
-    "react-native-permissions": "^3.8.4",
+    "react-native-permissions": "^3.9.0",
     "typescript": "^5.2.2"
   },
-  "reactNativePermissionsIOS": [
-    "Microphone"
-  ],
   "resolutions": {
     "@types/react": "17.0.21"
   },
