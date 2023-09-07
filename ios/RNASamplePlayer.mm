@@ -21,6 +21,7 @@
 @end // RNAPlayerController
 
 @implementation RNAPlayerController {
+  dispatch_time_t nextStopTime;
   uint64_t playbackId;
 }
 
@@ -28,7 +29,8 @@
  * Inits controller instance, and connects it with the given AVAudioPlayer.
  */
 - (id) init:(AVAudioPlayer*)player {
-  self.player = player;
+  self->_player = player;
+  self->nextStopTime = 0;
   self->playbackId = 0;
   player.delegate = self;
   return self;
@@ -51,16 +53,33 @@
       resolve:(RCTPromiseResolveBlock)resolve
        reject:(RCTPromiseRejectBlock)reject
 {
-  ++self->playbackId;
-  _player.currentTime = 0;
-  _player.numberOfLoops = loop ? -1 : 0;
-  if ([_player play] == NO) {
-    [[RNAudioException OPERATION_FAILED:nil] reject:reject];
-    return;
+  // If this player is currently playing and has not been ordered to stop yet,
+  // we order it to - otherwise an audible "click" is likely when we rewind it
+  // to the sample beginning.
+  if (_player.playing == YES && self->nextStopTime == 0) {
+    [self stop:nil reject:nil];
   }
-  [_player setVolume:0];
-  [_player setVolume:1 fadeDuration:0.1];
-  resolve(nil);
+
+  void (^start)() = ^{
+    ++self->playbackId;
+    self->_player.currentTime = 0;
+    self->_player.numberOfLoops = loop ? -1 : 0;
+    [self->_player setVolume:1];
+    if ([self->_player play] == NO) {
+      [[RNAudioException OPERATION_FAILED:nil] reject:reject];
+      return;
+    }
+    resolve(nil);
+  };
+
+  dispatch_time_t now = dispatch_time(DISPATCH_TIME_NOW, 0);
+  if (self->nextStopTime > now) {
+    // Note: If a previous playback is still being stopped, we wait till it is
+    // stopped prior to starting the new one - otherwise there most probably
+    // will be an audible "click" due to the sample position jumping back
+    // to the beginning.
+    dispatch_after(self->nextStopTime, dispatch_get_main_queue(), start);
+  } else start();
 }
 
 /**
@@ -80,9 +99,12 @@
   }
 
   [_player setVolume:0 fadeDuration:0.1];
-  dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 0.1);
-  dispatch_after(when, dispatch_get_main_queue(), ^{
-    if (id == self->playbackId) [self.player stop];
+  self->nextStopTime = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 0.1);
+  dispatch_after(self->nextStopTime, dispatch_get_main_queue(), ^{
+    if (id == self->playbackId) {
+      self->nextStopTime = 0;
+      [self.player stop];
+    }
     if (resolve != nil) resolve(nil);
   });
 }

@@ -155,6 +155,28 @@ export default function App() {
       >
         <Text style={styles.button}>Sample Player Test</Text>
       </Pressable>
+      <Pressable
+        onPressIn={async () => {
+          // Note: This test repeats 3 times a 1s playback of sample,
+          // stopping and immediately restarting it in-between. The purpose is
+          // to check that no undesireable audible "clicks" happen at the stop /
+          // start points.
+          await configAudioSystem();
+          heap.player?.play('test', true);
+          setTimeout(() => {
+            heap.player?.stop('test');
+            heap.player?.play('test', true);
+          }, 1000);
+          setTimeout(() => {
+            heap.player?.play('test', true);
+          }, 2000);
+          setTimeout(() => {
+            heap.player?.stop('test');
+          }, 3000);
+        }}
+      >
+        <Text style={styles.button}>Sample Player Test II</Text>
+      </Pressable>
     </View>
   );
 }
