@@ -6,7 +6,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "postinstall": "pod-install",
+    "postinstall": "RCT_NEW_ARCH_ENABLED=1 pod-install",
     "pods": "pod-install --quiet"
   },
   "dependencies": {
