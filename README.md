@@ -99,13 +99,14 @@ to audio input and output.
       a new [InputAudioStream] instance.
     - [.addChunkListener()] &mdash; Adds a new audio data chunk listener to
       the stream.
-    - [.addErrorListener()] &mdash; Adds a new error listener to the stream.
+    - [.addErrorListener()][InputAudioStream.addErrorListener()] &mdash; Adds a new error listener to the stream.
     - [.destroy()][InputAudioStream.destroy()] &mdash; Destroys the stream
       &mdash; stops recording, and releases all related resources.
     - [.mute()] &mdash; Mutes the stream.
     - [.removeChunkListener()] &mdash; Removes an audio data chunk listener
       from the stream.
-    - [.removeErrorListener()] &mdash; Removes an error listener from the stream.
+    - [.removeErrorListener()][InputAudioStream.removeErrorListener()] &mdash;
+      Removes an error listener from the stream.
     - [.start()] &mdash; Starts the audio stream recording.
     - [.stop()][InputAudioStream.stop()] &mdash; Stops the stream.
     - [.unmute()] &mdash; Unmutes a previously muted stream.
@@ -126,10 +127,14 @@ to audio input and output.
   - [SamplePlayer] &mdash; Represents an audio sample player.
     - [constructor()][SamplePlayer.constructor()] &mdash; Creates a new
       [SamplePlayer] instance.
+    - [.addErrorListener()][SamplePlayer.addErrorListener()] &mdash; Adds a new
+      error listener to the player.
     - [.destroy()][SamplePlayer.destroy()] &mdash; Destroys the player,
       releasing all related resources.
     - [.load()] &mdash; Loads an (additional) audio sample.
     - [.play()] &mdash; Plays an audio sample.
+    - [.removeErrorListener()][SamplePlayer.removeErrorListener()] &mdash;
+      Removes an error listener from the player.
     - [.stop()][SamplePlayer.stop()] &mdash; Stops an audio sample playback.
     - [.unload()] &mdash; Unloads an audio sample.
 - [Constants]
@@ -146,7 +151,9 @@ to audio input and output.
   - [ChunkListener] &mdash; The type of audio data chunk listeners that can be
     connected to a stream with [.addChunkListener()] method.
   - [ErrorListener] &mdash; The type of error listeners that can be connected to
-    a stream with [.addErrorListener()] method.
+    [InputAudioStream] and [SamplePlayer] instances using their corresponding
+    `.addErrorListener()` methods (see [stream method][InputAudioStream.addErrorListener()],
+    and [player method][SamplePlayer.addErrorListener()]).
 
 ## Classes
 [Classes]: #classes
@@ -209,12 +216,13 @@ to subsequently remove the listener from the stream.
 - `listener` &mdash; [ChunkListener] &mdash; The callback to call with audio
   data chunks when they arrive.
 
+<a id="inputaudiostream-adderrorlistener"></a>
 #### .addErrorListener()
-[.addErrorListener()]: #adderrorlistener
+[InputAudioStream.addErrorListener()]: #inputaudiostream-adderrorlistener
 ```ts
 stream.addErrorListener(listener: ErrorListener): void;
 ```
-Adds a new error listener to the stream. See [.removeErrorListener()]
+Adds a new error listener to the stream. See [.removeErrorListener()][InputAudioStream.removeErrorListener()]
 to subsequently remove the listener from the stream.
 
 **Note:** It is safe to call it repeatedly for the same listener & stream pair
@@ -257,12 +265,12 @@ connected to the stream. See [.addChunkListener()] to add the listener.
 - `listener` &mdash; [ChunkListener] &mdash; The listener to disconnect.
 
 #### .removeErrorListener()
-[.removeErrorListener()]: #removeerrorlistener
+[.removeErrorListener()][InputAudioStream.removeErrorListener()]: #removeerrorlistener
 ```ts
 stream.removeErrorListener(listener: ErrorListener): void;
 ```
 Removes the listener from the stream. No operation if given `listener` is not
-connected to the stream. See [.addErrorListener()] to connect the listener.
+connected to the stream. See [.addErrorListener()][InputAudioStream.addErrorListener()] to connect the listener.
 
 - `listener` &mdash; [ErrorListener] &mdash; The listener to disconnect.
 
@@ -401,6 +409,17 @@ instance already allocates some resources at the native side, thus to release
 those resources you MUST USE its [.destroy()][SamplePlayer.destroy()] method
 once the instance is not needed anymore.
 
+<a id="sampleplayer-adderrorlistener"></a>
+#### .addErrorListener()
+[SamplePlayer.addErrorListener()]: #sampleplayer-adderrorlistener
+```ts
+player.addErrorListener(listener: ErrorListener): void;
+```
+Adds an error listener to the player. Does nothing if given `listener` is
+already added to this player.
+
+- `listener` &mdash; [ErrorListener] &mdash; Error listener.
+
 <a id="sampleplayer-destroy"></a>
 #### .destroy()
 [SamplePlayer.destroy()]: #sampleplayer-destroy
@@ -411,7 +430,7 @@ Destroys player instance, releasing all related resources. Once destroyed
 the player instance can't be reused.
 - Resolves once completed.
 
-### .load()
+#### .load()
 [.load()]: #load
 ```ts
 player.load(sampleName: string, samplePath: string): Promise<void>;
@@ -427,7 +446,7 @@ Loads an (additional) audio sample into the player.
   a regular file).
 - Resolves once the sample is loaded and decoded, thus ready to be played.
 
-### .play()
+#### .play()
 [.play()]: #play
 ```ts
 player.play(sampleName: string, loop: boolean): Promise<void>;
@@ -437,14 +456,32 @@ Plays an audio sample, previously loaded with [.load()] method.
 **NOTE:** In the current implementation, at least on Android, playing a sample
 will stop the playback of any other sample, played by the same player, if any.
 
+**NOTE:** Use [.addErrorListener()][SamplePlayer.addErrorListener()] method to
+recieve details of any errors that happen during the playback. Although [.play()]
+itself rejects if the playback fails to start, that rejection message does not
+provide any details beyond the fact of the failure, and it also does not capture
+any further errors (as the playback itself is asynchronous).
+
 - `sampleName` &mdash; **string** &mdash; Sample name, assinged when loading it
   with the [.load()] method.
 - `loop` &mdash; **boolean** &mdash; Set _true_ to infinitely loop the sample;
   or _false_ to play it once.
-- Resolves once the playback is launched.
+- Resolves once the playback is launched; rejects if the playback fails to start
+  due to some error.
+
+<a id="sampleplayer-removeerrorlistener"></a>
+#### .removeErrorListener()
+[SamplePlayer.removeErrorListener()]: #sampleplayer-removeerrorlistener
+```ts
+player.removeErrorListener(listener: ErrorListener): void;
+```
+Removes `listener` from this `player`, or does nothing if the listener is not
+connected to the player.
+
+- `listener` &mdash; [ErrorListener] &mdash; Error listener to disconnect.
 
 <a id="sampleplayer-stop"></a>
-### .stop()
+#### .stop()
 [SamplePlayer.stop()]: #sampleplayer-stop
 ```ts
 player.stop(sampleName: string): Promise<void>;
@@ -454,7 +491,7 @@ player.
 - `sampleName` &mdash; **string** &mdash; Sample name.
 - Resolves once completed.
 
-### .unload()
+#### .unload()
 [.unload()]: #unload
 ```ts
 player.unload(sampleName: string): Promise<void>;
@@ -584,7 +621,7 @@ The type of audio data chunk listeners that can be connected to an
 type ErrorListener = (error: Error) => void;
 ```
 The type of error listeners that can be connected to an [InputAudioStream] with
-[.addErrorListener()] method.
+[.addErrorListener()][InputAudioStream.addErrorListener()] method.
 
 - `error` &mdash; [Error] &mdash; Stream error.
 

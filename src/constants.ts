@@ -51,3 +51,5 @@ export enum CHANNEL_CONFIGS {
   MONO = CHANNEL_IN_MONO,
   STEREO = CHANNEL_IN_STEREO,
 }
+
+export type ErrorListener = (error: Error) => void;

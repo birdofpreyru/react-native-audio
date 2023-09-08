@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
 import { type Spec } from './NativeReactNativeAudio';
 
@@ -27,3 +27,5 @@ const ReactNativeAudio = ReactNativeAudioModule
     );
 
 export default ReactNativeAudio as Spec;
+
+export const eventEmitter = new NativeEventEmitter(ReactNativeAudio);

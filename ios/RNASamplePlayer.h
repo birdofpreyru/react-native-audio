@@ -3,8 +3,10 @@
 
 #import <React/RCTBridgeModule.h>
 
+#import "RNAudioException.h"
+
 @interface RNASamplePlayer: NSObject
-- (id) init;
+- (id) init:(OnError)onError;
 
 - (void) load:(NSString*)name
      fromPath:(NSString*)path
@@ -24,7 +26,7 @@
         resolve:(RCTPromiseResolveBlock)resolve
          reject:(RCTPromiseRejectBlock)reject;
 
-+ (RNASamplePlayer*) new;
++ (RNASamplePlayer*) new:(OnError)onError;
 @end // RNASamplePlayer
 
 #endif /* RNASamplePlayer_h */

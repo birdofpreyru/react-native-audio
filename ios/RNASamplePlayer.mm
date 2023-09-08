@@ -2,13 +2,15 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import "RNAudioException.h"
-
 @interface RNAPlayerController: NSObject<AVAudioPlayerDelegate>
 @property AVAudioPlayer *player;
-- (id) init:(AVAudioPlayer*)player;
+- (id) init:(AVAudioPlayer*)player onError:(OnError)onError;
+
 - (void) audioPlayerDidFinishPlaying:(AVAudioPlayer *)player
                         successfully:(BOOL)flag;
+
+- (void) audioPlayerDecodeErrorDidOccur:(AVAudioPlayer*)player
+                                  error:(NSError*)error;
 
 - (void) play:(BOOL)loop
       resolve:(RCTPromiseResolveBlock)resolve
@@ -17,20 +19,22 @@
 - (void) stop:(RCTPromiseResolveBlock)resolve
        reject:(RCTPromiseRejectBlock)reject;
 
-+ (RNAPlayerController*) for:(AVAudioPlayer*)player;
++ (RNAPlayerController*) for:(AVAudioPlayer*)player onError:(OnError)onError;
 @end // RNAPlayerController
 
 @implementation RNAPlayerController {
   dispatch_time_t nextStopTime;
+  OnError onError;
   uint64_t playbackId;
 }
 
 /**
  * Inits controller instance, and connects it with the given AVAudioPlayer.
  */
-- (id) init:(AVAudioPlayer*)player {
+- (id) init:(AVAudioPlayer*)player onError:(OnError)onError {
   self->_player = player;
   self->nextStopTime = 0;
+  self->onError = onError;
   self->playbackId = 0;
   player.delegate = self;
   return self;
@@ -44,6 +48,13 @@
                         successfully:(BOOL)flag
 {
   [_player prepareToPlay];
+}
+
+- (void) audioPlayerDecodeErrorDidOccur:(AVAudioPlayer*)player
+                                  error:(NSError*)error
+{
+  onError([NSString stringWithFormat:@"%@ [%d]: %@",
+           error.domain, (int)error.code, error.localizedDescription]);
 }
 
 /**
@@ -109,22 +120,24 @@
   });
 }
 
-+ (RNAPlayerController*) for:(AVAudioPlayer*)player
++ (RNAPlayerController*) for:(AVAudioPlayer*)player onError:(OnError)onError
 {
-  return [[RNAPlayerController alloc] init:player];
+  return [[RNAPlayerController alloc] init:player onError:onError];
 }
 
 @end // RNAPlayerDelegate
 
 @implementation RNASamplePlayer {
+  OnError onError;
   NSMutableDictionary<NSString*,RNAPlayerController*> *pool;
 }
 
 /**
  * Inits RNASamplePlayer instance.
  */
-- (id) init
+- (id) init:(OnError)onError
 {
+  self->onError = onError;
   pool = [NSMutableDictionary new];
   return self;
 }
@@ -159,7 +172,7 @@
     return;
   }
 
-  pool[name] = [RNAPlayerController for:player];
+  pool[name] = [RNAPlayerController for:player onError:onError];
   resolve(nil);
 }
 
@@ -207,9 +220,9 @@
 /**
  * Creates a new RNASamplePlayer instance.
  */
-+ (RNASamplePlayer*) new
++ (RNASamplePlayer*) new:(OnError)onError
 {
-  return [[RNASamplePlayer alloc] init];
+  return [[RNASamplePlayer alloc] init:onError];
 }
 
 @end // RNASamplePlayer

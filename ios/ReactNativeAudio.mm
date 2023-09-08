@@ -7,6 +7,7 @@
 
 NSString *EVENT_AUDIO_CHUNK = @"RNA_AudioChunk";
 NSString *EVENT_INPUT_AUDIO_STREAM_ERROR = @"RNA_InputAudioStreamError";
+NSString *EVENT_SAMPLE_PLAYER_ERROR = @"RNA_SamplePlayerError";
 
 @implementation ReactNativeAudio {
   NSMutableDictionary<NSNumber*,RNAInputAudioStream*> *inputStreams;
@@ -56,7 +57,11 @@ RCT_REMAP_METHOD(getInputAvailable,
 
 - (NSArray<NSString*>*)supportedEvents
 {
-  return @[EVENT_AUDIO_CHUNK, EVENT_INPUT_AUDIO_STREAM_ERROR];
+  return @[
+    EVENT_AUDIO_CHUNK,
+    EVENT_INPUT_AUDIO_STREAM_ERROR,
+    EVENT_SAMPLE_PLAYER_ERROR
+  ];
 }
 
 // TODO: Should we somehow plug-in this audio system configuration into
@@ -197,7 +202,12 @@ RCT_EXPORT_METHOD(initSamplePlayer:(double)playerId
     return;
   }
 
-  samplePlayers[id] = [RNASamplePlayer new];
+  OnError onError = ^void(NSString *error) {
+    [self sendEventWithName:EVENT_SAMPLE_PLAYER_ERROR
+                       body:@{@"playerId":id, @"error":error}];
+  };
+
+  samplePlayers[id] = [RNASamplePlayer new:onError];
   resolve(nil);
 }
 

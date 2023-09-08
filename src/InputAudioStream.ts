@@ -1,10 +1,10 @@
 import { Buffer } from 'buffer';
+
 import {
   type AppStateStatus,
   type NativeEventSubscription,
   Alert,
   AppState,
-  NativeEventEmitter,
   Platform,
 } from 'react-native';
 
@@ -17,18 +17,16 @@ import {
 
 import { Emitter, Semaphore } from '@dr.pogodin/js-utils';
 
-import ReactNativeAudio from './ReactNativeAudio';
+import ReactNativeAudio, { eventEmitter } from './ReactNativeAudio';
 
 import type {
   AUDIO_FORMATS,
   AUDIO_SOURCES,
   CHANNEL_CONFIGS,
+  ErrorListener,
 } from './constants';
 
 type ChunkListener = (chunk: Buffer, chunkId: number) => void;
-type ErrorListener = (error: Error) => void;
-
-const eventEmitter = new NativeEventEmitter(ReactNativeAudio);
 
 // TODO: UUID string would be better, but making "uuid" library to work for RN
 // is a bit cumbersome, at least in my current understanding.
@@ -186,11 +184,11 @@ export class InputAudioStream {
    * Adds a new chunk listener.
    * @param listener
    */
-  async addChunkListener(listener: ChunkListener) {
+  addChunkListener(listener: ChunkListener) {
     chunkEmitters[this.streamId]!.addListener(listener);
   }
 
-  async addErrorListener(listener: ErrorListener) {
+  addErrorListener(listener: ErrorListener) {
     errorEmitters[this.streamId]!.addListener(listener);
   }
 
@@ -255,11 +253,11 @@ export class InputAudioStream {
     }
   }
 
-  async removeChunkListener(listener: ChunkListener) {
+  removeChunkListener(listener: ChunkListener) {
     chunkEmitters[this.streamId]!.removeListener(listener);
   }
 
-  async removeErrorListener(listener: ErrorListener) {
+  removeErrorListener(listener: ErrorListener) {
     errorEmitters[this.streamId]!.removeListener(listener);
   }
 

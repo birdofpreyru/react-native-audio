@@ -1,5 +1,7 @@
 #import <AVFAudio/AVFAudio.h>
 
+#import "RNAudioException.h"
+
 enum AUDIO_FORMATS {
   PCM_8BIT = 1,
   PCM_16BIT = 2,
@@ -27,13 +29,6 @@ enum CHANNEL_CONFIGS {
  * @param size Size of chunk data in bytes.
  */
 typedef void (^OnChunk)(int chunkId, unsigned char *chunk, int size);
-
-/**
- * Error handler. Assuming its only purpose is to forward brief error descriptions to JS layer, it takes an error
- * description as a string (and not a specialized error handling object).
- * @param error Brief error message.
- */
-typedef void (^OnError)(NSString *error);
 
 @interface RNAInputAudioStream : NSObject
 

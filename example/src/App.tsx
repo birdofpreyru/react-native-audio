@@ -61,6 +61,9 @@ export default function App() {
     // ready to play, and when it is actually used / disposed. Fine for now,
     // not good for a production use.
     heap.player = new SamplePlayer();
+    heap.player.addErrorListener((error) => {
+      console.error(error);
+    });
 
     let stream: InputAudioStream | undefined;
     (async () => {
