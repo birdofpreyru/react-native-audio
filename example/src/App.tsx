@@ -86,6 +86,7 @@ export default function App() {
       const ia = await getInputAvailable();
       setInputAvailable(ia ? 'YES' : 'NO');
       if (ia) {
+        await configAudioSystem();
         stream = new InputAudioStream(
           AUDIO_SOURCES.RAW,
           SAMPLE_RATE_BASE,

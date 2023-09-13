@@ -89,10 +89,24 @@ RCT_REMAP_METHOD(configAudioSystem,
   }
 
   NSError *error = nil;
+
+  AVAudioSessionCategoryOptions options =
+    AVAudioSessionCategoryOptionAllowBluetooth |
+    AVAudioSessionCategoryOptionAllowBluetoothA2DP |
+    AVAudioSessionCategoryOptionDefaultToSpeaker;
+
+  // NOTE: The AVAudioSessionCategoryOptionOverrideMutedMicrophoneInterruption
+  // option triggers an error if one attempts to set it for a category that does
+  // not support audio input. For categories that do support it, it allows for
+  // simultaneous playback and audio input.
+  if (category == AVAudioSessionCategoryPlayAndRecord) {
+    if (@available(iOS 14.5, *)) {
+      options |= AVAudioSessionCategoryOptionOverrideMutedMicrophoneInterruption;
+    }
+  }
+
   BOOL res = [audioSession setCategory:category
-                           withOptions:(AVAudioSessionCategoryOptionAllowBluetooth |
-                                        AVAudioSessionCategoryOptionAllowBluetoothA2DP |
-                                        AVAudioSessionCategoryOptionDefaultToSpeaker)
+                           withOptions:options
                                  error:&error];
 
   // TODO: Currently here, and in the next rejection, although we include
