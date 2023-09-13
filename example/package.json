@@ -14,10 +14,10 @@
     "fft.js": "^4.0.4",
     "react": "18.2.0",
     "react-native": "0.72.4",
-    "react-native-permissions": "^3.9.0"
+    "react-native-permissions": "^3.9.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.15",
+    "@babel/core": "^7.22.17",
     "@babel/preset-env": "^7.22.15",
     "@babel/runtime": "^7.22.15",
     "@react-native/eslint-config": "^0.72.2",
