@@ -30,7 +30,6 @@
     "test": "npm run lint && npm run typecheck && jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "postinstall": "pod-install",
     "prepack": "bob build",
     "example": "npm --cwd example",
     "bootstrap": "npm example && npm install && npm example pods",
