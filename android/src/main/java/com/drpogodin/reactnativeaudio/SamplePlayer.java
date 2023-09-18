@@ -49,7 +49,7 @@ public class SamplePlayer implements SoundPool.OnLoadCompleteListener {
   void play(String sampleName, boolean loop, Promise promise) {
     Integer soundId = soundIds.get(sampleName);
     if (soundId == null) {
-      Errors.UNKNOWN_SAMPLE_NAME.reject(promise);
+      Errors.UNKNOWN_SAMPLE_NAME.reject(promise, sampleName);
       return;
     }
 
@@ -70,7 +70,7 @@ public class SamplePlayer implements SoundPool.OnLoadCompleteListener {
   void unload(String name, Promise promise) {
     Integer soundId = soundIds.remove(name);
     if (soundId == null) {
-      Errors.UNKNOWN_SAMPLE_NAME.reject(promise);
+      Errors.UNKNOWN_SAMPLE_NAME.reject(promise, name);
       return;
     }
 
