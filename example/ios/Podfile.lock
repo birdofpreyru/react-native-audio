@@ -2,7 +2,7 @@ PODS:
   - boost (1.76.0)
   - CocoaAsyncSocket (7.6.5)
   - DoubleConversion (1.1.6)
-  - dr-pogodin-react-native-audio (1.7.2):
+  - dr-pogodin-react-native-audio (1.7.3):
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - RCTRequired
@@ -1090,7 +1090,7 @@ PODS:
     - React-jsi (= 0.72.4)
     - React-logger (= 0.72.4)
     - React-perflogger (= 0.72.4)
-  - RNPermissions (3.9.1):
+  - RNPermissions (3.9.2):
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - RCTRequired
@@ -1297,7 +1297,7 @@ SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  dr-pogodin-react-native-audio: b207ab07d18d3c954b98627485f1f4febf698bd7
+  dr-pogodin-react-native-audio: 901ef6b3a0f4facc6ea2d852aef219b191a0a4a7
   dr-pogodin-react-native-fs: bb2051cf55bd125d705d5fa227439e091ac91bf1
   FBLazyVector: 5d4a3b7f411219a45a6d952f77d2c0a6c9989da5
   Flipper: 6edb735e6c3e332975d1b17956bcc584eccf5818
@@ -1349,7 +1349,7 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 4941cc1b3cf08b792fbf666342c9fc95f1969035
   React-utils: b79f2411931f9d3ea5781404dcbb2fa8a837e13a
   ReactCommon: 4b2bdcb50a3543e1c2b2849ad44533686610826d
-  RNPermissions: fd9cd5b68e276c8df46bbe5495afbe4ea526e449
+  RNPermissions: 79245ee2f81a89ea0bc92ab0ac1e19b2955f67c1
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 3efc43e0d48686ce2e8c60f99d4e6bd349aff981
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
