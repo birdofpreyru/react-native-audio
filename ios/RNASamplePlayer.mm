@@ -2,134 +2,90 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-@interface RNAPlayerController: NSObject<AVAudioPlayerDelegate>
-@property AVAudioPlayer *player;
-- (id) init:(AVAudioPlayer*)player onError:(OnError)onError;
+@interface RNAOutputStream: NSObject
 
-- (void) audioPlayerDidFinishPlaying:(AVAudioPlayer *)player
-                        successfully:(BOOL)flag;
+- (id) init:(AVAudioEngine*)engine
+     sample:(AVAudioPCMBuffer*)sample
+       loop:(BOOL)loop;
 
-- (void) audioPlayerDecodeErrorDidOccur:(AVAudioPlayer*)player
-                                  error:(NSError*)error;
-
-- (void) play:(BOOL)loop
-      resolve:(RCTPromiseResolveBlock)resolve
+- (void) play:(RCTPromiseResolveBlock)resolve
        reject:(RCTPromiseRejectBlock)reject;
 
-- (void) stop:(RCTPromiseResolveBlock)resolve
-       reject:(RCTPromiseRejectBlock)reject;
+- (void) stop;
 
-+ (RNAPlayerController*) for:(AVAudioPlayer*)player onError:(OnError)onError;
-@end // RNAPlayerController
+@end // RNAOutputStream
 
-@implementation RNAPlayerController {
-  dispatch_time_t nextStopTime;
-  OnError onError;
-  uint64_t playbackId;
+@implementation RNAOutputStream {
+  AVAudioPlayerNode *player;
+  AVAudioMixerNode *mixer;
+  NSTimer *timer;
 }
 
-/**
- * Inits controller instance, and connects it with the given AVAudioPlayer.
- */
-- (id) init:(AVAudioPlayer*)player onError:(OnError)onError {
-  self->_player = player;
-  self->nextStopTime = 0;
-  self->onError = onError;
-  self->playbackId = 0;
-  player.delegate = self;
+- (id) init:(AVAudioEngine*)engine
+     sample:(AVAudioPCMBuffer *)sample
+       loop:(BOOL)loop
+{
+  player = [[AVAudioPlayerNode alloc] init];
+  mixer = [[AVAudioMixerNode alloc] init];
+  [engine attachNode:player];
+  [engine attachNode:mixer];
+  [engine connect:player to:mixer format:sample.format];
+  [engine connect:mixer to:engine.mainMixerNode format:nil];
+  [player scheduleBuffer:sample
+                  atTime:nil
+                 options:loop ? AVAudioPlayerNodeBufferLoops : 0
+  completionCallbackType:AVAudioPlayerNodeCompletionDataPlayedBack
+       completionHandler:^(AVAudioPlayerNodeCompletionCallbackType) {
+    // NOTE: Node detachment should be done async, otherwise it just hangs,
+    // presumably because the engine waits till completion handler exists
+    // before it assumes the node can be detached.
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+      [engine detachNode:self->mixer];
+      [engine detachNode:self->player];
+    });
+  }];
   return self;
 }
 
-/**
- * Each time the underlying AVAudioPlayer stops to play, we immediately prepare it to play again,
- * to thus guarantee a low latency of the future playback.
- */
-- (void) audioPlayerDidFinishPlaying:(AVAudioPlayer *)player
-                        successfully:(BOOL)flag
+- (void) fadeOut
 {
-  [_player prepareToPlay];
-}
-
-- (void) audioPlayerDecodeErrorDidOccur:(AVAudioPlayer*)player
-                                  error:(NSError*)error
-{
-  onError([NSString stringWithFormat:@"%@ [%d]: %@",
-           error.domain, (int)error.code, error.localizedDescription]);
-}
-
-/**
- * Plays the sample from the beginning.
- */
-- (void) play:(BOOL)loop
-      resolve:(RCTPromiseResolveBlock)resolve
-       reject:(RCTPromiseRejectBlock)reject
-{
-  // If this player is currently playing and has not been ordered to stop yet,
-  // we order it to - otherwise an audible "click" is likely when we rewind it
-  // to the sample beginning.
-  if (_player.playing == YES && self->nextStopTime == 0) {
-    [self stop:nil reject:nil];
-  }
-
-  void (^start)() = ^{
-    ++self->playbackId;
-    self->_player.currentTime = 0;
-    self->_player.numberOfLoops = loop ? -1 : 0;
-    [self->_player setVolume:1];
-    if ([self->_player play] == NO) {
-      [[RNAudioException OPERATION_FAILED:nil] reject:reject];
-      return;
-    }
-    resolve(nil);
-  };
-
-  dispatch_time_t now = dispatch_time(DISPATCH_TIME_NOW, 0);
-  if (self->nextStopTime > now) {
-    // Note: If a previous playback is still being stopped, we wait till it is
-    // stopped prior to starting the new one - otherwise there most probably
-    // will be an audible "click" due to the sample position jumping back
-    // to the beginning.
-    dispatch_after(self->nextStopTime, dispatch_get_main_queue(), start);
-  } else start();
-}
-
-/**
- * Gracefully stops the player. The point is: if we just call [_player stop] right away, it will produce
- * an audible click in most cases, to prevent which we need to fade the player volume down to 0 over
- * a brief time, and only then stop the player. Further we need to take special consideration to ensure
- * that this volume fading does not block the thread, and does not interrupt a new playback of this
- * player, if it has been started in the meantime.
- */
-- (void) stop:(RCTPromiseResolveBlock)resolve
-       reject:(RCTPromiseRejectBlock)reject
-{
-  uint64_t id = playbackId;
-  if (_player.playing == NO) {
-    if (resolve != nil) resolve(nil);
+  if (mixer.outputVolume <= 0.1) {
+    [player stop];
     return;
   }
 
-  [_player setVolume:0 fadeDuration:0.1];
-  self->nextStopTime = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 0.1);
-  dispatch_after(self->nextStopTime, dispatch_get_main_queue(), ^{
-    if (id == self->playbackId) {
-      self->nextStopTime = 0;
-      [self.player stop];
-    }
-    if (resolve != nil) resolve(nil);
+  mixer.outputVolume -= 0.1;
+  dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 0.01);
+  dispatch_after(when, dispatch_get_main_queue(), ^(void) {
+    [self fadeOut];
   });
 }
 
-+ (RNAPlayerController*) for:(AVAudioPlayer*)player onError:(OnError)onError
+- (void) play:(RCTPromiseResolveBlock)resolve
+       reject:(RCTPromiseRejectBlock)reject
 {
-  return [[RNAPlayerController alloc] init:player onError:onError];
+  NSError *error;
+  AVAudioEngine *engine = player.engine;
+  if (engine.running != YES && [engine startAndReturnError:&error] != YES) {
+    [[RNAudioException INTERNAL_ERROR:error.localizedDescription] reject:reject];
+    return;
+  }
+  [player play];
+  resolve(nil);
 }
 
-@end // RNAPlayerDelegate
+- (void) stop
+{
+  if (mixer.outputVolume == 1.0) [self fadeOut];
+}
+
+@end // RNAOutputStream
 
 @implementation RNASamplePlayer {
   OnError onError;
-  NSMutableDictionary<NSString*,RNAPlayerController*> *pool;
+  AVAudioEngine *engine;
+  NSMutableDictionary<NSString*,AVAudioPCMBuffer*> *samples;
+  RNAOutputStream *activeStream;
 }
 
 /**
@@ -138,7 +94,8 @@
 - (id) init:(OnError)onError
 {
   self->onError = onError;
-  pool = [NSMutableDictionary new];
+  engine = [[AVAudioEngine alloc] init];
+  samples = [NSMutableDictionary new];
   return self;
 }
 
@@ -147,9 +104,6 @@
       resolve:(RCTPromiseResolveBlock)resolve
        reject:(RCTPromiseRejectBlock)reject
 {
-  RNAPlayerController *controller = pool[name];
-  if (controller != nil) [controller stop:nil reject:nil];
-
   NSURL *url = [NSURL fileURLWithPath:path];
   if ([url checkResourceIsReachableAndReturnError:nil] == NO) {
     [[RNAudioException OPERATION_FAILED:@"Invalid sample path"] reject:reject];
@@ -157,22 +111,24 @@
   }
 
   NSError *error;
-  AVAudioPlayer *player = [[AVAudioPlayer alloc]
-                           initWithContentsOfURL:url
-                           error:&error];
+  AVAudioFile *file = [[AVAudioFile alloc] initForReading:url error:&error];
   if (error != nil) {
     [[RNAudioException OPERATION_FAILED:error.localizedDescription]
      reject:reject];
     return;
   }
 
-  if ([player prepareToPlay] == NO) {
-    [[RNAudioException OPERATION_FAILED:@"Playback preparation failure"]
+  AVAudioPCMBuffer *sample = [[AVAudioPCMBuffer alloc]
+                              initWithPCMFormat:file.processingFormat
+                              frameCapacity:file.length];
+
+  if (![file readIntoBuffer:sample error:&error]) {
+    [[RNAudioException OPERATION_FAILED:error.localizedDescription]
      reject:reject];
     return;
   }
 
-  pool[name] = [RNAPlayerController for:player onError:onError];
+  samples[name] = sample;
   resolve(nil);
 }
 
@@ -181,40 +137,43 @@
       resolve:(RCTPromiseResolveBlock)resolve
        reject:(RCTPromiseRejectBlock)reject
 {
-  RNAPlayerController *controller = pool[sampleName];
-  if (controller == nil) {
+  [self stop:@"" resolve:nil reject:nil];
+
+  AVAudioPCMBuffer *sample = samples[sampleName];
+  if (sample == nil) {
     [RNAudioException UNKNOWN_SAMPLE_NAME:reject];
     return;
   }
 
-  [controller play:loop resolve:resolve reject:reject];
+  activeStream = [[RNAOutputStream alloc]
+                  init:engine
+                  sample:sample
+                  loop:loop];
+  [activeStream play:resolve reject:reject];
 }
 
 - (void) stop:(NSString*)sampleName
       resolve:(RCTPromiseResolveBlock)resolve
        reject:(RCTPromiseRejectBlock)reject
 {
-  RNAPlayerController *controller = pool[sampleName];
-  if (controller == nil) {
-    [RNAudioException UNKNOWN_SAMPLE_NAME:reject];
-    return;
+  if (activeStream != nil) {
+    [activeStream stop];
+    activeStream = nil;
   }
-
-  [controller stop:resolve reject:reject];
+  if (resolve != nil) resolve(nil);
 }
 
 - (void) unload:(NSString *)sampleName
         resolve:(RCTPromiseResolveBlock)resolve
          reject:(RCTPromiseRejectBlock)reject
 {
-  RNAPlayerController *controller = pool[sampleName];
-  if (controller == nil) {
+  if (samples[sampleName] == nil) {
     [RNAudioException UNKNOWN_SAMPLE_NAME:reject];
     return;
   }
 
-  [pool removeObjectForKey:sampleName];
-  [controller stop:resolve reject:reject];
+  [samples removeObjectForKey:sampleName];
+  resolve(nil);
 }
 
 /**

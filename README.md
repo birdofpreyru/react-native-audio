@@ -265,7 +265,7 @@ connected to the stream. See [.addChunkListener()] to add the listener.
 - `listener` &mdash; [ChunkListener] &mdash; The listener to disconnect.
 
 #### .removeErrorListener()
-[.removeErrorListener()][InputAudioStream.removeErrorListener()]: #removeerrorlistener
+[InputAudioStream.removeErrorListener()]: #removeerrorlistener
 ```ts
 stream.removeErrorListener(listener: ErrorListener): void;
 ```
@@ -453,8 +453,10 @@ player.play(sampleName: string, loop: boolean): Promise<void>;
 ```
 Plays an audio sample, previously loaded with [.load()] method.
 
-**NOTE:** In the current implementation, at least on Android, playing a sample
-will stop the playback of any other sample, played by the same player, if any.
+**NOTE:** In the current implementation, starting a sample playback always stops
+the ongoing playback of a sample previously played by the same player, if any.
+There is no technical barrier to support playback of multiple samples at
+the same time, it just needs some more development effort.
 
 **NOTE:** Use [.addErrorListener()][SamplePlayer.addErrorListener()] method to
 recieve details of any errors that happen during the playback. Although [.play()]
