@@ -17,6 +17,7 @@ public class SamplePlayer implements SoundPool.OnLoadCompleteListener {
 
   static {
     SamplePlayer.builder = new SoundPool.Builder();
+    SamplePlayer.builder.setMaxStreams(4);
   }
 
   SamplePlayer() {
