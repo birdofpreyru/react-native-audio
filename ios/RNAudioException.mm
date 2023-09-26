@@ -16,9 +16,11 @@ static NSString* const ERROR_DOMAIN = @"RNAudio";
 }
 
 - (id) initWithName:(NSString*)name
-  details:(NSString*)details
-  userInfo:(NSDictionary<NSErrorUserInfoKey, id>*)userInfo
+            details:(NSString*)details
+               code:(NSInteger)code
+           userInfo:(NSDictionary<NSErrorUserInfoKey, id>*)userInfo
 {
+  self->_code = code;
   self = [super initWithName:name reason:details userInfo:userInfo];
   return self;
 }
@@ -57,6 +59,7 @@ static NSString* const ERROR_DOMAIN = @"RNAudio";
   return [[RNAudioException alloc]
           initWithName:error.domain
           details:error.localizedDescription
+          code:error.code
           userInfo:error.userInfo];
 }
 
@@ -87,11 +90,14 @@ static NSString* const ERROR_DOMAIN = @"RNAudio";
   return [[RNAudioException alloc] initWithName:name details:details];
 }
 
-+ (RNAudioException*) INTERNAL_ERROR:(NSString*)details
++ (RNAudioException*) INTERNAL_ERROR:(NSInteger)code
+                             details:(NSString *)details
 {
   return [[RNAudioException alloc]
           initWithName:@"Internal error"
-          details:details];
+          details:details
+          code:code
+          userInfo:nil];
 }
 
 + (RNAudioException*) OPERATION_FAILED:(NSString *)details

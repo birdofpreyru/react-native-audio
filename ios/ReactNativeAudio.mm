@@ -211,7 +211,8 @@ RCT_EXPORT_METHOD(initSamplePlayer:(double)playerId
 {
   NSNumber *id = [NSNumber numberWithDouble:playerId];
   if (samplePlayers[id] != nil) {
-    [[RNAudioException INTERNAL_ERROR:@"Sample player ID is occupied"]
+    [[RNAudioException INTERNAL_ERROR:0
+                              details:@"Sample player ID is occupied"]
      reject:reject];
     return;
   }

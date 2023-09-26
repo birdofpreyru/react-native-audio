@@ -12,9 +12,12 @@ typedef void (^OnError)(NSString *error);
 
 @interface RNAudioException : NSException
 - (id) initWithName:(NSString*)name details:(NSString*)details;
+
 - (id) initWithName:(NSString*)name
             details:(NSString*)details
+               code:(NSInteger)code
            userInfo:(NSDictionary<NSErrorUserInfoKey,id>*)userInfo;
+
 - (NSError*) error;
 - (RNAudioException*) log;
 - (RNAudioException*) reject:(RCTPromiseRejectBlock)reject;
@@ -23,7 +26,9 @@ typedef void (^OnError)(NSString *error);
 + (RNAudioException*) name:(NSString*)name;
 + (RNAudioException*) name:(NSString*)name details:(NSString*)details;
 
-+ (RNAudioException*) INTERNAL_ERROR:(NSString*)details;
++ (RNAudioException*) INTERNAL_ERROR:(NSInteger)code
+                             details:(NSString*)details;
+
 + (RNAudioException*) OPERATION_FAILED:(NSString*)details;
 + (RNAudioException*) UNKNOWN_PLAYER_ID:(RCTPromiseRejectBlock)reject;
 + (RNAudioException*) UNKNOWN_SAMPLE_NAME:(RCTPromiseRejectBlock)reject;

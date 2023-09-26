@@ -67,7 +67,7 @@
   NSError *error;
   AVAudioEngine *engine = player.engine;
   if (engine.running != YES && [engine startAndReturnError:&error] != YES) {
-    [[RNAudioException INTERNAL_ERROR:error.localizedDescription] reject:reject];
+    [[RNAudioException fromError:error] reject:reject];
     return;
   }
   [player play];
