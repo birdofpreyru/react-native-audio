@@ -1,6 +1,6 @@
 {
   "name": "@dr.pogodin/react-native-audio",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "description": "React Native: access to the audio input stream",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -64,9 +64,9 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@react-native/eslint-config": "^0.72.2",
+    "@react-native/eslint-config": "^0.73.1",
     "@types/jest": "^29.5.5",
-    "@types/react": "^18.2.22",
+    "@types/react": "^18.2.23",
     "del-cli": "^5.1.0",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
@@ -75,7 +75,7 @@
     "pod-install": "^0.1.39",
     "prettier": "^3.0.3",
     "react": "18.2.0",
-    "react-native": "0.72.4",
+    "react-native": "0.72.5",
     "react-native-builder-bob": "^0.22.0",
     "react-native-permissions": "^3.9.2",
     "typescript": "^5.2.2"
