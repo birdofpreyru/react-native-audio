@@ -60,6 +60,8 @@ public class SamplePlayer implements SoundPool.OnLoadCompleteListener {
     streamId = pool.play(soundId, 1, 1, 1, loop ? 1 : 0, 1);
     if (streamId == 0) Errors.OPERATION_FAILED.reject(promise);
     else streamIds.put(sampleName, streamId);
+
+    promise.resolve(null);
   }
 
   void stop(String sampleName, Promise promise) {
