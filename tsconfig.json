@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "rootDir": ".",
     "paths": {
       "@dr.pogodin/react-native-audio": ["./src/index"]
     },

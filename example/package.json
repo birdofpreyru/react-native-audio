@@ -1,29 +1,29 @@
 {
-  "name": "ReactNativeAudioExample",
+  "name": "@dr.pogodin/react-native-audio-example",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "postinstall": "RCT_NEW_ARCH_ENABLED=1 pod-install",
-    "pods": "pod-install --quiet"
+    "build:android": "cd android && ./gradlew assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a",
+    "build:ios": "cd ios && xcodebuild -workspace ReactNativeAudioExample.xcworkspace -scheme ReactNativeAudioExample -configuration Debug -sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO"
   },
   "dependencies": {
-    "@dr.pogodin/react-native-fs": "^2.21.0-alpha.3",
+    "@dr.pogodin/react-native-fs": "^2.22.0-alpha.1",
     "fft.js": "^4.0.4",
     "react": "18.2.0",
-    "react-native": "0.72.5",
+    "react-native": "0.73.0",
     "react-native-permissions": "^3.9.2"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",
     "@babel/preset-env": "^7.22.20",
     "@babel/runtime": "^7.23.1",
-    "@react-native/eslint-config": "^0.73.1",
-    "@react-native/metro-config": "^0.72.11",
-    "babel-plugin-module-resolver": "^5.0.0",
-    "metro-react-native-babel-preset": "0.76.8"
+    "@react-native/babel-preset": "^0.73.18",
+    "@react-native/metro-config": "^0.73.2",
+    "@react-native/typescript-config": "^0.73.1",
+    "babel-plugin-module-resolver": "^5.0.0"
   },
   "engines": {
     "node": ">=18"

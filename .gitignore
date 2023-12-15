@@ -60,6 +60,14 @@ buck-out/
 android/app/libs
 android/keystores/debug.keystore
 
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 # Expo
 .expo/
 
@@ -70,4 +78,4 @@ android/keystores/debug.keystore
 lib/
 
 # Other
-/dr.pogodin-react-native-audio-*.tgz
+package.tgz
