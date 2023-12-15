@@ -20,6 +20,67 @@ It covers:
 - [Installation]
 - [Getting Started]
 - [API Reference]
+  - [Classes]
+    - [InputAudioStream] &mdash; Represents individual input audio streams.
+      - [constructor()][InputAudioStream.constructor()] &mdash; Creates
+        a new [InputAudioStream] instance.
+      - [.addChunkListener()] &mdash; Adds a new audio data chunk listener to
+        the stream.
+      - [.addErrorListener()][InputAudioStream.addErrorListener()] &mdash; Adds a new error listener to the stream.
+      - [.destroy()][InputAudioStream.destroy()] &mdash; Destroys the stream
+        &mdash; stops recording, and releases all related resources.
+      - [.mute()] &mdash; Mutes the stream.
+      - [.removeChunkListener()] &mdash; Removes an audio data chunk listener
+        from the stream.
+      - [.removeErrorListener()][InputAudioStream.removeErrorListener()] &mdash;
+        Removes an error listener from the stream.
+      - [.start()] &mdash; Starts the audio stream recording.
+      - [.stop()][InputAudioStream.stop()] &mdash; Stops the stream.
+      - [.unmute()] &mdash; Unmutes a previously muted stream.
+      - [.active] &mdash; _true_ when the stream is started and recoding.
+      - [.audioFormat] &mdash; Holds the audio format value provided to
+        the [constructor()][InputAudioStream.constructor()].
+      - [.audioSource] &mdash; Holds the audio source value provided to
+        the [constructor()][InputAudioStream.constructor()].
+      - [.channelConfig] &mdash; Holds the channel mode value provided to
+        the [constructor()][InputAudioStream.constructor()].
+      - [.muted] &mdash; _true_ when the stream is muted.
+      - [.sampleRate] &mdash; Holds the stream's sample rate in [[Hz]].
+      - [.samplingSize] &mdash; Holds the stream's sampling (audio data chunk)
+        size, per channel.
+      - [.stopInBackground] &mdash; _true_ if the stream is configured to stop
+        automatically when the app leaves foreground, and to start again when it
+        returns to the foreground.
+    - [SamplePlayer] &mdash; Represents an audio sample player.
+      - [constructor()][SamplePlayer.constructor()] &mdash; Creates a new
+        [SamplePlayer] instance.
+      - [.addErrorListener()][SamplePlayer.addErrorListener()] &mdash; Adds a new
+        error listener to the player.
+      - [.destroy()][SamplePlayer.destroy()] &mdash; Destroys the player,
+        releasing all related resources.
+      - [.load()] &mdash; Loads an (additional) audio sample.
+      - [.play()] &mdash; Plays an audio sample.
+      - [.removeErrorListener()][SamplePlayer.removeErrorListener()] &mdash;
+        Removes an error listener from the player.
+      - [.stop()][SamplePlayer.stop()] &mdash; Stops an audio sample playback.
+      - [.unload()] &mdash; Unloads an audio sample.
+  - [Constants]
+    - [AUDIO_FORMATS] &mdash; Provides valid [.audioFormat] values.
+    - [AUDIO_SOURCES] &mdash; Provides valid [.audioSource] values.
+    - [CHANNEL_CONFIGS] &mdash; Provides valid [.channelConfig] values.
+    - [IS_MAC_CATALYST] &mdash; _true_ if app is running on macOS (Catalyst).
+  - [Functions]
+    - [configAudioSystem()] &mdash; Configures audio system (input & output devices)
+      for iOS, does nothing on Android.
+    - [getInputAvailable()] &mdash; Resolves _true_ if device has an available
+      audio input source.
+  - [Types]
+    - [ChunkListener] &mdash; The type of audio data chunk listeners that can be
+      connected to a stream with [.addChunkListener()] method.
+    - [ErrorListener] &mdash; The type of error listeners that can be connected to
+      [InputAudioStream] and [SamplePlayer] instances using their corresponding
+      `.addErrorListener()` methods (see [stream method][InputAudioStream.addErrorListener()],
+      and [player method][SamplePlayer.addErrorListener()]).
 
 ## Installation
 [Installation]: #installation
@@ -92,68 +153,6 @@ to audio input and output.
 
 ## API Reference
 [API Reference]: #api-reference
-
-- [Classes]
-  - [InputAudioStream] &mdash; Represents individual input audio streams.
-    - [constructor()][InputAudioStream.constructor()] &mdash; Creates
-      a new [InputAudioStream] instance.
-    - [.addChunkListener()] &mdash; Adds a new audio data chunk listener to
-      the stream.
-    - [.addErrorListener()][InputAudioStream.addErrorListener()] &mdash; Adds a new error listener to the stream.
-    - [.destroy()][InputAudioStream.destroy()] &mdash; Destroys the stream
-      &mdash; stops recording, and releases all related resources.
-    - [.mute()] &mdash; Mutes the stream.
-    - [.removeChunkListener()] &mdash; Removes an audio data chunk listener
-      from the stream.
-    - [.removeErrorListener()][InputAudioStream.removeErrorListener()] &mdash;
-      Removes an error listener from the stream.
-    - [.start()] &mdash; Starts the audio stream recording.
-    - [.stop()][InputAudioStream.stop()] &mdash; Stops the stream.
-    - [.unmute()] &mdash; Unmutes a previously muted stream.
-    - [.active] &mdash; _true_ when the stream is started and recoding.
-    - [.audioFormat] &mdash; Holds the audio format value provided to
-      the [constructor()][InputAudioStream.constructor()].
-    - [.audioSource] &mdash; Holds the audio source value provided to
-      the [constructor()][InputAudioStream.constructor()].
-    - [.channelConfig] &mdash; Holds the channel mode value provided to
-      the [constructor()][InputAudioStream.constructor()].
-    - [.muted] &mdash; _true_ when the stream is muted.
-    - [.sampleRate] &mdash; Holds the stream's sample rate in [[Hz]].
-    - [.samplingSize] &mdash; Holds the stream's sampling (audio data chunk)
-      size, per channel.
-    - [.stopInBackground] &mdash; _true_ if the stream is configured to stop
-      automatically when the app leaves foreground, and to start again when it
-      returns to the foreground.
-  - [SamplePlayer] &mdash; Represents an audio sample player.
-    - [constructor()][SamplePlayer.constructor()] &mdash; Creates a new
-      [SamplePlayer] instance.
-    - [.addErrorListener()][SamplePlayer.addErrorListener()] &mdash; Adds a new
-      error listener to the player.
-    - [.destroy()][SamplePlayer.destroy()] &mdash; Destroys the player,
-      releasing all related resources.
-    - [.load()] &mdash; Loads an (additional) audio sample.
-    - [.play()] &mdash; Plays an audio sample.
-    - [.removeErrorListener()][SamplePlayer.removeErrorListener()] &mdash;
-      Removes an error listener from the player.
-    - [.stop()][SamplePlayer.stop()] &mdash; Stops an audio sample playback.
-    - [.unload()] &mdash; Unloads an audio sample.
-- [Constants]
-  - [AUDIO_FORMATS] &mdash; Provides valid [.audioFormat] values.
-  - [AUDIO_SOURCES] &mdash; Provides valid [.audioSource] values.
-  - [CHANNEL_CONFIGS] &mdash; Provides valid [.channelConfig] values.
-  - [IS_MAC_CATALYST] &mdash; _true_ if app is running on macOS (Catalyst).
-- [Functions]
-  - [configAudioSystem()] &mdash; Configures audio system (input & output devices)
-    for iOS, does nothing on Android.
-  - [getInputAvailable()] &mdash; Resolves _true_ if device has an available
-    audio input source.
-- [Types]
-  - [ChunkListener] &mdash; The type of audio data chunk listeners that can be
-    connected to a stream with [.addChunkListener()] method.
-  - [ErrorListener] &mdash; The type of error listeners that can be connected to
-    [InputAudioStream] and [SamplePlayer] instances using their corresponding
-    `.addErrorListener()` methods (see [stream method][InputAudioStream.addErrorListener()],
-    and [player method][SamplePlayer.addErrorListener()]).
 
 ## Classes
 [Classes]: #classes

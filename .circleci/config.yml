@@ -9,14 +9,14 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: node-modules-{{ checksum "package-lock.json" }}-{{ checksum "example/package-lock.json" }}
-      - run: npm install --force && cd example && npm install --force
+          key: node-modules-{{ checksum "yarn.lock" }}
+      - run: yarn install
       - save_cache:
-          key: node-modules-{{ checksum "package-lock.json" }}-{{ checksum "example/package-lock.json" }}
+          key: node-modules-{{ checksum "yarn.lock" }}
           paths:
             - example/node_modules
             - node_modules
-      - run: npm test
+      - run: yarn test
       - persist_to_workspace:
           root: .
           paths:
