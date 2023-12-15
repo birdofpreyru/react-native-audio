@@ -79,3 +79,4 @@ lib/
 
 # Other
 package.tgz
+**/.xcode.env.local
