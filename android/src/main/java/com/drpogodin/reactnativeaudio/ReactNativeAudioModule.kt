@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.MediaRecorder
+import android.os.Build
 import android.util.Base64
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -37,11 +38,19 @@ class ReactNativeAudioModule internal constructor(context: ReactApplicationConte
         constants["AUDIO_SOURCE_DEFAULT"] = MediaRecorder.AudioSource.DEFAULT
         constants["AUDIO_SOURCE_MIC"] = MediaRecorder.AudioSource.MIC
         constants["AUDIO_SOURCE_REMOTE_SUBMIX"] = MediaRecorder.AudioSource.REMOTE_SUBMIX
-        constants["AUDIO_SOURCE_UNPROCESSED"] = MediaRecorder.AudioSource.UNPROCESSED
+
+        constants["AUDIO_SOURCE_UNPROCESSED"] =
+          if (Build.VERSION.SDK_INT >= 24) MediaRecorder.AudioSource.UNPROCESSED
+          else MediaRecorder.AudioSource.DEFAULT
+
         constants["AUDIO_SOURCE_VOICE_CALL"] = MediaRecorder.AudioSource.VOICE_CALL
         constants["AUDIO_SOURCE_VOICE_COMMUNICATION"] = MediaRecorder.AudioSource.VOICE_COMMUNICATION
         constants["AUDIO_SOURCE_VOICE_DOWNLINK"] = MediaRecorder.AudioSource.VOICE_DOWNLINK
-        constants["AUDIO_SOURCE_VOICE_PERFORMANCE"] = MediaRecorder.AudioSource.VOICE_PERFORMANCE
+
+        constants["AUDIO_SOURCE_VOICE_PERFORMANCE"] =
+          if (Build.VERSION.SDK_INT >= 29) MediaRecorder.AudioSource.VOICE_PERFORMANCE
+          else MediaRecorder.AudioSource.DEFAULT
+
         constants["AUDIO_SOURCE_VOICE_RECOGNITION"] = MediaRecorder.AudioSource.VOICE_RECOGNITION
         constants["AUDIO_SOURCE_VOICE_UPLINK"] = MediaRecorder.AudioSource.VOICE_UPLINK
 
@@ -55,11 +64,12 @@ class ReactNativeAudioModule internal constructor(context: ReactApplicationConte
 
     @ReactMethod
     override fun getInputAvailable(promise: Promise) {
-        val ctxt: Context = getReactApplicationContext().getApplicationContext()
+        val ctxt: Context = reactApplicationContext.applicationContext
         val manager = ctxt.getSystemService(
                 Context.AUDIO_SERVICE) as AudioManager
         try {
-            promise.resolve(manager.microphones.size > 0)
+            if (Build.VERSION.SDK_INT >= 28) promise.resolve(manager.microphones.size > 0)
+            else Errors.NOT_IMPLEMENTED.reject(promise, "Requires Android SDK 28 or above")
         } catch (e: IOException) {
             val msg = "Failed to get microphone list"
             promise.reject(
@@ -73,7 +83,7 @@ class ReactNativeAudioModule internal constructor(context: ReactApplicationConte
      * Sets up and runs an input audio stream.
      * @param audioSource Audio source. Valid values are:
      * https://developer.android.com/reference/android/media/MediaRecorder.AudioSource#summary
-     * @param sampleRate Sample rate [Hz]. 44100 Hz is currently the only rate that is guaranteed
+     * @param sampleRate Sample rate (Hz). 44100 Hz is currently the only rate that is guaranteed
      * to work on all devices. Zero value means the default rate, which is usually
      * the audio source sample rate.
      * @param channelConfig Valid values are:
@@ -96,7 +106,7 @@ class ReactNativeAudioModule internal constructor(context: ReactApplicationConte
             samplingSize: Double,
             promise: Promise
     ) {
-        val emitter: DeviceEventManagerModule.RCTDeviceEventEmitter = getReactApplicationContext()
+        val emitter: DeviceEventManagerModule.RCTDeviceEventEmitter = reactApplicationContext
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
         val stream = InputAudioStream(audioSource.toInt(), sampleRate.toInt(), channelConfig.toInt(), audioFormat.toInt(), samplingSize.toInt(),
                 object : InputAudioStream.Listener {

@@ -5,12 +5,11 @@ import com.facebook.react.bridge.Promise
 
 class SamplePlayer internal constructor() : SoundPool.OnLoadCompleteListener {
     private val loadPromises = HashMap<Int, Promise>()
-    private val pool: SoundPool
+    private val pool: SoundPool = builder!!.build()
     private val soundIds = HashMap<String, Int>()
     private val streamIds = HashMap<String, Int>()
 
     init {
-        pool = builder!!.build()
         pool.setOnLoadCompleteListener(this)
     }
 

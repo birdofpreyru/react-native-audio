@@ -38,7 +38,7 @@ enum class Errors(val message: String) {
     }
 
     override fun toString(): String {
-        return LOGTAG + ":" + name
+        return "${LOGTAG}:${name}"
     }
 
     companion object {

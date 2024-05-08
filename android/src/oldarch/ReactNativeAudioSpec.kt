@@ -1,8 +1,8 @@
 package com.drpogodin.reactnativeaudio
 
-import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.Promise
 
 abstract class ReactNativeAudioSpec(context: ReactApplicationContext?) : ReactContextBaseJavaModule(context) {
     abstract override fun getName(): String
