@@ -16,6 +16,13 @@ It covers:
 
 [![Sponsor](https://raw.githubusercontent.com/birdofpreyru/react-native-audio/master/.README/sponsor.svg)](https://github.com/sponsors/birdofpreyru)
 
+### Sponsored By
+[<img width=36 src="https://avatars.githubusercontent.com/u/521341?s=36&v=4" />](https://github.com/liamjones)
+
+### [Contributors](https://github.com/birdofpreyru/react-native-audio/graphs/contributors)
+[<img width=36 src="https://avatars.githubusercontent.com/u/84858035?s=36&v=4" />](https://github.com/Siminn-teiturg)
+[<img width=36 src="https://avatars.githubusercontent.com/u/20144632?s=36&v=4" />](https://github.com/birdofpreyru)
+
 ## Content
 - [Installation]
 - [Getting Started]
