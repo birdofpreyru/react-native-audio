@@ -3,7 +3,7 @@
 // resulting sound spectra as a simple text representation.
 
 import FFT from 'fft.js';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import {
   Alert,

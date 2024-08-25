@@ -1,4 +1,4 @@
-package com.reactnativeaudioexample
+package drpogodin.reactnativeaudio.example
 
 import android.app.Application
 import com.facebook.react.PackageList

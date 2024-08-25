@@ -1,4 +1,4 @@
-package com.reactnativeaudioexample
+package drpogodin.reactnativeaudio.example
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
