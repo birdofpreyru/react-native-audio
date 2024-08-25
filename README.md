@@ -6,7 +6,7 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/birdofpreyru/react-native-audio?style=social)](https://github.com/birdofpreyru/react-native-audio)
 [![Dr. Pogodin Studio](https://raw.githubusercontent.com/birdofpreyru/react-native-audio/master/.README/logo-dr-pogodin-studio.svg)](https://dr.pogodin.studio/docs/react-native-audio)
 
-React Native (RN) Audio library for Android and iOS platforms, with support of
+React Native (RN) Audio library for Android, iOS, and macOS (Catalyst) platforms, with support of
 [new][New RN Architecture] and [old][Old RN Architecture] RN architectures.
 It covers:
 - Input audio stream (microphone) listening / recording.
