@@ -1,6 +1,6 @@
 {
   "name": "@dr.pogodin/react-native-audio",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "description": "React Native: access to the audio input stream",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
@@ -17,24 +17,6 @@
       }
     }
   },
-  "files": [
-    "src",
-    "lib",
-    "android",
-    "ios",
-    "cpp",
-    "*.podspec",
-    "!ios/build",
-    "!android/build",
-    "!android/gradle",
-    "!android/gradlew",
-    "!android/gradlew.bat",
-    "!android/local.properties",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__",
-    "!**/.*"
-  ],
   "scripts": {
     "example": "yarn workspace @dr.pogodin/react-native-audio-example",
     "test": "yarn lint && yarn typecheck",
@@ -75,7 +57,7 @@
   "devDependencies": {
     "@react-native/eslint-config": "^0.75.2",
     "@types/jest": "^29.5.12",
-    "@types/react": "^18.3.4",
+    "@types/react": "^18.3.5",
     "del-cli": "^5.1.0",
     "eslint": "^8.57.0",
     "jest": "^29.7.0",

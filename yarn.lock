@@ -1576,12 +1576,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.25.4, @babel/runtime@npm:^7.8.4":
-  version: 7.25.4
-  resolution: "@babel/runtime@npm:7.25.4"
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.25.6, @babel/runtime@npm:^7.8.4":
+  version: 7.25.6
+  resolution: "@babel/runtime@npm:7.25.6"
   dependencies:
     regenerator-runtime: ^0.14.0
-  checksum: 5c2aab03788e77f1f959d7e6ce714c299adfc9b14fb6295c2a17eb7cad0dd9c2ebfb2d25265f507f68c43d5055c5cd6f71df02feb6502cea44b68432d78bcbbe
+  checksum: ee1a69d3ac7802803f5ee6a96e652b78b8addc28c6a38c725a4ad7d61a059d9e6cb9f6550ed2f63cce67a1bd82e0b1ef66a1079d895be6bfb536a5cfbd9ccc32
   languageName: node
   linkType: hard
 
@@ -1642,7 +1642,7 @@ __metadata:
   dependencies:
     "@babel/core": ^7.25.2
     "@babel/preset-env": ^7.25.4
-    "@babel/runtime": ^7.25.4
+    "@babel/runtime": ^7.25.6
     "@dr.pogodin/react-native-fs": ^2.28.0
     "@react-native/babel-preset": 0.75.2
     "@react-native/metro-config": 0.75.2
@@ -1662,7 +1662,7 @@ __metadata:
     "@dr.pogodin/js-utils": ^0.0.12
     "@react-native/eslint-config": ^0.75.2
     "@types/jest": ^29.5.12
-    "@types/react": ^18.3.4
+    "@types/react": ^18.3.5
     del-cli: ^5.1.0
     eslint: ^8.57.0
     jest: ^29.7.0
