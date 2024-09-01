@@ -84,3 +84,5 @@ android/generated
 # Other
 package.tgz
 **/.xcode.env.local
+
+/dr.pogodin-react-native-audio-*.tgz
