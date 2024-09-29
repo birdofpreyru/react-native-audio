@@ -1,6 +1,7 @@
 package com.drpogodin.reactnativeaudio
 
 import android.content.Context
+import android.media.AudioDeviceInfo
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.MediaRecorder
@@ -68,8 +69,13 @@ class ReactNativeAudioModule internal constructor(context: ReactApplicationConte
         val manager = ctxt.getSystemService(
                 Context.AUDIO_SERVICE) as AudioManager
         try {
-            if (Build.VERSION.SDK_INT >= 28) promise.resolve(manager.microphones.size > 0)
-            else Errors.NOT_IMPLEMENTED.reject(promise, "Requires Android SDK 28 or above")
+          val res: Boolean
+          if (Build.VERSION.SDK_INT >= 28) res = manager.microphones.size > 0
+          else {
+            val devices = manager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+            res = devices.isNotEmpty()
+          }
+          promise.resolve(res)
         } catch (e: IOException) {
             val msg = "Failed to get microphone list"
             promise.reject(
