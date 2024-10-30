@@ -1,7 +1,6 @@
 package com.drpogodin.reactnativeaudio
 
 import android.content.Context
-import android.media.AudioDeviceInfo
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.MediaRecorder
@@ -39,11 +38,7 @@ class ReactNativeAudioModule internal constructor(context: ReactApplicationConte
         constants["AUDIO_SOURCE_DEFAULT"] = MediaRecorder.AudioSource.DEFAULT
         constants["AUDIO_SOURCE_MIC"] = MediaRecorder.AudioSource.MIC
         constants["AUDIO_SOURCE_REMOTE_SUBMIX"] = MediaRecorder.AudioSource.REMOTE_SUBMIX
-
-        constants["AUDIO_SOURCE_UNPROCESSED"] =
-          if (Build.VERSION.SDK_INT >= 24) MediaRecorder.AudioSource.UNPROCESSED
-          else MediaRecorder.AudioSource.DEFAULT
-
+        constants["AUDIO_SOURCE_UNPROCESSED"] = MediaRecorder.AudioSource.UNPROCESSED
         constants["AUDIO_SOURCE_VOICE_CALL"] = MediaRecorder.AudioSource.VOICE_CALL
         constants["AUDIO_SOURCE_VOICE_COMMUNICATION"] = MediaRecorder.AudioSource.VOICE_COMMUNICATION
         constants["AUDIO_SOURCE_VOICE_DOWNLINK"] = MediaRecorder.AudioSource.VOICE_DOWNLINK

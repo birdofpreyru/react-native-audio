@@ -23,11 +23,11 @@ class ReactNativeAudioPackage : TurboReactPackage() {
       moduleInfos[ReactNativeAudioModule.NAME] = ReactModuleInfo(
         ReactNativeAudioModule.NAME,
         ReactNativeAudioModule.NAME,
-        false,  // canOverrideExistingModule
-        false,  // needsEagerInit
-        true,  // hasConstants
-        false,  // isCxxModule
-        isTurboModule // isTurboModule
+        canOverrideExistingModule = false,  // canOverrideExistingModule
+        needsEagerInit = false,  // needsEagerInit
+        hasConstants = true,  // hasConstants
+        isCxxModule = false,  // isCxxModule
+        isTurboModule = isTurboModule // isTurboModule
       )
       moduleInfos
     }
