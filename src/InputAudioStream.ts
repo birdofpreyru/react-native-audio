@@ -17,7 +17,8 @@ import {
 
 import { Emitter, Semaphore } from '@dr.pogodin/js-utils';
 
-import ReactNativeAudio, { eventEmitter } from './ReactNativeAudio';
+import eventEmitter from './eventEmitter';
+import ReactNativeAudio from './NativeReactNativeAudio';
 
 import type {
   AUDIO_FORMATS,

@@ -1,4 +1,4 @@
-import ReactNativeAudio from './ReactNativeAudio';
+import ReactNativeAudio from './NativeReactNativeAudio';
 
 export * from './constants';
 export * from './InputAudioStream';

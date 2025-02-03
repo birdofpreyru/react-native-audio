@@ -9,12 +9,14 @@ import android.util.Base64
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import java.io.IOException
 
-class ReactNativeAudioModule internal constructor(context: ReactApplicationContext) :
-  ReactNativeAudioSpec(context) {
+@ReactModule(name = ReactNativeAudioModule.NAME)
+class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
+  NativeReactNativeAudioSpec(reactContext) {
     private val inputStreams = HashMap<Double, InputAudioStream>()
     private val samplePlayers = HashMap<Double, SamplePlayer>()
     @ReactMethod
@@ -60,8 +62,8 @@ class ReactNativeAudioModule internal constructor(context: ReactApplicationConte
 
     @ReactMethod
     override fun getInputAvailable(promise: Promise) {
-        val ctxt: Context = reactApplicationContext.applicationContext
-        val manager = ctxt.getSystemService(
+        val context: Context = reactApplicationContext.applicationContext
+        val manager = context.getSystemService(
                 Context.AUDIO_SERVICE) as AudioManager
         try {
           val res: Boolean
@@ -216,10 +218,11 @@ class ReactNativeAudioModule internal constructor(context: ReactApplicationConte
         if (player == null) Errors.UNKNOWN_PLAYER_ID.reject(promise) else player.unload(sampleName, promise)
     }
 
+    override fun getName(): String {
+        return NAME
+    }
+
     companion object {
       const val NAME = "ReactNativeAudio"
     }
-  override fun getName(): String {
-    return NAME
-  }
 }

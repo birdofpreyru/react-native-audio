@@ -1,6 +1,6 @@
 // Exposes constants provided by native layer.
 
-import ReactNativeAudio from './ReactNativeAudio';
+import ReactNativeAudio from './NativeReactNativeAudio';
 
 const {
   AUDIO_FORMAT_PCM_8BIT,

@@ -5,7 +5,6 @@ import com.facebook.react.bridge.Promise
 
 enum class Errors(val message: String) {
     INTERNAL_ERROR("Internal error"),
-    NOT_IMPLEMENTED("Not implemented"),
     OPERATION_FAILED("Operation failed"),
     UNKNOWN_PLAYER_ID("Unknown player ID"),
     UNKNOWN_SAMPLE_NAME("Unknown sample name");
@@ -16,12 +15,12 @@ enum class Errors(val message: String) {
         get() = Exception(message)
 
     fun log(): Errors {
-        Log.e(LOGTAG, message)
+        Log.e(LOG_TAG, message)
         return this
     }
 
     fun log(e: Exception): Errors {
-        Log.e(LOGTAG, e.toString())
+        Log.e(LOG_TAG, e.toString())
         return this.log()
     }
 
@@ -38,10 +37,10 @@ enum class Errors(val message: String) {
     }
 
     override fun toString(): String {
-        return "${LOGTAG}:${name}"
+        return "${LOG_TAG}:${name}"
     }
 
     companion object {
-        const val LOGTAG = "RN_AUDIO"
+        const val LOG_TAG = "RN_AUDIO"
     }
 }

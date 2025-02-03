@@ -1,6 +1,6 @@
 # MIT License
 
-_Copyright &copy; 2020&ndash;2024, Dr. Sergey Pogodin_
+_Copyright &copy; 2020&ndash;2025, Dr. Sergey Pogodin_
   &mdash; <doc@pogodin.studio> (https://dr.pogodin.studio)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

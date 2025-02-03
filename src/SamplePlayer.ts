@@ -1,7 +1,8 @@
 import { Emitter } from '@dr.pogodin/js-utils';
 
 import type { ErrorListener } from './constants';
-import ReactNativeAudio, { eventEmitter } from './ReactNativeAudio';
+import eventEmitter from './eventEmitter';
+import ReactNativeAudio from './NativeReactNativeAudio';
 
 let lastSamplePlayerId: number = 0;
 

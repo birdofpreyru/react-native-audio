@@ -10,23 +10,23 @@
     "build:ios": "react-native build-ios --scheme ReactNativeAudioExample --mode Debug --extra-params \"-sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO\""
   },
   "dependencies": {
-    "@dr.pogodin/react-native-fs": "^2.29.1",
+    "@dr.pogodin/react-native-fs": "^2.31.0",
     "fft.js": "^4.0.4",
     "react": "18.3.1",
-    "react-native": "0.76.1",
-    "react-native-permissions": "^5.1.0"
+    "react-native": "0.77.0",
+    "react-native-permissions": "^5.2.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@babel/preset-env": "^7.26.0",
-    "@babel/runtime": "^7.26.0",
-    "@react-native-community/cli": "15.0.1-alpha.0",
-    "@react-native-community/cli-platform-android": "15.0.1-alpha.0",
-    "@react-native-community/cli-platform-ios": "15.0.1-alpha.0",
-    "@react-native/babel-preset": "0.76.1",
-    "@react-native/metro-config": "0.76.1",
-    "@react-native/typescript-config": "0.76.1",
-    "react-native-builder-bob": "^0.30.3"
+    "@babel/core": "^7.26.7",
+    "@babel/preset-env": "^7.26.7",
+    "@babel/runtime": "^7.26.7",
+    "@react-native-community/cli": "15.1.3",
+    "@react-native-community/cli-platform-android": "15.1.3",
+    "@react-native-community/cli-platform-ios": "15.1.3",
+    "@react-native/babel-preset": "0.77.0",
+    "@react-native/metro-config": "0.77.0",
+    "@react-native/typescript-config": "0.77.0",
+    "react-native-builder-bob": "^0.36.0"
   },
   "engines": {
     "node": ">=18"

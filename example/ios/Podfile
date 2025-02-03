@@ -1,3 +1,5 @@
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+
 # Note: This section of the standard RN Podfile has been modified according to
 # the react-native-permissions@3.9.0 installation instructions.
 def node_require(script)
@@ -35,13 +37,9 @@ target 'ReactNativeAudioExample' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'ReactNativeAudioExampleTests' do
-    inherit! :complete
-    # Pods for testing
-  end
 
   pre_install do |installer|
-    system("export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && \. \"$NVM_DIR/nvm.sh\" && cd ../../ && npx bob build --target codegen")
+    system("cd ../../ && npx bob build --target codegen")
   end
 
   post_install do |installer|

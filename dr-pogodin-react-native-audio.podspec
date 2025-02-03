@@ -15,6 +15,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/birdofpreyru/react-native-audio.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,cpp}"
+  s.private_header_files = "ios/generated/**/*.h"
 
   s.frameworks = "AudioToolbox"
   # Use install_modules_dependencies helper to install the dependencies if React Native version >=0.71.0.
