@@ -1,6 +1,6 @@
 {
   "name": "@dr.pogodin/react-native-audio",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "React Native: access to the audio input stream",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
