@@ -1,21 +1,16 @@
 {
   "name": "@dr.pogodin/react-native-audio",
-  "version": "1.13.1",
+  "version": "1.14.0",
   "description": "React Native: access to the audio input stream",
   "source": "./src/index.tsx",
-  "main": "./lib/commonjs/index.js",
-  "module": "./lib/module/index.js",
+  "main": "./lib/module/index.js",
+  "types": "./lib/typescript/src/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./lib/typescript/module/src/index.d.ts",
-        "default": "./lib/module/index.js"
-      },
-      "require": {
-        "types": "./lib/typescript/commonjs/src/index.d.ts",
-        "default": "./lib/commonjs/index.js"
-      }
-    }
+      "types": "./lib/typescript/src/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "example": "yarn workspace @dr.pogodin/react-native-audio-example",
@@ -55,21 +50,23 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@react-native-community/cli": "15.1.3",
-    "@react-native/eslint-config": "^0.78.0",
+    "@eslint/compat": "^1.2.8",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.25.1",
+    "@react-native-community/cli": "18.0.0",
+    "@react-native/babel-preset": "0.79.1",
+    "@react-native/eslint-config": "^0.79.1",
     "@types/jest": "^29.5.14",
     "@types/react": "^19.0.10",
     "del-cli": "^6.0.0",
-    "eslint": "^8.57.1",
+    "eslint": "^9.25.1",
     "jest": "^29.7.0",
     "react": "19.0.0",
-    "react-native": "0.78.0",
-    "react-native-builder-bob": "^0.37.0",
-    "react-native-permissions": "^5.2.5",
-    "typescript": "^5.7.3"
-  },
-  "resolutions": {
-    "@types/react": "^18.2.44"
+    "react-native": "0.79.1",
+    "react-native-builder-bob": "^0.40.7",
+    "react-native-monorepo-config": "^0.1.7",
+    "react-native-permissions": "^5.4.0",
+    "typescript": "^5.8.3"
   },
   "peerDependencies": {
     "react": "*",
@@ -79,7 +76,7 @@
   "workspaces": [
     "example"
   ],
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@4.9.1",
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
@@ -87,34 +84,10 @@
       "<rootDir>/lib/"
     ]
   },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@react-native"
-    ],
-    "rules": {
-      "curly": [
-        "error",
-        "multi-line"
-      ],
-      "react/react-in-jsx-scope": "off"
-    }
-  },
-  "eslintIgnore": [
-    "node_modules/",
-    "lib/"
-  ],
   "react-native-builder-bob": {
     "source": "src",
     "output": "lib",
     "targets": [
-      "codegen",
-      [
-        "commonjs",
-        {
-          "esm": true
-        }
-      ],
       [
         "module",
         {
@@ -124,8 +97,7 @@
       [
         "typescript",
         {
-          "project": "tsconfig.build.json",
-          "esm": true
+          "project": "tsconfig.build.json"
         }
       ]
     ]
@@ -134,21 +106,16 @@
     "@dr.pogodin/js-utils": "^0.0.17"
   },
   "codegenConfig": {
-    "name": "RNReactNativeAudioSpec",
+    "name": "ReactNativeAudioSpec",
     "type": "modules",
     "jsSrcsDir": "src",
-    "outputDir": {
-      "ios": "ios/generated",
-      "android": "android/generated"
-    },
     "android": {
       "javaPackageName": "com.drpogodin.reactnativeaudio"
-    },
-    "includesGeneratedCode": true
+    }
   },
   "create-react-native-library": {
-    "type": "turbo-module",
     "languages": "kotlin-objc",
-    "version": "0.48.2"
+    "type": "turbo-module",
+    "version": "0.49.10"
   }
 }
