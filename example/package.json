@@ -7,27 +7,28 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "build:android": "react-native build-android --extra-params \"--no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a\"",
-    "build:ios": "react-native build-ios --scheme ReactNativeAudioExample --mode Debug --extra-params \"-sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO\""
+    "build:ios": "react-native build-ios --mode Debug"
   },
   "dependencies": {
-    "@dr.pogodin/react-native-fs": "^2.33.1",
+    "@dr.pogodin/react-native-fs": "^2.34.0",
     "fft.js": "^4.0.4",
-    "react": "19.0.0",
-    "react-native": "0.79.1",
-    "react-native-permissions": "^5.4.0"
+    "react": "19.1.0",
+    "react-native": "0.80.0",
+    "react-native-permissions": "^5.4.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.27.1",
-    "@babel/preset-env": "^7.27.1",
-    "@babel/runtime": "^7.27.1",
-    "@react-native-community/cli": "18.0.0",
-    "@react-native-community/cli-platform-android": "18.0.0",
-    "@react-native-community/cli-platform-ios": "18.0.0",
-    "@react-native/babel-preset": "0.79.1",
-    "@react-native/metro-config": "0.79.1",
-    "@react-native/typescript-config": "0.79.1",
-    "@types/react": "^19.0.0",
-    "react-native-builder-bob": "^0.40.7"
+    "@babel/core": "^7.27.7",
+    "@babel/preset-env": "^7.27.2",
+    "@babel/runtime": "^7.27.6",
+    "@react-native-community/cli": "19.0.0",
+    "@react-native-community/cli-platform-android": "19.0.0",
+    "@react-native-community/cli-platform-ios": "19.0.0",
+    "@react-native/babel-preset": "0.80.0",
+    "@react-native/eslint-config": "0.80.0",
+    "@react-native/metro-config": "0.80.0",
+    "@types/react": "^19.1.8",
+    "react-native-builder-bob": "^0.40.12",
+    "react-native-monorepo-config": "^0.1.9"
   },
   "engines": {
     "node": ">=18"

@@ -9,6 +9,6 @@ android/gradlew.bat
 android/local.properties
 build
 dr.pogodin-react-native-audio-*.tgz
-/example/
+example/
 ios/build
 node_modules
