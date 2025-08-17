@@ -61,7 +61,7 @@ export default function App() {
     // ready to play, and when it is actually used / disposed. Fine for now,
     // not good for a production use.
     heap.player = new SamplePlayer();
-    heap.player.addErrorListener((error) => {
+    heap.player.addErrorListener(error => {
       console.error(error);
     });
 
@@ -94,7 +94,7 @@ export default function App() {
           AUDIO_FORMATS.PCM_16BIT,
           FFT_SIZE,
         );
-        stream.addErrorListener((error) => {
+        stream.addErrorListener(error => {
           Alert.alert('React Natitve Audio Error', error.message);
         });
         stream.addChunkListener((chunk, chunkId) => {
