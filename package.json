@@ -1,6 +1,6 @@
 {
   "name": "@dr.pogodin/react-native-audio",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "description": "React Native: access to the audio input stream",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -50,26 +50,26 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@eslint/compat": "^1.3.2",
+    "@eslint/compat": "^1.4.0",
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.33.0",
-    "@react-native-community/cli": "20.0.0",
-    "@react-native/babel-preset": "0.81.0",
-    "@react-native/eslint-config": "^0.81.0",
-    "@react-native/typescript-config": "0.81.0",
+    "@eslint/js": "^9.37.0",
+    "@react-native-community/cli": "20.0.2",
+    "@react-native/babel-preset": "0.82.0",
+    "@react-native/eslint-config": "^0.82.0",
+    "@react-native/typescript-config": "0.82.0",
     "@types/jest": "^30.0.0",
-    "@types/react": "^19.1.10",
-    "del-cli": "^6.0.0",
-    "eslint": "^9.33.0",
+    "@types/react": "^19.1.13",
+    "del-cli": "^7.0.0",
+    "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
-    "jest": "^30.0.5",
+    "jest": "^30.2.0",
     "prettier": "^3.6.2",
-    "react": "19.1.0",
-    "react-native": "0.81.0",
+    "react": "19.1.1",
+    "react-native": "0.82.0",
     "react-native-builder-bob": "^0.40.13",
     "react-native-permissions": "^5.4.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "react": "*",
@@ -79,7 +79,7 @@
   "workspaces": [
     "example"
   ],
-  "packageManager": "yarn@4.9.2",
+  "packageManager": "yarn@4.10.3",
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
@@ -119,6 +119,6 @@
   "create-react-native-library": {
     "languages": "kotlin-objc",
     "type": "turbo-module",
-    "version": "0.52.1"
+    "version": "0.54.5"
   }
 }
