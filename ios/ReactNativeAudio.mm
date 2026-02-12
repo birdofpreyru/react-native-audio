@@ -51,15 +51,6 @@ RCT_REMAP_METHOD(getInputAvailable,
   return dispatch_queue_create("studio.pogodin.react_native_audio", DISPATCH_QUEUE_SERIAL);
 }
 
-- (NSArray<NSString*>*)supportedEvents
-{
-  return @[
-    EVENT_AUDIO_CHUNK,
-    EVENT_INPUT_AUDIO_STREAM_ERROR,
-    EVENT_SAMPLE_PLAYER_ERROR
-  ];
-}
-
 // TODO: Should we somehow plug-in this audio system configuration into
 // AudioStream initialization, and base it on the "audioSource" parameter,
 // which is now ignored on iOS?
