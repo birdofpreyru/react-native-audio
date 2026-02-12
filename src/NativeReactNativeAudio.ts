@@ -1,5 +1,24 @@
-import type { TurboModule } from 'react-native';
-import { TurboModuleRegistry } from 'react-native';
+import {
+  type CodegenTypes,
+  type TurboModule,
+  TurboModuleRegistry,
+} from 'react-native';
+
+type AudioChunkEventT = {
+  chunkId: number;
+  data: string;
+  streamId: number;
+};
+
+type InputAudioStreamErrorEventT = {
+  error: string;
+  streamId: number;
+};
+
+type SamplePlayerErrorEventT = {
+  error: string;
+  playerId: number;
+};
 
 export interface Spec extends TurboModule {
   configAudioSystem(): Promise<void>;
@@ -41,6 +60,11 @@ export interface Spec extends TurboModule {
   ): Promise<void>;
 
   muteInputStream(streamId: number, muted: boolean): void;
+
+  readonly onAudioChunk: CodegenTypes.EventEmitter<AudioChunkEventT>;
+  readonly onInputAudioStreamError: CodegenTypes.EventEmitter<InputAudioStreamErrorEventT>;
+  readonly onSamplePlayerError: CodegenTypes.EventEmitter<SamplePlayerErrorEventT>;
+
   unlisten(streamId: number): Promise<void>;
 
   addListener(eventName: string): void;

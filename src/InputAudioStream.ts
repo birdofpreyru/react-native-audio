@@ -2,7 +2,7 @@ import { Buffer } from 'buffer';
 
 import {
   type AppStateStatus,
-  type NativeEventSubscription,
+  type EventSubscription,
   Alert,
   AppState,
   Platform,
@@ -17,7 +17,6 @@ import {
 
 import { Emitter, Semaphore } from '@dr.pogodin/js-utils';
 
-import eventEmitter from './eventEmitter';
 import ReactNativeAudio from './NativeReactNativeAudio';
 
 import type {
@@ -37,7 +36,7 @@ const chunkEmitters: { [streamId: number]: Emitter<[Buffer, number]> } = {};
 
 const errorEmitters: { [streamId: number]: Emitter<[Error]> } = {};
 
-eventEmitter.addListener('RNA_AudioChunk', ({ streamId, chunkId, data }) => {
+ReactNativeAudio.onAudioChunk(({ streamId, chunkId, data }) => {
   const emitter = chunkEmitters[streamId];
   if (emitter && emitter.hasListeners) {
     const chunk = Buffer.from(data, 'base64');
@@ -45,7 +44,7 @@ eventEmitter.addListener('RNA_AudioChunk', ({ streamId, chunkId, data }) => {
   }
 });
 
-eventEmitter.addListener('RNA_InputAudioStreamError', ({ streamId, error }) => {
+ReactNativeAudio.onInputAudioStreamError(({ streamId, error }) => {
   const emitter = errorEmitters[streamId];
   if (emitter && emitter.hasListeners) emitter.emit(Error(error));
 });
@@ -126,7 +125,7 @@ export class InputAudioStream {
   readonly samplingSize: number;
   readonly stopInBackground: boolean;
 
-  private _appStateSub?: NativeEventSubscription;
+  private _appStateSub?: EventSubscription;
   private _active = false;
   private _muted = false;
   private sem = new Semaphore(true);

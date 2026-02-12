@@ -11,7 +11,6 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.modules.core.DeviceEventManagerModule
 import java.io.IOException
 
 @ReactModule(name = ReactNativeAudioModule.NAME)
@@ -109,23 +108,23 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
             samplingSize: Double,
             promise: Promise
     ) {
-        val emitter: DeviceEventManagerModule.RCTDeviceEventEmitter = reactApplicationContext
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
         val stream = InputAudioStream(audioSource.toInt(), sampleRate.toInt(), channelConfig.toInt(), audioFormat.toInt(), samplingSize.toInt(),
                 object : InputAudioStream.Listener {
                     override fun onChunk(chunkId: Int, chunk: ByteArray?) {
-                        val event = Arguments.createMap()
-                        event.putDouble("streamId", streamId)
-                        event.putDouble("chunkId", chunkId.toDouble())
-                        event.putString("data", Base64.encodeToString(chunk, Base64.NO_WRAP))
-                        emitter.emit("RNA_AudioChunk", event)
+                        val event = Arguments.createMap().apply {
+                            putDouble("streamId", streamId)
+                            putDouble("chunkId", chunkId.toDouble())
+                            putString("data", Base64.encodeToString(chunk, Base64.NO_WRAP))
+                        }
+                        emitOnAudioChunk(event)
                     }
 
                     override fun onError(e: Exception?) {
-                        val event = Arguments.createMap()
-                        event.putDouble("streamId", streamId)
-                        event.putString("error", e.toString())
-                        emitter.emit("RNA_InputAudioStreamError", event)
+                        val event = Arguments.createMap().apply {
+                            putDouble("streamId", streamId)
+                            putString("error", e.toString())
+                        }
+                        emitOnInputAudioStreamError(event)
                     }
                 })
         inputStreams[streamId] = stream

@@ -1,6 +1,5 @@
-#import <React/RCTEventEmitter.h>
 #import <ReactNativeAudioSpec/ReactNativeAudioSpec.h>
 
-@interface ReactNativeAudio : RCTEventEmitter <NativeReactNativeAudioSpec>
+@interface ReactNativeAudio : NativeReactNativeAudioSpecBase <NativeReactNativeAudioSpec>
 
 @end

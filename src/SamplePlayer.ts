@@ -1,14 +1,13 @@
 import { Emitter } from '@dr.pogodin/js-utils';
 
 import type { ErrorListener } from './constants';
-import eventEmitter from './eventEmitter';
 import ReactNativeAudio from './NativeReactNativeAudio';
 
 let lastSamplePlayerId: number = 0;
 
 const errorEmitters: { [playerId: number]: Emitter<[Error]> } = {};
 
-eventEmitter.addListener('RNA_SamplePlayerError', ({ playerId, error }) => {
+ReactNativeAudio.onSamplePlayerError(({ playerId, error }) => {
   const emitter = errorEmitters[playerId];
   if (emitter && emitter.hasListeners) emitter.emit(Error(error));
 });

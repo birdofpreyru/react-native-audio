@@ -5,10 +5,6 @@
 #import "RNAInputAudioStream.h"
 #import "RNASamplePlayer.h"
 
-NSString *EVENT_AUDIO_CHUNK = @"RNA_AudioChunk";
-NSString *EVENT_INPUT_AUDIO_STREAM_ERROR = @"RNA_InputAudioStreamError";
-NSString *EVENT_SAMPLE_PLAYER_ERROR = @"RNA_SamplePlayerError";
-
 @implementation ReactNativeAudio {
   NSMutableDictionary<NSNumber*,RNAInputAudioStream*> *inputStreams;
   NSMutableDictionary<NSNumber*,RNASamplePlayer*> *samplePlayers;
@@ -148,15 +144,13 @@ RCT_REMAP_METHOD(listen,
     NSData* data = [NSData dataWithBytesNoCopy:chunk
                                         length:size
                                   freeWhenDone:NO];
-    [self sendEventWithName:EVENT_AUDIO_CHUNK
-                       body:@{@"streamId":sid,
+    [self emitOnAudioChunk: @{@"streamId":sid,
                               @"chunkId":@(chunkId),
                               @"data":[data base64EncodedStringWithOptions:0]}];
   };
   
   OnError onError = ^void(NSString* error) {
-    [self sendEventWithName:EVENT_INPUT_AUDIO_STREAM_ERROR
-                       body:@{@"streamId":sid, @"error":error}];
+    [self emitOnInputAudioStreamError:@{@"streamId":sid, @"error":error}];
   };
   
   RNAInputAudioStream *stream =
@@ -218,8 +212,7 @@ RCT_EXPORT_METHOD(initSamplePlayer:(double)playerId
   }
 
   OnError onError = ^void(NSString *error) {
-    [self sendEventWithName:EVENT_SAMPLE_PLAYER_ERROR
-                       body:@{@"playerId":id, @"error":error}];
+    [self emitOnSamplePlayerError:@{@"playerId":id, @"error":error}];
   };
 
   samplePlayers[id] = [RNASamplePlayer new:onError];
