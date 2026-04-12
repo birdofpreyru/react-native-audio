@@ -20,16 +20,16 @@
 
 - (facebook::react::ModuleConstants<JS::NativeReactNativeAudio::Constants>) constantsToExport {
   return facebook::react::typedConstants<JS::NativeReactNativeAudio::Constants>({
-    .AUDIO_FORMAT_PCM_8BIT: PCM_8BIT,
-    .AUDIO_FORMAT_PCM_16BIT: PCM_16BIT,
-    .AUDIO_FORMAT_PCM_FLOAT: PCM_FLOAT,
-    .AUDIO_SOURCE_DEFAULT: DEFAULT,
-    .AUDIO_SOURCE_MIC: MIC,
-    .AUDIO_SOURCE_UNPROCESSED: UNPROCESSED,
-    .CHANNEL_IN_MONO: MONO,
-    .CHANNEL_IN_STEREO: STEREO,
-    .IS_MAC_CATALYST: TARGET_OS_MACCATALYST
-  };
+    .AUDIO_FORMAT_PCM_8BIT = PCM_8BIT,
+    .AUDIO_FORMAT_PCM_16BIT = PCM_16BIT,
+    .AUDIO_FORMAT_PCM_FLOAT = PCM_FLOAT,
+    .CHANNEL_IN_MONO = MONO,
+    .CHANNEL_IN_STEREO = STEREO,
+    .IS_MAC_CATALYST = TARGET_OS_MACCATALYST,
+    .AUDIO_SOURCE_DEFAULT = DEFAULT,
+    .AUDIO_SOURCE_MIC = MIC,
+    .AUDIO_SOURCE_UNPROCESSED = UNPROCESSED
+  });
 }
 
 - (facebook::react::ModuleConstants<JS::NativeReactNativeAudio::Constants>) getConstants {
