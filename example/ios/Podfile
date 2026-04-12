@@ -1,5 +1,3 @@
-ENV['RCT_NEW_ARCH_ENABLED'] = '1'
-
 # Note: This section of the standard RN Podfile has been modified according to
 # the react-native-permissions@3.9.0 installation instructions.
 def node_require(script)

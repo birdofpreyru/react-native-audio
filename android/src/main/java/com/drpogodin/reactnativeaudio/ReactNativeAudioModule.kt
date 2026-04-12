@@ -217,11 +217,7 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
         if (player == null) Errors.UNKNOWN_PLAYER_ID.reject(promise) else player.unload(sampleName, promise)
     }
 
-    override fun getName(): String {
-        return NAME
-    }
-
     companion object {
-      const val NAME = "ReactNativeAudio"
+      const val NAME = NativeReactNativeAudioSpec.NAME
     }
 }

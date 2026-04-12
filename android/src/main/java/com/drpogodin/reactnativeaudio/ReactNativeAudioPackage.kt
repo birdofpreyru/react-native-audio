@@ -16,18 +16,16 @@ class ReactNativeAudioPackage : BaseReactPackage() {
     }
   }
 
-  override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
-    return ReactModuleInfoProvider {
-      val moduleInfos: MutableMap<String, ReactModuleInfo> = HashMap()
-      moduleInfos[ReactNativeAudioModule.NAME] = ReactModuleInfo(
-        ReactNativeAudioModule.NAME,
-        ReactNativeAudioModule.NAME,
-        canOverrideExistingModule = false,  // canOverrideExistingModule
-        needsEagerInit = false,  // needsEagerInit
-        isCxxModule = false,  // isCxxModule
-        isTurboModule = true // isTurboModule
+  override fun getReactModuleInfoProvider() = ReactModuleInfoProvider {
+    mapOf(
+      ReactNativeAudioModule.NAME to ReactModuleInfo(
+        name = ReactNativeAudioModule.NAME,
+        className = ReactNativeAudioModule.NAME,
+        canOverrideExistingModule = false,
+        needsEagerInit = false,
+        isCxxModule = false,
+        isTurboModule = true
       )
-      moduleInfos
-    }
+    )
   }
 }

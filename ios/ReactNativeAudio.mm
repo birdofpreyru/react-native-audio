@@ -10,36 +10,35 @@
   NSMutableDictionary<NSNumber*,RNASamplePlayer*> *samplePlayers;
 }
 
-RCT_EXPORT_MODULE()
-
-- (instancetype) init {
-  inputStreams = [NSMutableDictionary new];
-  samplePlayers = [NSMutableDictionary new];
-  return [super init];
+- (id) init {
+  if (self = [super init]) {
+    inputStreams = [NSMutableDictionary new];
+    samplePlayers = [NSMutableDictionary new];
+  }
+  return self;
 }
 
-- (NSDictionary *) constantsToExport {
-  return @{
-    @"AUDIO_FORMAT_PCM_8BIT": [NSNumber numberWithInt:PCM_8BIT],
-    @"AUDIO_FORMAT_PCM_16BIT": [NSNumber numberWithInt:PCM_16BIT],
-    @"AUDIO_FORMAT_PCM_FLOAT": [NSNumber numberWithInt:PCM_FLOAT],
-    @"AUDIO_SOURCE_DEFAULT": [NSNumber numberWithInt:DEFAULT],
-    @"AUDIO_SOURCE_MIC": [NSNumber numberWithInt:MIC],
-    @"AUDIO_SOURCE_UNPROCESSED": [NSNumber numberWithInt:UNPROCESSED],
-    @"CHANNEL_IN_MONO": [NSNumber numberWithInt:MONO],
-    @"CHANNEL_IN_STEREO": [NSNumber numberWithInt:STEREO],
-    @"IS_MAC_CATALYST": @(TARGET_OS_MACCATALYST)
+- (facebook::react::ModuleConstants<JS::NativeReactNativeAudio::Constants>) constantsToExport {
+  return facebook::react::typedConstants<JS::NativeReactNativeAudio::Constants>({
+    .AUDIO_FORMAT_PCM_8BIT: PCM_8BIT,
+    .AUDIO_FORMAT_PCM_16BIT: PCM_16BIT,
+    .AUDIO_FORMAT_PCM_FLOAT: PCM_FLOAT,
+    .AUDIO_SOURCE_DEFAULT: DEFAULT,
+    .AUDIO_SOURCE_MIC: MIC,
+    .AUDIO_SOURCE_UNPROCESSED: UNPROCESSED,
+    .CHANNEL_IN_MONO: MONO,
+    .CHANNEL_IN_STEREO: STEREO,
+    .IS_MAC_CATALYST: TARGET_OS_MACCATALYST
   };
 }
 
-- (NSDictionary*) getConstants {
+- (facebook::react::ModuleConstants<JS::NativeReactNativeAudio::Constants>) getConstants {
   return [self constantsToExport];
 }
 
-RCT_REMAP_METHOD(getInputAvailable,
-  getInputAvailable:(RCTPromiseResolveBlock)resolve
+- (void) getInputAvailable:(RCTPromiseResolveBlock)resolve
   reject:(RCTPromiseRejectBlock)reject
-) {
+{
   resolve([NSNumber numberWithBool: AVAudioSession.sharedInstance.inputAvailable]);
 }
 
@@ -54,10 +53,9 @@ RCT_REMAP_METHOD(getInputAvailable,
 // TODO: Should we somehow plug-in this audio system configuration into
 // AudioStream initialization, and base it on the "audioSource" parameter,
 // which is now ignored on iOS?
-RCT_REMAP_METHOD(configAudioSystem,
-  configAudioSystem:(RCTPromiseResolveBlock)resolve
+- (void) configAudioSystem:(RCTPromiseResolveBlock)resolve
   reject:(RCTPromiseRejectBlock)reject
-) {
+{
   RCTLogInfo(@"Audio session configuration...");
 
   AVAudioSession *audioSession = AVAudioSession.sharedInstance;
@@ -118,8 +116,7 @@ RCT_REMAP_METHOD(configAudioSystem,
 }
 
 // NOTE: Can't use enum as the argument type here, as RN won't understand that.
-RCT_REMAP_METHOD(listen,
-  listen:(double)streamId
+- (void) listen:(double)streamId
   audioSource:(double)audioSource
   sampleRate:(double)sampleRate
   channelConfig:(double)channelConfig
@@ -127,7 +124,7 @@ RCT_REMAP_METHOD(listen,
   samplingSize:(double)samplingSize
   resolve:(RCTPromiseResolveBlock) resolve
   reject:(RCTPromiseRejectBlock) reject
-) {
+{
   NSNumber *sid = [NSNumber numberWithDouble:streamId];
 
   OnChunk onChunk = ^void(int chunkId, unsigned char *chunk, int size) {
@@ -158,11 +155,10 @@ RCT_REMAP_METHOD(listen,
   resolve(nil);
 }
 
-RCT_REMAP_METHOD(unlisten,
-  unlisten:(double)streamId
+- (void) unlisten:(double)streamId
   resolve:(RCTPromiseResolveBlock) resolve
   reject:(RCTPromiseRejectBlock) reject
-) {
+{
   NSNumber *id = [NSNumber numberWithDouble:streamId];
   [inputStreams[id] stop];
   [inputStreams removeObjectForKey:id];
@@ -170,15 +166,13 @@ RCT_REMAP_METHOD(unlisten,
   resolve(nil);
 }
 
-RCT_REMAP_METHOD(muteInputStream,
-  muteInputStream:(double)streamId muted:(BOOL)muted
-) {
+- (void) muteInputStream:(double)streamId muted:(BOOL)muted {
   inputStreams[[NSNumber numberWithDouble:streamId]].muted = muted;
 }
 
-RCT_EXPORT_METHOD(destroySamplePlayer:(double)playerId
+- (void) destroySamplePlayer:(double)playerId
                   resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+                  reject:(RCTPromiseRejectBlock)reject
 {
   NSNumber *id = [NSNumber numberWithDouble:playerId];
   if (samplePlayers[id] == nil) {
@@ -190,9 +184,9 @@ RCT_EXPORT_METHOD(destroySamplePlayer:(double)playerId
   resolve(nil);
 }
 
-RCT_EXPORT_METHOD(initSamplePlayer:(double)playerId
+- (void) initSamplePlayer:(double)playerId
                   resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+                  reject:(RCTPromiseRejectBlock)reject
 {
   NSNumber *id = [NSNumber numberWithDouble:playerId];
   if (samplePlayers[id] != nil) {
@@ -210,11 +204,11 @@ RCT_EXPORT_METHOD(initSamplePlayer:(double)playerId
   resolve(nil);
 }
 
-RCT_EXPORT_METHOD(loadSample:(double)playerId
+- (void) loadSample:(double)playerId
                   sampleName:(NSString *)sampleName
                   samplePath:(NSString *)samplePath
                   resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+                  reject:(RCTPromiseRejectBlock)reject
 {
   NSNumber *id = [NSNumber numberWithDouble:playerId];
   RNASamplePlayer *player = samplePlayers[id];
@@ -225,11 +219,11 @@ RCT_EXPORT_METHOD(loadSample:(double)playerId
   [player load:sampleName fromPath:samplePath resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(playSample:(double)playerId
+- (void) playSample:(double)playerId
                   sampleName:(NSString *)sampleName
                   loop:(BOOL)loop
                   resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+                  reject:(RCTPromiseRejectBlock)reject
 {
   NSNumber *id = [NSNumber numberWithDouble:playerId];
   RNASamplePlayer *player = samplePlayers[id];
@@ -240,10 +234,10 @@ RCT_EXPORT_METHOD(playSample:(double)playerId
   [player play:sampleName loop:loop resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(stopSample:(double)playerId
+- (void) stopSample:(double)playerId
                   sampleName:(NSString *)sampleName
                   resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+                  reject:(RCTPromiseRejectBlock)reject
 {
   NSNumber *id = [NSNumber numberWithDouble:playerId];
   RNASamplePlayer *player = samplePlayers[id];
@@ -254,10 +248,10 @@ RCT_EXPORT_METHOD(stopSample:(double)playerId
   [player stop:sampleName resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(unloadSample:(double)playerId
+- (void) unloadSample:(double)playerId
                   sampleName:(NSString *)sampleName
                   resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+                  reject:(RCTPromiseRejectBlock)reject
 {
   NSNumber *id = [NSNumber numberWithDouble:playerId];
   RNASamplePlayer *player = samplePlayers[id];
@@ -276,6 +270,11 @@ RCT_EXPORT_METHOD(unloadSample:(double)playerId
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
     return std::make_shared<facebook::react::NativeReactNativeAudioSpecJSI>(params);
+}
+
++ (NSString *)moduleName
+{
+  return @"ReactNativeAudio";
 }
 
 @end

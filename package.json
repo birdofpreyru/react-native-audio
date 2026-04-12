@@ -1,6 +1,6 @@
 {
   "name": "@dr.pogodin/react-native-audio",
-  "version": "1.18.0",
+  "version": "1.18.1",
   "description": "React Native: access to the audio input stream",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -14,11 +14,11 @@
   },
   "scripts": {
     "example": "yarn workspace @dr.pogodin/react-native-audio-example",
-    "test": "yarn lint && yarn typecheck",
-    "typecheck": "tsc",
-    "lint": "eslint",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
-    "prepare": "bob build"
+    "prepare": "bob build",
+    "typecheck": "tsc",
+    "test": "yarn lint && yarn typecheck",
+    "lint": "eslint"
   },
   "keywords": [
     "audio",
@@ -50,24 +50,24 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@eslint/compat": "^2.0.2",
-    "@eslint/eslintrc": "^3.3.3",
-    "@eslint/js": "^9.39.2",
-    "@react-native/babel-preset": "0.84.0",
-    "@react-native/eslint-config": "^0.84.0",
+    "@eslint/compat": "^2.0.5",
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^10.0.1",
+    "@react-native/babel-preset": "0.85.0",
+    "@react-native/eslint-config": "^0.85.0",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
     "del-cli": "^7.0.0",
-    "eslint": "^9.39.2",
+    "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-ft-flow": "^3.0.11",
     "eslint-plugin-prettier": "^5.5.5",
-    "jest": "^30.2.0",
-    "prettier": "^3.8.1",
+    "prettier": "^3.8.2",
     "react": "19.2.3",
-    "react-native": "0.84.0",
-    "react-native-builder-bob": "^0.40.18",
-    "react-native-permissions": "^5.4.4",
-    "typescript": "^5.9.3"
+    "react-native": "0.85.0",
+    "react-native-builder-bob": "^0.41.0",
+    "react-native-permissions": "^5.5.1",
+    "typescript": "^6.0.2"
   },
   "peerDependencies": {
     "react": "*",
@@ -104,7 +104,7 @@
     ]
   },
   "dependencies": {
-    "@dr.pogodin/js-utils": "^0.1.5",
+    "@dr.pogodin/js-utils": "^0.1.6",
     "buffer": "^6.0.3"
   },
   "codegenConfig": {
@@ -121,6 +121,6 @@
     "tools": [
       "eslint"
     ],
-    "version": "0.57.2"
+    "version": "0.61.0"
   }
 }
