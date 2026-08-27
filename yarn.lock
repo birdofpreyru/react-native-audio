@@ -1420,7 +1420,7 @@ __metadata:
     "@babel/core": "npm:^7.29.7"
     "@babel/preset-env": "npm:^7.29.7"
     "@babel/runtime": "npm:^7.29.7"
-    "@dr.pogodin/react-native-fs": "npm:^2.39.2"
+    "@dr.pogodin/react-native-fs": "npm:^2.40.0"
     "@react-native-community/cli": "npm:20.2.0"
     "@react-native-community/cli-platform-android": "npm:20.2.0"
     "@react-native-community/cli-platform-ios": "npm:20.2.0"
@@ -1467,16 +1467,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dr.pogodin/react-native-fs@npm:^2.39.2":
-  version: 2.39.2
-  resolution: "@dr.pogodin/react-native-fs@npm:2.39.2"
+"@dr.pogodin/react-native-fs@npm:^2.40.0":
+  version: 2.40.0
+  resolution: "@dr.pogodin/react-native-fs@npm:2.40.0"
   dependencies:
     buffer: "npm:^6.0.3"
     http-status-codes: "npm:^2.3.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/4dab26b34dd4c1d8bef81341513846a2ecf28c869955e8b73c598dc41081cada3bcecb8d4fcd8b16b6c0b28b91f5d9d53cd4c4c2a893495dbfae832f7900fb65
+  checksum: 10c0/f32f94cdeb22506c4cc1ee90e99d30977edea1f4ce3b34242609d2261db7c563d0bff5f0990aef34a4ccbc35d3668e96017e0845bfaf12b874331d5adf3ef906
   languageName: node
   linkType: hard
 
