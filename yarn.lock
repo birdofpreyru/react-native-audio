@@ -1431,7 +1431,7 @@ __metadata:
     fft.js: "npm:^4.0.4"
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
-    react-native-builder-bob: "npm:^0.43.1"
+    react-native-builder-bob: "npm:^0.43.2"
     react-native-monorepo-config: "npm:^0.4.0"
     react-native-permissions: "npm:^5.6.2"
   languageName: unknown
@@ -1457,7 +1457,7 @@ __metadata:
     prettier: "npm:^3.9.10"
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
-    react-native-builder-bob: "npm:^0.43.1"
+    react-native-builder-bob: "npm:^0.43.2"
     react-native-permissions: "npm:^5.6.2"
     typescript: "npm:^6.0.3"
   peerDependencies:
@@ -6319,9 +6319,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-builder-bob@npm:^0.43.1":
-  version: 0.43.1
-  resolution: "react-native-builder-bob@npm:0.43.1"
+"react-native-builder-bob@npm:^0.43.2":
+  version: 0.43.2
+  resolution: "react-native-builder-bob@npm:0.43.2"
   dependencies:
     "@babel/core": "npm:^7.29.0"
     "@babel/plugin-transform-flow-strip-types": "npm:^7.27.1"
@@ -6347,7 +6347,7 @@ __metadata:
     yargs: "npm:^18.0.0"
   bin:
     bob: bin/bob
-  checksum: 10c0/aa7423d549f3dedac66950482dd4c62c6ad42f3a04c47ac23e37bb454103b5fc18fc1bd889f0156d64c3e786f47f6046705736cbe43af9a0563ae90f14f41792
+  checksum: 10c0/7eebf5db5a3d2407d70c0b44d45ede8ff1ca6077755d50123165dce8e8f7ad6792da8392487f33db20a42ef553f9fdf8446a6ef10d1eff8bcb8a3d53406177cd
   languageName: node
   linkType: hard
 

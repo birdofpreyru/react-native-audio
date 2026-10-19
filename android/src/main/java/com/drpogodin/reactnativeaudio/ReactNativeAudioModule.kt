@@ -9,16 +9,13 @@ import android.util.Base64
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.bridge.ReactMethod
 import java.io.IOException
 
-@ReactModule(name = ReactNativeAudioModule.NAME)
 class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
   NativeReactNativeAudioSpec(reactContext) {
     private val inputStreams = HashMap<Double, InputAudioStream>()
     private val samplePlayers = HashMap<Double, SamplePlayer>()
-    @ReactMethod
+
     override fun configAudioSystem(promise: Promise) {
         // As of now, no special configuration needed on Android.
         promise.resolve(null)
@@ -59,7 +56,6 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
         return constants
     }
 
-    @ReactMethod
     override fun getInputAvailable(promise: Promise) {
         val context: Context = reactApplicationContext.applicationContext
         val manager = context.getSystemService(
@@ -98,7 +94,6 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
      * @param samplingSize Number of samples in data chunk (per channel).
      * @param promise RN promise to resolve / reject.
      */
-    @ReactMethod
     override fun listen(
             streamId: Double,
             audioSource: Double,
@@ -136,7 +131,6 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
      * @param streamId
      * @param muted
      */
-    @ReactMethod
     override fun muteInputStream(streamId: Double, muted: Boolean) {
         inputStreams[streamId]!!.muted = muted
     }
@@ -145,24 +139,20 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
      * Stops, and releases an input audio stream.
      * @param streamId
      */
-    @ReactMethod
     override fun unlisten(streamId: Double, promise: Promise) {
         inputStreams.remove(streamId)!!.stop()
         promise.resolve(null)
     }
 
-    @ReactMethod
     override fun addListener(eventName: String?) {
         // NOOP
     }
 
-    @ReactMethod
     override fun removeListeners(count: Double) {
         // NOOP
     }
 
     // These methods are for SamplePlayer functionality.
-    @ReactMethod
     override fun initSamplePlayer(playerId: Double, promise: Promise) {
         if (samplePlayers.containsKey(playerId)) {
             Errors.INTERNAL_ERROR.reject(promise, "Sample player ID is occupied")
@@ -172,7 +162,6 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
         promise.resolve(null)
     }
 
-    @ReactMethod
     override fun destroySamplePlayer(playerId: Double, promise: Promise) {
         val player = samplePlayers.remove(playerId)
         if (player == null) {
@@ -183,7 +172,6 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
         promise.resolve(null)
     }
 
-    @ReactMethod
     override fun loadSample(
             playerId: Double,
             sampleName: String,
@@ -194,7 +182,6 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
         if (player == null) Errors.UNKNOWN_PLAYER_ID.reject(promise) else player.load(sampleName, samplePath, promise)
     }
 
-    @ReactMethod
     override fun playSample(
             playerId: Double,
             sampleName: String,
@@ -205,13 +192,11 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
         if (player == null) Errors.UNKNOWN_PLAYER_ID.reject(promise) else player.play(sampleName, loop, promise)
     }
 
-    @ReactMethod
     override fun stopSample(playerId: Double, sampleName: String, promise: Promise) {
         val player = samplePlayers[playerId]
         if (player == null) Errors.UNKNOWN_PLAYER_ID.reject(promise) else player.stop(sampleName, promise)
     }
 
-    @ReactMethod
     override fun unloadSample(playerId: Double, sampleName: String, promise: Promise) {
         val player = samplePlayers[playerId]
         if (player == null) Errors.UNKNOWN_PLAYER_ID.reject(promise) else player.unload(sampleName, promise)
