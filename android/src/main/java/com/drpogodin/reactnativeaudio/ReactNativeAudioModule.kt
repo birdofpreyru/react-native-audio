@@ -62,7 +62,7 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
                 Context.AUDIO_SERVICE) as AudioManager
         try {
           val res: Boolean
-          if (Build.VERSION.SDK_INT >= 28) res = manager.microphones.size > 0
+          if (Build.VERSION.SDK_INT >= 28) res = manager.microphones.isNotEmpty()
           else {
             val devices = manager.getDevices(AudioManager.GET_DEVICES_INPUTS)
             res = devices.isNotEmpty()
