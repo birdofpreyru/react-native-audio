@@ -6,7 +6,6 @@ import {
 
 type AudioChunkEventT = {
   chunkId: number;
-  data: string;
   streamId: number;
 };
 
@@ -48,6 +47,7 @@ export interface Spec extends TurboModule {
     AUDIO_SOURCE_VOICE_UPLINK?: number;
   };
 
+  getChunk(streamId: number, id: number): ArrayBuffer;
   getInputAvailable(): Promise<boolean>;
 
   listen(

@@ -97,28 +97,31 @@ export default function App() {
         stream.addErrorListener(error => {
           Alert.alert('React Natitve Audio Error', error.message);
         });
-        stream.addChunkListener((chunk, chunkId) => {
+        stream.addChunkListener(chunkId => {
           stream?.mute();
           setCurrentChunkId(chunkId);
-          const data = new Int16Array(chunk.buffer);
-          fft.realTransform(fftOutput, data);
-          spectra.fill(0);
-          for (let i = 0; i < FFT_SIZE / 2; ++i) {
-            const bin = Math.floor(i / 128);
-            spectra[bin] = fftOutput[2 * i] ** 2 + fftOutput[2 * i + 1] ** 2;
+          const chunk = stream?.getChunk(chunkId);
+          if (chunk) {
+            const data = new Int16Array(chunk);
+            fft.realTransform(fftOutput, data);
+            spectra.fill(0);
+            for (let i = 0; i < FFT_SIZE / 2; ++i) {
+              const bin = Math.floor(i / 128);
+              spectra[bin] = fftOutput[2 * i] ** 2 + fftOutput[2 * i + 1] ** 2;
+            }
+            let max = 0;
+            for (let i = 0; i < 16; ++i) {
+              if (max < spectra[i]) max = spectra[i];
+            }
+            const newTextSpectra = Array(16);
+            for (let i = 0; i < 16; ++i) {
+              newTextSpectra[i] = ''.padEnd(
+                Math.floor((16 * spectra[i]) / max),
+                '*',
+              );
+            }
+            setTextSpectra(newTextSpectra);
           }
-          let max = 0;
-          for (let i = 0; i < 16; ++i) {
-            if (max < spectra[i]) max = spectra[i];
-          }
-          const newTextSpectra = Array(16);
-          for (let i = 0; i < 16; ++i) {
-            newTextSpectra[i] = ''.padEnd(
-              Math.floor((16 * spectra[i]) / max),
-              '*',
-            );
-          }
-          setTextSpectra(newTextSpectra);
           stream?.unmute();
         });
         stream.start();

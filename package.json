@@ -1,6 +1,6 @@
 {
   "name": "@dr.pogodin/react-native-audio",
-  "version": "1.19.3",
+  "version": "1.20.0",
   "description": "React Native: access to the audio input stream",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -60,7 +60,7 @@
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-ft-flow": "^3.0.11",
-    "eslint-plugin-prettier": "^5.5.6",
+    "eslint-plugin-prettier": "^5.5.7",
     "prettier": "^3.9.10",
     "react": "19.3.0",
     "react-native": "0.88.0",
@@ -96,8 +96,7 @@
     ]
   },
   "dependencies": {
-    "@dr.pogodin/js-utils": "^0.2.0",
-    "buffer": "^6.0.3"
+    "@dr.pogodin/js-utils": "^0.2.0"
   },
   "codegenConfig": {
     "name": "ReactNativeAudioSpec",

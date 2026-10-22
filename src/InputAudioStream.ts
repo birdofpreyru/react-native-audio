@@ -1,5 +1,3 @@
-import { Buffer } from 'buffer';
-
 import {
   type AppStateStatus,
   type EventSubscription,
@@ -26,27 +24,30 @@ import type {
   ErrorListener,
 } from './constants';
 
-type ChunkListener = (chunk: Buffer, chunkId: number) => void;
+type ChunkListener = (chunkId: number) => void;
 
 // TODO: UUID string would be better, but making "uuid" library to work for RN
 // is a bit cumbersome, at least in my current understanding.
 let lastInputStreamId: number = 0;
 
-const chunkEmitters: { [streamId: number]: Emitter<[Buffer, number]> } = {};
+type StreamHandlerT = {
+  chunkEmitter: Emitter<[number]>;
+  errorEmitter: Emitter<[Error]>;
+  lastChunkId: number;
+};
 
-const errorEmitters: { [streamId: number]: Emitter<[Error]> } = {};
+const handlers: Record<number, StreamHandlerT> = {};
 
-ReactNativeAudio.onAudioChunk(({ streamId, chunkId, data }) => {
-  const emitter = chunkEmitters[streamId];
-  if (emitter && emitter.hasListeners) {
-    const chunk = Buffer.from(data, 'base64');
-    emitter.emit(chunk, chunkId);
+ReactNativeAudio.onAudioChunk(({ streamId, chunkId }) => {
+  const handler = handlers[streamId];
+  if (handler) {
+    handler.lastChunkId = chunkId;
+    handler.chunkEmitter.emit(chunkId);
   }
 });
 
 ReactNativeAudio.onInputAudioStreamError(({ streamId, error }) => {
-  const emitter = errorEmitters[streamId];
-  if (emitter && emitter.hasListeners) emitter.emit(Error(error));
+  handlers[streamId]?.errorEmitter.emit(Error(error));
 });
 
 /**
@@ -176,20 +177,29 @@ export class InputAudioStream {
     this.samplingSize = samplingSize;
     this.stopInBackground = stopInBackground;
     this.streamId = ++lastInputStreamId;
-    chunkEmitters[this.streamId] = new Emitter();
-    errorEmitters[this.streamId] = new Emitter();
+
+    handlers[this.streamId] = {
+      chunkEmitter: new Emitter(),
+      errorEmitter: new Emitter(),
+      lastChunkId: 0,
+    };
   }
 
   /**
    * Adds a new chunk listener.
-   * @param listener
    */
   addChunkListener(listener: ChunkListener) {
-    chunkEmitters[this.streamId]!.addListener(listener);
+    handlers[this.streamId]!.chunkEmitter.addListener(listener);
   }
 
   addErrorListener(listener: ErrorListener) {
-    errorEmitters[this.streamId]!.addListener(listener);
+    handlers[this.streamId]!.errorEmitter.addListener(listener);
+  }
+
+  getChunk(id: number): ArrayBuffer | null {
+    if (id !== handlers[this.streamId]?.lastChunkId) return null;
+    const chunk = ReactNativeAudio.getChunk(this.streamId, id);
+    return chunk.byteLength ? chunk : null;
   }
 
   private _handleAppStateChange(appState: AppStateStatus) {
@@ -237,8 +247,7 @@ export class InputAudioStream {
 
   async destroy() {
     await this._stop();
-    delete chunkEmitters[this.streamId];
-    delete errorEmitters[this.streamId];
+    delete handlers[this.streamId];
   }
 
   async mute() {
@@ -254,11 +263,11 @@ export class InputAudioStream {
   }
 
   removeChunkListener(listener: ChunkListener) {
-    chunkEmitters[this.streamId]!.removeListener(listener);
+    handlers[this.streamId]!.chunkEmitter.removeListener(listener);
   }
 
   removeErrorListener(listener: ErrorListener) {
-    errorEmitters[this.streamId]!.removeListener(listener);
+    handlers[this.streamId]!.errorEmitter.removeListener(listener);
   }
 
   /**
