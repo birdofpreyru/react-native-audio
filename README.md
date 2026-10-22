@@ -36,6 +36,7 @@ It covers:
       - [.addErrorListener()][InputAudioStream.addErrorListener()] &mdash; Adds a new error listener to the stream.
       - [.destroy()][InputAudioStream.destroy()] &mdash; Destroys the stream
         &mdash; stops recording, and releases all related resources.
+      - [.getChunk()] &mdash; Returns [ArrayBuffer] with audio chunk bytes.
       - [.mute()] &mdash; Mutes the stream.
       - [.removeChunkListener()] &mdash; Removes an audio data chunk listener
         from the stream.
@@ -109,7 +110,7 @@ It covers:
 A better _Getting Started_ tutorial is to be written, however the main idea
 is this:
 
-```js
+```tsx
 import {
   AUDIO_FORMATS,
   AUDIO_SOURCES,
@@ -126,23 +127,28 @@ function createAndStartAudioStream() {
     4096, // Sampling size.
   );
 
-  stream.addErrorListener((error) => {
+  stream.addErrorListener((error: Error) => {
     // Do something with a stream error.
   });
 
-  stream.addChunkListener((chunk, chunkId) => {
-    // Pause the stream for the chunk processing. The point is: if your chunk
-    // processing in this function is too slow, and chunks arrive faster than
-    // this callback is able to handle them, it will rapidly crash the app,
-    // with out of memory error. Muting the stream ignores any new chunks
-    // until stream.unmute() is called, thus protecting from the crash.
-    // And if your chunk processing is rapid enough, not chunks won't be
-    // skipped. The "chunkId" argument is just sequential chunk numbers,
-    // by which you may judge whether any chunks have been skipped between
-    // this callback calls or not.
+  stream.addChunkListener((chunkId: number) => {
+    // You may pause the stream for chunk processing - this way you will not
+    // receive new chunk events until stream.unmute() is called. Note, `chunkId`
+    // argument is just a sequential chunk number, thus you may judge by it,
+    // whether any chunks have been skipped between this callback calls.
     stream.mute();
 
-    // Do something with the chunk.
+    const chunk: ArrayBuffer = stream.getChunk(chunkId);
+
+    // .getChunk(chunkId) returns "null" if `chunkId` value does not match ID
+    // of the latest chunk in the stream. This way, starting with v1.20.0 of
+    // the library, it will not crash with out-of-memory error even if you do
+    // not use stream.mute() - the native layer only keeps the latest chunk
+    // data, thus not consuming too much memory if your chunk processing is
+    // slower then generation of the chunks.
+    if (chunk) {
+      // Do something with the chunk.
+    }
 
     // Resumes the stream.
     stream.unmute();
@@ -247,6 +253,20 @@ Destroys the stream &mdash; stops the recording, and releases all related
 resources, both at the native and JS sides. Once a stream is destroyed,
 it cannot be re-used.
 
+#### .getChunk()
+[.getChunk()]: #getchunk
+```ts
+stream.getChunk(id: number): ArrayBuffer | null;
+```
+Returns [ArrayBuffer] with byte data of the latest audio chunk in the stream,
+if given `id` matches ID of that latest audio chunk; otherwise, it returns _null_;
+_i.e._ if you don't retrieve an audio chunk data in time, its data are discarded
+as soon as the next chunk becomes available &mdash; this way, even if you are
+processing audio chunks slower than they are generated, and you do not use
+[.mute()]/[.unmute()] methods, the library will not crash with out-of-memory
+error (and receiving _null_ from [.getChunk()] you will know that you have
+missed some audio chunks).
+
 #### .mute()
 [.mute()]: #mute
 ```ts
@@ -254,9 +274,7 @@ stream.mute(): void;
 ```
 Mutes the stream. A muted stream still continues to capture audio data chunks
 from the audio source, and thus keeps incrementing chunk IDs (see [ChunkListener]),
-but it discards all data chunks immediately after the capture, without sending
-them to the JavaScript layer, thus causing the minimal performance and memory
-overhead possible without interrupting the recording.
+but it does not send new chunk events to the JavaScript layer.
 
 Calling [.mute()] on a muted, or non-active (not recording) audio stream has
 no effect. See also [.active], [.muted].
@@ -610,18 +628,15 @@ function getInputAvailable(): Promise<boolean>;
 ### ChunkListener
 [ChunkListener]: #chunklistener
 ```ts
-type ChunkListener = (chunk: Buffer, chunkId: number) => void;
+type ChunkListener = (chunkId: number) => void;
 ```
 The type of audio data chunk listeners that can be connected to an
 [InputAudioStream] with [.addChunkListener()] method.
 
-- `chunk` &mdash; [Buffer] &mdash; Audio data chunk in the format specified
-  upon the audio stream [construction][InputAudioStream.constructor()]. [Buffer] implementation
-  for RN is provided by [the `buffer` library](https://www.npmjs.com/package/buffer).
-- `chunkId` &mdash; **number** &mdash; Consequtive chunk number. When a stream
-  is [.muted] the chunk numbers are still incremented for discarted audio chunks,
-  thus `chunkId` may be used to judge whether any chunks were missed while
-  a stream was muted.
+- `chunkId` &mdash; **number** &mdash; Consequtive chunk number, pass it to
+  [.getChunk()] method to get chunk data. When a stream is [.muted] the chunk
+  numbers are still being incremented for skipped audio chunks, thus `chunkId`
+  may be used to judge whether any chunks were missed while a stream was muted.
 
 ### ErrorListener
 [ErrorListener]: #errorlistener
@@ -634,7 +649,7 @@ The type of error listeners that can be connected to an [InputAudioStream] with
 - `error` &mdash; [Error] &mdash; Stream error.
 
 <!-- Global references. -->
-[Buffer]: https://nodejs.org/api/buffer.html
+[ArrayBuffer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer
 [Error]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
 [Hz]: https://en.wikipedia.org/wiki/Hertz
 [New RN Architecture]: https://reactnative.dev/docs/the-new-architecture/pillars-turbomodules
