@@ -7,7 +7,6 @@ const int NUM_BUFFERS = 3;
 
 @implementation RNAInputAudioStream {
   BOOL destroyed;
-  int chunkId;
   AudioQueueBufferRef buffers[NUM_BUFFERS];
   AudioQueueRef queue;
   OnChunk onChunk;
@@ -22,12 +21,11 @@ void HandleInputBuffer(void *inUserData,
                        const AudioStreamPacketDescription *inPacketDesc)
 {
   RNAInputAudioStream *stream = (__bridge RNAInputAudioStream*)inUserData;
+  ++stream->_lastChunkId;
   if (!stream.muted) {
-    stream->onChunk(stream->chunkId,
-                    (unsigned char *)inBuffer->mAudioData,
-                    inBuffer->mAudioDataByteSize);
+    stream->_lastChunk = [NSMutableData dataWithBytes:inBuffer->mAudioData length:inBuffer->mAudioDataByteSize];
+    stream->onChunk(stream->_lastChunkId);
   }
-  ++stream->chunkId;
   [stream handleStatus:AudioQueueEnqueueBuffer(inAQ, inBuffer, 0, NULL)];
 }
 

@@ -127,14 +127,8 @@
 {
   NSNumber *sid = [NSNumber numberWithDouble:streamId];
 
-  OnChunk onChunk = ^void(int chunkId, unsigned char *chunk, int size) {
-    RCTLogInfo(@"[Stream %@] Audio data chunk %d received", sid, chunkId);
-    NSData* data = [NSData dataWithBytesNoCopy:chunk
-                                        length:size
-                                  freeWhenDone:NO];
-    [self emitOnAudioChunk: @{@"streamId":sid,
-                              @"chunkId":@(chunkId),
-                              @"data":[data base64EncodedStringWithOptions:0]}];
+  OnChunk onChunk = ^void(int chunkId) {
+    [self emitOnAudioChunk: @{@"streamId":sid, @"chunkId":@(chunkId)}];
   };
   
   OnError onError = ^void(NSString* error) {
@@ -260,6 +254,19 @@
     return;
   }
   [player unload:sampleName resolve:resolve reject:reject];
+}
+
+- (void)addListener:(nonnull NSString *)eventName {
+  // NOOP
+}
+
+- (NSMutableData * _Nullable)getChunk:(double)streamId id:(double)id {
+  RNAInputAudioStream *stream = inputStreams[@(streamId)];
+  return id == stream.lastChunkId ? stream.lastChunk : nil;
+}
+
+- (void)removeListeners:(double)count {
+  // NOOP
 }
 
 + (BOOL) requiresMainQueueSetup {

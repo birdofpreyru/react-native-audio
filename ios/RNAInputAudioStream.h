@@ -25,13 +25,13 @@ enum CHANNEL_CONFIGS {
 /**
  * Audio data chunk handler.
  * @param chunkId Consequtive chunk number (the count includes chunks dropped because of mute).
- * @param chunk Raw chunk data.
- * @param size Size of chunk data in bytes.
  */
-typedef void (^OnChunk)(int chunkId, unsigned char *chunk, int size);
+typedef void (^OnChunk)(int chunkId);
 
 @interface RNAInputAudioStream : NSObject
 
+@property NSMutableData* lastChunk;
+@property int lastChunkId;
 @property BOOL muted;
 
 - (void)stop;
