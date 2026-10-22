@@ -5,8 +5,8 @@ import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.MediaRecorder
 import android.os.Build
-import android.util.Base64
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.ArrayBuffer
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import java.io.IOException
@@ -19,6 +19,11 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
     override fun configAudioSystem(promise: Promise) {
         // As of now, no special configuration needed on Android.
         promise.resolve(null)
+    }
+
+    override fun getChunk(streamId: Double, id: Double): ArrayBuffer? {
+      val stream = inputStreams[streamId]!!
+      return if (id.toInt() == stream.lastChunkId) stream.lastChunk else null
     }
 
     override fun getTypedExportedConstants(): MutableMap<String, Any> {
@@ -105,11 +110,10 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
     ) {
         val stream = InputAudioStream(audioSource.toInt(), sampleRate.toInt(), channelConfig.toInt(), audioFormat.toInt(), samplingSize.toInt(),
                 object : InputAudioStream.Listener {
-                    override fun onChunk(chunkId: Int, chunk: ByteArray?) {
+                    override fun onChunk(chunkId: Int) {
                         val event = Arguments.createMap().apply {
                             putDouble("streamId", streamId)
                             putDouble("chunkId", chunkId.toDouble())
-                            putString("data", Base64.encodeToString(chunk, Base64.NO_WRAP))
                         }
                         emitOnAudioChunk(event)
                     }

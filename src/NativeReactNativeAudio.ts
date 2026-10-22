@@ -47,7 +47,7 @@ export interface Spec extends TurboModule {
     AUDIO_SOURCE_VOICE_UPLINK?: number;
   };
 
-  getChunk(streamId: number, id: number): ArrayBuffer;
+  getChunk(streamId: number, id: number): ArrayBuffer | null;
   getInputAvailable(): Promise<boolean>;
 
   listen(

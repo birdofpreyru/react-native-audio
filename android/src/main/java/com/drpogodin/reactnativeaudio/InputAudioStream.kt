@@ -2,6 +2,8 @@ package com.drpogodin.reactnativeaudio
 
 import android.media.AudioFormat
 import android.media.AudioRecord
+import com.facebook.react.bridge.ArrayBuffer
+import java.nio.ByteBuffer
 import kotlin.math.max
 
 /**
@@ -31,9 +33,8 @@ class InputAudioStream internal constructor(audioSource: Int, sampleRate: Int, c
          * Called when a new audio data chunk is ready.
          * @param chunkId Consequent chunk number (the count includes chunks which were not delivered
          * because of the stream being muted).
-         * @param chunk
          */
-        fun onChunk(chunkId: Int, chunk: ByteArray?)
+        fun onChunk(chunkId: Int)
 
         /**
          * Called when any error happens during the stream initialization or lifetime.
@@ -41,6 +42,9 @@ class InputAudioStream internal constructor(audioSource: Int, sampleRate: Int, c
          */
         fun onError(e: Exception?)
     }
+
+    var lastChunk: ArrayBuffer? = null
+    var lastChunkId: Int = -1
 
     /**
      * This flag governs whether current audio chunks are sent to the listener (if false),
@@ -58,7 +62,8 @@ class InputAudioStream internal constructor(audioSource: Int, sampleRate: Int, c
           // Initialization.
           val frameSize = getNumChannels(channelConfig) * getSampleSize(audioFormat) // bytes
           val chunkSize = frameSize * samplingSize // bytes
-          val chunk = ByteArray(chunkSize)
+
+          val chunk = ByteBuffer.allocateDirect(chunkSize)
           val minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
           val bufferSize = max(3 * chunkSize, minBufferSize) // bytes
           record = AudioRecord(audioSource, sampleRate, channelConfig, audioFormat,
@@ -69,11 +74,14 @@ class InputAudioStream internal constructor(audioSource: Int, sampleRate: Int, c
           record.startRecording()
 
           // Main lifetime.
-          var chunkId = 0
           while (!isInterrupted) {
-            record.read(chunk, 0, chunkSize)
-            if (!muted) listener.onChunk(chunkId, chunk)
-            ++chunkId
+            record.read(chunk, chunkSize, AudioRecord.READ_BLOCKING)
+            ++lastChunkId
+
+            if (!muted) {
+              lastChunk = ArrayBuffer.arrayBufferWithOwnedBytes(chunk)
+              listener.onChunk(lastChunkId)
+            }
           }
 
           // De-initialization.

@@ -198,8 +198,7 @@ export class InputAudioStream {
 
   getChunk(id: number): ArrayBuffer | null {
     if (id !== handlers[this.streamId]?.lastChunkId) return null;
-    const chunk = ReactNativeAudio.getChunk(this.streamId, id);
-    return chunk.byteLength ? chunk : null;
+    return ReactNativeAudio.getChunk(this.streamId, id);
   }
 
   private _handleAppStateChange(appState: AppStateStatus) {
