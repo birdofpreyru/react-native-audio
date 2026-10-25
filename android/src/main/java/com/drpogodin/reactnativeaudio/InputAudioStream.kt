@@ -79,7 +79,7 @@ class InputAudioStream internal constructor(audioSource: Int, sampleRate: Int, c
             ++lastChunkId
 
             if (!muted) {
-              lastChunk = ArrayBuffer.arrayBufferWithOwnedBytes(chunk)
+              lastChunk = ArrayBuffer.arrayBufferWithCopiedBytes(chunk)
               listener.onChunk(lastChunkId)
             }
           }
