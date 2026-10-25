@@ -22,7 +22,7 @@ class ReactNativeAudioModule(reactContext: ReactApplicationContext) :
     }
 
     override fun getChunk(streamId: Double, id: Double): ArrayBuffer? {
-      val stream = inputStreams[streamId]!!
+      val stream = inputStreams[streamId] ?: return null
       return if (id.toInt() == stream.lastChunkId) stream.lastChunk else null
     }
 
