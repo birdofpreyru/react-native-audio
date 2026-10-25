@@ -1740,7 +1740,7 @@ PODS:
     - React-perflogger (= 0.88.0)
     - React-utils (= 0.88.0)
     - ReactNativeDependencies
-  - ReactNativeAudio (1.20.0):
+  - ReactNativeAudio (1.20.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1787,7 +1787,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNPermissions (5.6.2):
+  - RNPermissions (5.6.3):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2172,10 +2172,10 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 782ee9546c9cd3b53b73f1e9e3dd728540085fc7
   ReactCodegen: 7b71f4464442e9b6eae41094d11076d56c51c0e3
   ReactCommon: 145a14b942b19fc2fe38927f261955ada56978aa
-  ReactNativeAudio: 124e5b1544455974108ac318434dfd4de28f964b
+  ReactNativeAudio: 7b93ab3e77546b0f5b50b275462a0ddc4f52a82e
   ReactNativeDependencies: d3b7423ba1e52525e42085c8470109abde583d2e
   ReactNativeFs: c0b2d8faaa402ae3224aa2c098aec9212fdc392e
-  RNPermissions: 8b30d25ece585f358938536bf13c627674f29de9
+  RNPermissions: f15cd26b24b9fd287840eab811d03756606f671f
   SocketRocket: 37aec555668fb852ec12e3c0de59a86ca58f0871
   Yoga: d1c536142c5ff8ec8cd856ab2a7c227a1d875c8e
 

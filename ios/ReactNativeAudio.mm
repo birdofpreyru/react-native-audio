@@ -262,6 +262,7 @@
 
 - (NSMutableData * _Nullable)getChunk:(double)streamId id:(double)id {
   RNAInputAudioStream *stream = inputStreams[@(streamId)];
+  if (stream == nil) return nil;
   return id == stream.lastChunkId ? stream.lastChunk : nil;
 }
 
