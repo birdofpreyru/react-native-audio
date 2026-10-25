@@ -245,7 +245,7 @@ export class InputAudioStream {
   }
 
   async destroy() {
-    await this._stop();
+    await this.stop();
     delete handlers[this.streamId];
   }
 
